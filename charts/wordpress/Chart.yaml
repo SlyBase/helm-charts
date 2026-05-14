@@ -2,7 +2,7 @@ apiVersion: v2
 name: wordpress
 description: "Using the official WordPress image. This chart provides automation for installation, user management, plugin installation, and metrics."
 type: application
-version: 3.6.39
+version: 3.6.40
 appVersion: "6.9.4" # renovate: image=docker.io/wordpress
 icon: https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
 home: https://github.com/slydlake/helm-charts
@@ -27,7 +27,7 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: changed
-      description: "Update redis to 0.27.6"
+      description: "Update redis to 0.27.9"
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:6.9.4-php8.3-apache
@@ -51,7 +51,7 @@ dependencies:
   - condition: redis.enabled
     name: redis
     repository: oci://registry-1.docker.io/cloudpirates
-    version: 0.27.6
+    version: 0.27.9
   - condition: valkey.enabled
     name: valkey
     repository: oci://registry-1.docker.io/cloudpirates
