@@ -120,6 +120,7 @@
                 "charts/**"
             ],
             "groupName": "chart/{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}/{{{depName}}}/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
+            "branchTopic": "chart-{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
             "labels": [
                 "dependencies",
                 "renovate"
@@ -145,6 +146,7 @@
                 "docker.io/linuxserver/wireguard"
             ],
             "groupName": "chart/wireguard/wireguard/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
+            "branchTopic": "chart-wireguard-wireguard-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
             "commitMessageAction": "charts/wireguard chore(deps): wireguard",
             "commitMessageTopic": "",
             "commitMessageExtra": " {{#if (equals updateType 'digest')}}digest {{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
@@ -158,6 +160,7 @@
                 "charts/**"
             ],
             "groupName": "subchart/{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}/{{{depName}}}/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
+            "branchTopic": "subchart-{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
             "labels": [
                 "dependencies",
                 "renovate"
@@ -180,6 +183,7 @@
                 "charts/wordpress/**"
             ],
             "groupName": "subchart/wordpress/{{{depName}}}/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
+            "branchTopic": "subchart-wordpress-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
             "labels": [
                 "dependencies",
                 "renovate"
@@ -272,6 +276,7 @@
             "matchFileNames": [
                 ".github/workflows/**"
             ],
+            "branchTopic": "github-actions-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
             "labels": [
                 "dependencies",
                 "renovate"
