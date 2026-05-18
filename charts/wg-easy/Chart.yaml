@@ -2,8 +2,8 @@ apiVersion: v2
 name: wg-easy
 description: Using the offical wg-easy/wg-easy image with almost any environment variables for K8s. Supporting Init Mode.
 type: application
-version: 0.6.3
-appVersion: 15.2.2 # renovate: image=ghcr.io/wg-easy/wg-easy
+version: 0.9.0
+appVersion: 15.3.0 # renovate: image=ghcr.io/wg-easy/wg-easy
 icon: https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wg-easy/app.png
 home: https://github.com/slydlake/helm-charts
 maintainers:
@@ -22,12 +22,12 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: fixed
-      description: "Fixed runtimeClassName value to be an empty string instead of an empty object"
+    - kind: changed
+      description: "Update ghcr.io/wg-easy/wg-easy to 15.3.0"
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wg-easy
-      image: ghcr.io/wg-easy/wg-easy:15.2.2
+      image: ghcr.io/wg-easy/wg-easy:15.3.0
 keywords:
   - wireguard
   - vpn
