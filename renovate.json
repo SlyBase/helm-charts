@@ -7,7 +7,6 @@
         "41898282+github-actions[bot]@users.noreply.github.com"
     ],
     "platformAutomerge": true,
-    "automergeRequireAllStatusChecks": true,
     "rebaseWhen": "conflicted",
     "semanticCommits": "disabled",
     "enabledManagers": [
