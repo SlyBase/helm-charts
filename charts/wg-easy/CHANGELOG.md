@@ -1,6 +1,19 @@
 # Changelog
 
 All notable changes to this chart are documented here.
+
+## 0.9.0 - 2026-05-18
+
+- Update ghcr.io/wg-easy/wg-easy to 15.3.0
+
+## 0.8.0 - 2026-05-18
+
+- Update ghcr.io/wg-easy/wg-easy to 15.3.0
+
+## 0.7.0 - 2026-05-18
+
+- Update ghcr.io/wg-easy/wg-easy to 15.3.0
+
 ## 0.6.3 - 2026-03-12
 
 - Fixed runtimeClassName value to be an empty string instead of an empty object
