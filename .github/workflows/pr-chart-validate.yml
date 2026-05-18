@@ -64,3 +64,43 @@ jobs:
 
             echo "::endgroup::"
           done
+
+      - name: Check chart version bump
+        shell: bash
+        env:
+          CHARTS_JSON: ${{ steps.charts.outputs.charts_json }}
+        run: |
+          set -euo pipefail
+
+          mapfile -t chart_dirs < <(printf '%s' "$CHARTS_JSON" | jq -r '.[]')
+
+          if [ "${#chart_dirs[@]}" -eq 0 ]; then
+            echo "No chart changes detected, skipping version check"
+            exit 0
+          fi
+
+          failed=0
+          for chart_dir in "${chart_dirs[@]}"; do
+            main_version=$(git show "origin/main:${chart_dir}/Chart.yaml" 2>/dev/null \
+              | awk '/^version:/ { print $2; exit }') || true
+            if [ -z "$main_version" ]; then
+              echo "⏩ ${chart_dir}: new chart, skipping version check"
+              continue
+            fi
+
+            pr_version=$(awk '/^version:/ { print $2; exit }' "${chart_dir}/Chart.yaml")
+
+            if [ "$pr_version" = "$main_version" ]; then
+              echo "❌ ${chart_dir}: chart version not bumped (still ${pr_version})" >&2
+              failed=1
+            else
+              echo "✅ ${chart_dir}: version ${main_version} → ${pr_version}"
+            fi
+          done
+
+          if [ "$failed" -ne 0 ]; then
+            echo "" >&2
+            echo "One or more charts were changed without bumping Chart.yaml version." >&2
+            echo "Ensure postUpgradeTasks ran (self-hosted Renovate) or bump the version manually." >&2
+            exit 1
+          fi
