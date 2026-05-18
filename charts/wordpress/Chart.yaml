@@ -2,7 +2,7 @@ apiVersion: v2
 name: wordpress
 description: "Using the official WordPress image. This chart provides automation for installation, user management, plugin installation, and metrics."
 type: application
-version: 3.6.41
+version: 3.6.42
 appVersion: "6.9.4" # renovate: image=docker.io/wordpress
 icon: https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
 home: https://github.com/slydlake/helm-charts
@@ -27,7 +27,7 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: changed
-      description: "Update docker.io/memcached digest to f7a252e"
+      description: "Update valkey to 0.20.2"
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:6.9.4-php8.3-apache
@@ -55,7 +55,7 @@ dependencies:
   - condition: valkey.enabled
     name: valkey
     repository: oci://registry-1.docker.io/cloudpirates
-    version: 0.20.1
+    version: 0.20.2
   - condition: mariadb.enabled
     name: mariadb
     repository: oci://registry-1.docker.io/cloudpirates
