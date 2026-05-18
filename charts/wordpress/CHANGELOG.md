@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 3.6.42 - 2026-05-18
+
+- Update valkey to 0.20.2
+
 ## 3.6.41 - 2026-05-18
 
 - Update docker.io/memcached digest to f7a252e
