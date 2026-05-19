@@ -1366,7 +1366,7 @@ valkey:
     ## @param valkey.image.repository string Valkey image repository
     repository: docker.io/valkey/valkey
     ## @param valkey.image.tag string Valkey image tag
-    tag: "9.0.4-trixie"
+    tag: "9.1.0-trixie"
     ## @param valkey.image.pullPolicy string Valkey image pull policy
     pullPolicy: IfNotPresent
 
