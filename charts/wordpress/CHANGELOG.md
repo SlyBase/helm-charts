@@ -2,6 +2,14 @@
 
 All notable changes to this chart are documented here.
 
+## 3.8.0 - 2026-05-19
+
+- Update docker.io/valkey/valkey to 9.1.0
+
+## 3.7.0 - 2026-05-19
+
+- Update docker.io/valkey/valkey to 9.1.0
+
 ## 3.6.43 - 2026-05-19
 
 - Update mariadb to 0.16.3
