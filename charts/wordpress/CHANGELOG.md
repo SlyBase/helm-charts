@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 3.8.3 - 2026-05-20
+
+- Update docker.io/memcached digest to 26983a4
+
 ## 3.8.2 - 2026-05-20
 
 - Update docker.io/memcached to 1.6.42
