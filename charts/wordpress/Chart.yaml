@@ -2,7 +2,7 @@ apiVersion: v2
 name: wordpress
 description: "Using the official WordPress image. This chart provides automation for installation, user management, plugin installation, and metrics."
 type: application
-version: 3.8.0
+version: 3.8.2
 appVersion: "6.9.4" # renovate: image=docker.io/wordpress
 icon: https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
 home: https://github.com/slydlake/helm-charts
@@ -27,7 +27,7 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: changed
-      description: "Update docker.io/valkey/valkey to 9.1.0"
+      description: "Update docker.io/memcached to 1.6.42"
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:6.9.4-php8.3-apache
@@ -38,7 +38,7 @@ annotations:
     - name: mariadb
       image: docker.io/mariadb:12.2.2-noble
     - name: memcached
-      image: docker.io/memcached:1.6.41
+      image: docker.io/memcached:1.6.42
     - name: redis
       image: docker.io/redis:8.6.3-trixie
     - name: valkey
