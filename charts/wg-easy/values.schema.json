@@ -6,6 +6,12 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "global": {
+      "title": "Global values",
+      "description": "Global values injected by Helm during dependency coalescing.",
+      "type": "object",
+      "additionalProperties": true
+    },
     "replicaCount": {
       "title": "Replica count",
       "type": "integer",
