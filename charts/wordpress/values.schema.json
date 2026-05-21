@@ -1603,7 +1603,7 @@
                                 "timeoutSeconds": {
                                     "type": "integer",
                                     "description": "Timeout for readiness probe",
-                                    "default": 3
+                                    "default": 5
                                 },
                                 "failureThreshold": {
                                     "type": "integer",
@@ -1638,7 +1638,7 @@
                                 "timeoutSeconds": {
                                     "type": "integer",
                                     "description": "Timeout for startup probe",
-                                    "default": 1
+                                    "default": 5
                                 },
                                 "failureThreshold": {
                                     "type": "integer",

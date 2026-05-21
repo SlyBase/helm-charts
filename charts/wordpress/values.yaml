@@ -869,6 +869,14 @@ metrics:
       tag: "v1.0.12@sha256:8bc1ba9d573058b101b833414028bff86b6f83be6f14b9bf9b568bc933b26e07"
 
     ## @section Apache Exporter Probes
+    ## @descriptionStart
+    ## All three probes use tcpSocket (not httpGet) intentionally.
+    ## httpGet on /metrics triggers a synchronous scrape of server-status, which can
+    ## block indefinitely if Apache is momentarily slow (e.g. during cron or autoupdates),
+    ## causing the probe to time out even though the exporter process is healthy.
+    ## tcpSocket simply checks that the exporter is listening, which is the correct semantic
+    ## for liveness/readiness. Actual scrape health is monitored by Prometheus.
+    ## @descriptionEnd
     livenessProbe:
       ## @param metrics.apache.livenessProbe.enabled bool Enable liveness probe
       enabled: true
@@ -877,7 +885,7 @@ metrics:
       ## @param metrics.apache.livenessProbe.periodSeconds int Period for liveness probe
       periodSeconds: 10
       ## @param metrics.apache.livenessProbe.timeoutSeconds int Timeout for liveness probe
-      timeoutSeconds: 10
+      timeoutSeconds: 5
       ## @param metrics.apache.livenessProbe.failureThreshold int Failure threshold for liveness probe
       failureThreshold: 5
       ## @param metrics.apache.livenessProbe.successThreshold int Success threshold for liveness probe
@@ -891,7 +899,7 @@ metrics:
       ## @param metrics.apache.readinessProbe.periodSeconds int Period for readiness probe
       periodSeconds: 10
       ## @param metrics.apache.readinessProbe.timeoutSeconds int Timeout for readiness probe
-      timeoutSeconds: 10
+      timeoutSeconds: 5
       ## @param metrics.apache.readinessProbe.failureThreshold int Failure threshold for readiness probe
       failureThreshold: 5
       ## @param metrics.apache.readinessProbe.successThreshold int Success threshold for readiness probe
@@ -905,7 +913,7 @@ metrics:
       ## @param metrics.apache.startupProbe.periodSeconds int Period for startup probe
       periodSeconds: 10
       ## @param metrics.apache.startupProbe.timeoutSeconds int Timeout for startup probe
-      timeoutSeconds: 1
+      timeoutSeconds: 5
       ## @param metrics.apache.startupProbe.failureThreshold int Failure threshold for startup probe
       failureThreshold: 15
       ## @param metrics.apache.startupProbe.successThreshold int Success threshold for startup probe

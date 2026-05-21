@@ -2,6 +2,11 @@
 
 All notable changes to this chart are documented here.
 
+## 3.8.6 - 2026-05-21
+
+- Fix apache exporter liveness/readiness probes: switch from `httpGet /metrics` to `tcpSocket` to prevent probe timeouts when Apache is momentarily slow (e.g. during cron or plugin autoupdates)
+- Increase `startupProbe.timeoutSeconds` for apache exporter from 1s to 5s
+
 ## 3.8.5 - 2026-05-21
 
 - Update redis to 0.28.0

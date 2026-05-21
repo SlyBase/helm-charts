@@ -787,12 +787,11 @@ spec:
             {{- toYaml .Values.metrics.apache.customLivenessProbe | nindent 12 }}
           {{- else if .Values.metrics.apache.livenessProbe.enabled }}
           livenessProbe:
-            httpGet:
-              path: /metrics
+            tcpSocket:
               port: metrics
             initialDelaySeconds: {{ .Values.metrics.apache.livenessProbe.initialDelaySeconds | default 5 }}
             periodSeconds: {{ .Values.metrics.apache.livenessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.metrics.apache.livenessProbe.timeoutSeconds | default 3 }}
+            timeoutSeconds: {{ .Values.metrics.apache.livenessProbe.timeoutSeconds | default 5 }}
             failureThreshold: {{ .Values.metrics.apache.livenessProbe.failureThreshold | default 3 }}
             successThreshold: {{ .Values.metrics.apache.livenessProbe.successThreshold | default 1 }}
           {{ end }}
@@ -801,12 +800,11 @@ spec:
             {{- toYaml .Values.metrics.apache.customReadinessProbe | nindent 12 }}
           {{- else if .Values.metrics.apache.readinessProbe.enabled }}
           readinessProbe:
-            httpGet:
-              path: /metrics
+            tcpSocket:
               port: metrics
             initialDelaySeconds: {{ .Values.metrics.apache.readinessProbe.initialDelaySeconds | default 5 }}
             periodSeconds: {{ .Values.metrics.apache.readinessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.metrics.apache.readinessProbe.timeoutSeconds | default 3 }}
+            timeoutSeconds: {{ .Values.metrics.apache.readinessProbe.timeoutSeconds | default 5 }}
             failureThreshold: {{ .Values.metrics.apache.readinessProbe.failureThreshold | default 3 }}
             successThreshold: {{ .Values.metrics.apache.readinessProbe.successThreshold | default 1 }}
           {{ end }}

@@ -1,0 +1,276 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-verify-config
+data:
+  custom.ini: |
+    upload_max_filesize = 64M
+    post_max_size = 64M
+    memory_limit = 256M
+  htaccess: |
+    # Server-status exception
+    <IfModule mod_rewrite.c>
+    RewriteRule ^server-status - [L]
+    </IfModule>
+
+    # Protect wp-config.php
+    <Files wp-config.php>
+    order allow,deny
+    deny from all
+    </Files>
+
+    # BEGIN WordPress
+    # Die Anweisungen (Zeilen) zwischen „BEGIN WordPress“ und „END WordPress“ sind
+    # dynamisch generiert und sollten nur über WordPress-Filter geändert werden.
+    # Alle Änderungen an den Anweisungen zwischen diesen Markierungen werden überschrieben.
+
+
+    # END WordPress
+
+
+    # turns cache on for 1 month
+    <IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType text/html "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 month"
+    </IfModule>
+    <ifmodule mod_headers.c>
+    <filesmatch "\\.(ico|jpe?g|png|gif|swf)$">
+      Header set Cache-Control "max-age=2592000, public"
+    </filesmatch>
+    <filesmatch "\\.(css)$">
+      Header set Cache-Control "max-age=604800, public"
+    </filesmatch>
+    <filesmatch "\\.(js)$">
+      Header set Cache-Control "max-age=216000, private"
+    </filesmatch>
+    </ifmodule>
+
+    # BEGIN htpw (.htaccess to protect WordPress)
+    #
+    # htpw was made with ♥ by Andrea Draghetti
+    #
+    # https://github.com/drego85/htpw
+    #
+    # Version: 1.5 - Last Update: 02 Oct 2024
+    #
+    # This file may be licensed under the terms of of the
+    # GNU General Public License Version 3 (the ``GPL'').
+    #
+
+    # Protect System Files
+    <files .htaccess>
+      <IfModule mod_authz_core.c>
+        Require all denied
+      </IfModule>
+      <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+      </IfModule>
+    </files>
+    <files readme.html>
+      <IfModule mod_authz_core.c>
+        Require all denied
+      </IfModule>
+      <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+      </IfModule>
+    </files>
+    <files readme.txt>
+      <IfModule mod_authz_core.c>
+        Require all denied
+      </IfModule>
+      <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+      </IfModule>
+    </files>
+    <files license.txt>
+      <IfModule mod_authz_core.c>
+        Require all denied
+      </IfModule>
+      <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+      </IfModule>
+    </files>
+    <files wp-config.php>
+      <IfModule mod_authz_core.c>
+        Require all denied
+      </IfModule>
+      <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+      </IfModule>
+    </files>
+    <files error_log>
+      <IfModule mod_authz_core.c>
+        Require all denied
+      </IfModule>
+      <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+      </IfModule>
+    </files>
+    <files php_errorlog>
+      <IfModule mod_authz_core.c>
+        Require all denied
+      </IfModule>
+      <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+      </IfModule>
+    </files>
+    <FilesMatch "\.(?i:sql|data|json|yml|ini)$">
+      <IfModule mod_authz_core.c>
+        Require all denied
+      </IfModule>
+      <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+      </IfModule>
+    </FilesMatch>
+
+    # Disable Directory Listening
+    Options -Indexes
+
+    <IfModule mod_rewrite.c>
+      RewriteEngine On
+
+      # Allow WordPress core JS files
+      # RewriteRule ^wp-includes/js/dist/ - [L]
+
+      # Protect System Files
+      RewriteRule ^wp-admin/install\.php$ - [F]
+      RewriteRule ^wp-admin/includes/ - [F]
+      RewriteRule !^wp-includes/ - [S=3]
+      RewriteRule ^wp-includes/[^/]+\.php$ - [F]
+      RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F]
+      RewriteRule ^wp-includes/theme-compat/ - [F]
+      RewriteRule \.(?:sql|data|json|yml|ini)$ - [NC,F]
+      RewriteCond %{REQUEST_FILENAME} -f
+      RewriteRule (^|.*/)\.(git|svn)/.* - [F]
+      RewriteRule ^wp-content/debug\.log$ - [F]
+      RewriteRule (^|/)error_log$ - [F]
+      RewriteRule (^|/)php_errorlog$ - [F]
+
+      # Disable PHP in Uploads
+      RewriteRule ^wp\-content/uploads/.*\.(?:php[1-8]?|pht|phtml?|phps)\.?$ - [NC,F]
+
+      # Disable PHP in Plugins
+      # RewriteRule ^wp\-content/plugins/.*\.(?:php[1-8]?|pht|phtml?|phps)\.?$ - [NC,F]
+
+      # Disable PHP in Themes
+      # RewriteRule ^wp\-content/themes/.*\.(?:php[1-8]?|pht|phtml?|phps)\.?$ - [NC,F]
+
+      # Block Malicious or Suspicious User Agent
+      RewriteCond %{HTTP_USER_AGENT} "^360Spider" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^arachni" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^Batman" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^dirbuster" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^havij" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^nessus" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^Nikto" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^Nmap" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^Nuclei" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^openvas" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^PhantomJS" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^s2bot" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^SCspider" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^sqlmap" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^sqlninja" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^w3af" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^Wappalyzer" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^WPScan" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^Zeus" [NC,OR]
+      RewriteCond %{HTTP_USER_AGENT} "^zgrab" [NC]
+      RewriteRule ^.* - [F,L]
+    </IfModule>
+
+    # Block XML-RPC requests except JetPack or Akismet connections:
+    # - https://jetpack.com/support/hosting-faq/
+    # - https://jetpack.com/ips-v4.txt
+    # - https://blog.akismet.com/akismet-hosting-faq/
+    <files xmlrpc.php>
+      <IfModule mod_authz_core.c>
+        <RequireAny>
+          Require ip 122.248.245.244/32
+          Require ip 54.217.201.243/32
+          Require ip 54.232.116.4/32
+          Require ip 192.0.80.0/20
+          Require ip 192.0.96.0/20
+          Require ip 192.0.112.0/20
+          Require ip 195.234.108.0/22
+        </RequireAny>
+      </IfModule>
+      <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+        allow from 122.248.245.244/32
+        allow from 54.217.201.243/32
+        allow from 54.232.116.4/32
+        allow from 192.0.80.0/20
+        allow from 192.0.96.0/20
+        allow from 192.0.112.0/20
+        allow from 195.234.108.0/22
+      </IfModule>
+    </files>
+
+    # Security Headers
+    <IfModule mod_headers.c>
+      Header set X-XSS-Protection: "0"
+      Header set X-Frame-Options "SAMEORIGIN"
+      Header set X-Content-Type-Options "nosniff"
+      Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+      Header set Referrer-Policy "origin"
+    </IfModule>
+
+    # END htpw
+  commands.sh: |
+    #!/bin/bash
+    # Custom init commands - these run at the end of the init container
+    # after WordPress installation and configuration
+
+    echo "Running custom initialization commands..."
+
+    # Example: Update all plugins to their latest versions
+    # wp plugin update --all
+
+    # Example: Install and activate a specific plugin
+    # wp plugin install contact-form-7 --activate
+
+    # Example: Set custom WordPress options
+    # wp option update blogdescription "My awesome WordPress site"
+
+    # Example: Create a custom page
+    # wp post create --post_type=page --post_title='Privacy Policy' --post_status=publish
+
+    # Example: Enable maintenance mode during deployment
+    # wp maintenance-mode activate
+
+    echo "Custom initialization completed!"
+  custom-security.php: |
+    <?php
+    /**
+     * Plugin Name: Custom Security Settings
+     * Description: Essential security configurations for WordPress
+     * Version: 1.0.0
+     */
+
+    // Disable file editing in WordPress admin
+    if (!defined('DISALLOW_FILE_EDIT')) {
+        define('DISALLOW_FILE_EDIT', true);
+    }
+
+    // Remove WordPress version from header
+    remove_action('wp_head', 'wp_generator');
+
+    // Disable XML-RPC to prevent attacks
+    add_filter('xmlrpc_enabled', '__return_false');
