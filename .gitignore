@@ -2,3 +2,4 @@
 .github/instructions/*
 /archive/*
 docs/*
+charts/wordpress/samples/verify/secrets.yaml

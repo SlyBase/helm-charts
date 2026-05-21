@@ -1,0 +1,71 @@
+wordpress:
+  init:
+    enabled: true
+    existingSecret: "wordpress-verify-secret"
+    firstname: "John"
+    lastname: "Doe"
+    title: "verify chart"
+    customInitConfigMap:
+      name: "wordpress-verify-config"
+  language: "de_DE"
+  muPluginsConfigMaps:
+    - name: wordpress-verify-config
+      key: custom-security.php
+  plugins:
+    - name: "wordpress/mcp-adapter"
+      activate: true
+      autoupdate: true
+    - name: "enable-abilities-for-mcp"
+      activate: true
+      autoupdate: true
+    - name: "redis-cache"
+      activate: true
+      autoupdate: true
+  themes:
+    - name: "blocksy"
+      activate: false
+      autoupdate: true
+    - name: "https://creativethemes.com/downloads/blocksy-child.zip"
+      slug: "blocksy-child" # Required for URL themes: enables autoupdate, sites[] and skip-if-installed
+      activate: true
+      autoupdate: true
+  users:
+    - username: "johnsmith"
+      email: "john.smith@example.com"
+      displayname: "John Smith"
+      firstname: "John"
+      lastname: "Smith"
+      role: "contributor"
+      sendEmail: false
+  configExtraSecret:
+    name: "wordpress-verify-secret"
+  htaccessConfigMap: "wordpress-verify-config"
+  url: "http://192.168.178.21:30911"
+service:
+  nodePorts:
+    http: 30911
+storage:
+  resourcePolicy: "" # Delete PVC on helm uninstall
+apache:
+  customPhpConfigMap: "wordpress-verify-config"
+metrics:
+  wordpress:
+    enabled: true
+    serviceMonitor:
+      existingSecret: "wordpress-verify-secret"
+    grafanaDashboard:
+      enabled: true
+      namespace: "monitoring"
+  apache:
+    enabled: true
+mariadb:
+  auth:
+    database: "wordpress_db"
+    username: "wordpress_db_user"
+    existingSecret: "wordpress-verify-secret"
+  persistence:
+    annotations:
+      helm.sh/resource-policy: "" # Delete PVC on helm uninstall
+valkey:
+  enabled: true
+  createConfig: true
