@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 0.9.1 - 2026-05-21
+
+- Fix schema validation failure when chart is used as a Helm dependency: added `global` property to `values.schema.json` so Helm's automatic global values injection no longer conflicts with `additionalProperties: false` at the root level
+
 ## 0.9.0 - 2026-05-18
 
 - Update ghcr.io/wg-easy/wg-easy to 15.3.0
