@@ -10,7 +10,7 @@ image:
   ## @param image.pullPolicy string Pull policy for the container image
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.20250521-r1-ls112@sha256:b4fdb5b5bbbdcd6c7a4433c8fe98b0b00bf8684c62542571a705543ac4a8e75c"
+  tag: "1.0.20250521-r1-ls113@sha256:33d861fd6ebcdc0f8d946ace22fa1efc2e3fc81951028bca2dea65f40fe05f93"
 
 ## @param imagePullSecrets list Secrets for pulling images from a private repository
 imagePullSecrets: []
