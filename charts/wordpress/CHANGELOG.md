@@ -2,6 +2,18 @@
 
 All notable changes to this chart are documented here.
 
+## 6.0.0 - 2026-05-22
+
+- Update docker.io/wordpress to 7.0.0
+
+## 5.0.0 - 2026-05-22
+
+- Update docker.io/wordpress to 7.0.0
+
+## 4.0.0 - 2026-05-22
+
+- Update docker.io/wordpress to 7.0.0
+
 ## 3.8.7 - 2026-05-22
 
 - Update valkey to 0.21.0

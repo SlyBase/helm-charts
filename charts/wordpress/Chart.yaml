@@ -2,8 +2,8 @@ apiVersion: v2
 name: wordpress
 description: "Using the official WordPress image. This chart provides automation for installation, user management, plugin installation, and metrics."
 type: application
-version: 3.8.7
-appVersion: "6.9.4" # renovate: image=docker.io/wordpress
+version: 6.0.0
+appVersion: "7.0.0" # renovate: image=docker.io/wordpress
 icon: https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
 home: https://github.com/slydlake/helm-charts
 maintainers:
@@ -27,10 +27,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: changed
-      description: "Update valkey to 0.21.0"
+      description: "Update docker.io/wordpress to 7.0.0"
   artifacthub.io/images: |
     - name: wordpress
-      image: docker.io/wordpress:6.9.4-php8.3-apache
+      image: docker.io/wordpress:7.0.0-php8.3-apache
     - name: wordpress-cli
       image: docker.io/wordpress:cli-2.12.0-php8.3
     - name: metrics-apache
