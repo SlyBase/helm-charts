@@ -1,12 +1,12 @@
 # GitHub Scripts
 
-This directory intentionally contains only the small helper that is still needed by GitHub Actions.
+This directory contains helpers used during the Renovate PR workflow.
 
-## Used by GitHub Actions
+## Invoked by Renovate
 
 ### update-chart-metadata.py
 
-Used by [.github/workflows/chart-release-metadata.yml](.github/workflows/chart-release-metadata.yml) on Renovate pull requests before merge.
+Invoked via `postUpgradeTasks` in `renovate.json` during PR creation (before merge).
 
 What it does:
 - Bumps the chart version from Renovate labels.

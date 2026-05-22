@@ -29,6 +29,10 @@ def main() -> int:
         print(json.dumps({"skipped": True, "reason": "metadata-up-to-date"}), end="")
         return 0
 
+    if version_already_bumped_in_session(chart_file_path):
+        print(json.dumps({"skipped": True, "reason": "already-bumped-this-session"}), end="")
+        return 0
+
     changelog_path = Path(args.chart_dir) / "CHANGELOG.md"
     current_version = read_current_version(chart_file_path)
     labels = normalise_labels(args.pr_labels)
@@ -108,6 +112,19 @@ def should_skip_metadata_update(chart_dir: str) -> bool:
         if line.strip() and not line.strip().endswith("/CHANGELOG.md")
     ]
     return len(changed_files) == 0
+
+
+def version_already_bumped_in_session(chart_file_path: Path) -> bool:
+    """Return True if the chart version was already bumped during this postUpgradeTasks session.
+
+    When executionMode is "update", the script runs once per matched dependency update.
+    A single image update can match multiple managers (helm-values, custom.regex for appVersion,
+    custom.regex for artifacthub.io/images), causing multiple invocations per PR. Each invocation
+    reads the already-modified Chart.yaml and bumps the version again. This guard detects that the
+    version line was already changed in the working directory (not yet committed) and skips.
+    """
+    diff = exec_git(["diff", "HEAD", "--", str(chart_file_path)], allow_failure=True)
+    return bool(re.search(r"^\+version:", diff, flags=re.MULTILINE))
 
 
 def read_current_version(chart_file_path: Path) -> str:
