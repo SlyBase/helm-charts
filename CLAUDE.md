@@ -15,7 +15,7 @@ Charts are distributed via OCI (`ghcr.io/slybase/charts`) and signed with Cosign
 ## Dependency update workflow
 
 1. Renovate opens a PR with dependency bumps (regex updates `appVersion` directly in `Chart.yaml`)
-2. After merge, `.github/workflows/chart-release-metadata.yml` runs `.github/scripts/update-chart-metadata.py`
+2. Renovate's `postUpgradeTasks` (configured in `renovate.json`) runs `.github/scripts/update-chart-metadata.py` during PR creation
 3. That script bumps the chart version, updates `artifacthub.io/changes`, and appends to `CHANGELOG.md`
 
 Local testing helpers: `.github/scripts/README.md` (`test-renovate.sh`, `test-appversion-regex.sh`, `test-renovate-full.sh`)
