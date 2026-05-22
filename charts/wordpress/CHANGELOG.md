@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 3.8.9 - 2026-05-22
+
+- Update memcached to 0.13.3
+
 ## 3.8.8 - 2026-05-22
 
 - Update mariadb to 0.16.4
