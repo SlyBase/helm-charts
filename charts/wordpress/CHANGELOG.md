@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 3.8.8 - 2026-05-22
+
+- Update mariadb to 0.16.4
+
 ## 3.8.7 - 2026-05-22
 
 - Update valkey to 0.21.0
