@@ -207,6 +207,40 @@ wordpress:
       ## ```
       sites: []
 
+    ## @section JWT Authentication configuration
+    ## @descriptionStart
+    ## When enabled, installs the `jwt-authentication-for-wp-rest-api` plugin (wordpress.org/plugins/jwt-authentication-for-wp-rest-api)
+    ## and injects define('JWT_AUTH_SECRET_KEY', ...) into wp-config.php via the main chart secret.
+    ## Requires wordpress.configExtraInject: true (default).
+    ## @descriptionEnd
+    jwt:
+      ## @param wordpress.init.jwt.enabled bool Enable JWT Authentication (installs jwt-authentication-for-wp-rest-api plugin)
+      enabled: false
+      ## @param wordpress.init.jwt.secret string Inline JWT signing secret (auto-generated and preserved across helm upgrades if empty; ignored when existingSecret is set)
+      secret: ""
+      ## @param wordpress.init.jwt.existingSecret string Name of an existing Secret containing the JWT signing key
+      existingSecret: ""
+      ## @param wordpress.init.jwt.secretKey string Key within existingSecret that holds the JWT signing key
+      secretKey: "JWT_AUTH_SECRET_KEY"
+
+    ## @param wordpress.init.applicationPassword object Create an Application Password for the admin user via a Helm hook Job
+    ## @descriptionStart
+    ## When set, a post-install/post-upgrade Job creates an Application Password for the admin user
+    ## and stores username, application password, and site URL in a Kubernetes Secret.
+    ## The Secret persists after helm uninstall.
+    ## E.g.
+    ## ```yaml
+    ## applicationPassword:
+    ##   name: "MCP Access"
+    ##   outputSecret:
+    ##     name: ""            # empty = <release>-token-<adminUsername>
+    ##     usernameKey: "WP_USERNAME"
+    ##     passwordKey: "WP_APP_PASSWORD"
+    ##     urlKey: "WP_SITE_URL"
+    ## ```
+    ## @descriptionEnd
+    applicationPassword: {}
+
     ## @section Custom init script
     customInitScript: ""
     ## @section Custom init commands
@@ -290,7 +324,7 @@ wordpress:
     ## @param wordpress.composer.repositories list Custom Composer repositories to add
     repositories: []
 
-  ## @param wordpress.users list WordPress users to create (username, email, displayname, firstname, lastname, role, sendEmail, superAdmin, sites)
+  ## @param wordpress.users list WordPress users to create (username, email, displayname, firstname, lastname, role, sendEmail, superAdmin, sites, applicationPassword)
   ## E.g.
   ## ```yaml
   ## users:
@@ -307,6 +341,13 @@ wordpress:
   ##         role: editor
   ##       - name: shop
   ##         role: administrator
+  ##     applicationPassword:    # optional: create Application Password, store in K8s Secret
+  ##       name: "MCP Access"
+  ##       outputSecret:
+  ##         name: ""            # empty = <release>-token-<username>
+  ##         usernameKey: "WP_USERNAME"
+  ##         passwordKey: "WP_APP_PASSWORD"
+  ##         urlKey: "WP_SITE_URL"
   ##   - username: author
   ##     email: author@example.com
   ##     role: author

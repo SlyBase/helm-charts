@@ -1,0 +1,65 @@
+## Token Authentication Sample
+##
+## Demonstrates both authentication methods for external connectivity (e.g. MCP):
+##   1. JWT via jwt-authentication-for-wp-rest-api (wordpress.init.jwt.enabled)
+##   2. Application Passwords per user (applicationPassword field)
+##
+## After install, retrieve credentials:
+##   # Application Password (admin)
+##   kubectl get secret <release>-token-admin -o jsonpath='{.data.WP_APP_PASSWORD}' | base64 -d
+##
+##   # JWT Signing Key
+##   kubectl get secret <release>-wordpress -o jsonpath='{.data.JWT_AUTH_SECRET_KEY}' | base64 -d
+##
+## Test Application Password:
+##   APP_PASS=$(kubectl get secret <release>-token-admin -o jsonpath='{.data.WP_APP_PASSWORD}' | base64 -d)
+##   curl -sf -u "admin:$APP_PASS" https://<site>/wp-json/wp/v2/users/me
+##
+## Test JWT:
+##   curl -sf -X POST https://<site>/wp-json/jwt-auth/v1/token \
+##     -d "username=admin&password=<adminpass>"
+
+wordpress:
+  url: "https://wordpress.example.com"
+
+  init:
+    enabled: true
+    existingSecret: "wordpress-init-secret"
+
+    ## JWT Authentication via jwt-authentication-for-wp-rest-api (auto-installed, no plugin entry needed)
+    jwt:
+      enabled: true
+      # secret: ""           # auto-generated and preserved across upgrades
+      # existingSecret: ""   # use existing Secret containing the signing key
+      # secretKey: "JWT_AUTH_SECRET_KEY"  # key within existingSecret
+
+    ## Application Password for the admin user
+    applicationPassword:
+      name: "API Access"
+      outputSecret:
+        name: ""              # empty = <release>-token-admin (auto-derived)
+        usernameKey: "WP_USERNAME"
+        passwordKey: "WP_APP_PASSWORD"
+        urlKey: "WP_SITE_URL"
+
+  ## Optional: dedicated service user with its own Application Password
+  users:
+    - username: api-service
+      email: api@example.com
+      displayname: "API Service"
+      role: editor
+      sendEmail: false
+      applicationPassword:
+        name: "API Access"
+        outputSecret:
+          name: "wordpress-token-api-service"
+          usernameKey: "WP_USERNAME"
+          passwordKey: "WP_APP_PASSWORD"
+          urlKey: "WP_SITE_URL"
+
+mariadb:
+  enabled: true
+  auth:
+    database: wordpress
+    username: wordpress
+    existingSecret: wordpress-mariadb-secret

@@ -8,6 +8,10 @@ data:
     post_max_size = 64M
     memory_limit = 256M
   htaccess: |
+    # Pass HTTP Authorization header to PHP
+    # Required for WordPress Application Passwords and JWT authentication
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
     # Server-status exception
     <IfModule mod_rewrite.c>
     RewriteRule ^server-status - [L]
@@ -274,3 +278,8 @@ data:
 
     // Disable XML-RPC to prevent attacks
     add_filter('xmlrpc_enabled', '__return_false');
+
+    // Allow Application Passwords over HTTP for local/cluster-internal access.
+    // wp_is_application_passwords_available() returns false on non-HTTPS sites; this overrides that.
+    // In production with HTTPS this filter is not needed — WordPress enables it automatically.
+    add_filter('wp_is_application_passwords_available', '__return_true');

@@ -11,7 +11,7 @@ echo "==> Applying ConfigMap..."
 kubectl apply -f "${SCRIPT_DIR}/cm.yaml"
 
 echo "==> Installing wordpress-verify..."
-helm install wordpress-verify "${CHART_DIR}" \
+helm upgrade --install wordpress-verify "${CHART_DIR}" \
   --values "${SCRIPT_DIR}/values.yaml"
 
 echo ""

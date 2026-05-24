@@ -400,6 +400,13 @@ spec:
             {{- end }}
             {{- end }}
             {{- end }}
+            {{- if and .Values.wordpress.init.jwt.enabled .Values.wordpress.init.jwt.existingSecret }}
+            - name: JWT_AUTH_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.wordpress.init.jwt.existingSecret }}
+                  key: {{ .Values.wordpress.init.jwt.secretKey | default "JWT_AUTH_SECRET_KEY" }}
+            {{- end }}
           {{- if and .Values.wordpress.configExtraConfigMap.name (not .Values.wordpress.configExtraSecret.name) }}
           {{- if .Values.wordpress.configExtraInject }}
           {{/* Combine external ConfigMap + chart-managed inject via K8s env var interpolation */}}
@@ -622,6 +629,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "metrics.wordpress.fullname" . }}
                   key: wordpress.metrics.encryptionKey
+          {{- end }}
+          {{- if and .Values.wordpress.init.jwt.enabled .Values.wordpress.init.jwt.existingSecret }}
+            - name: JWT_AUTH_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.wordpress.init.jwt.existingSecret }}
+                  key: JWT_AUTH_SECRET_KEY
           {{- end }}
           {{- if and .Values.wordpress.configExtraConfigMap.name (not .Values.wordpress.configExtraSecret.name) }}
           {{- if .Values.wordpress.configExtraInject }}
