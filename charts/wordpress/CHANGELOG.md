@@ -2,6 +2,14 @@
 
 All notable changes to this chart are documented here.
 
+## 4.1.0 - 2026-05-23
+
+- Add token-based authentication support for external connectivity (e.g. MCP):
+  - `wordpress.init.jwt.enabled`: auto-installs `jwt-authentication-for-wp-rest-api` in the init container and injects `JWT_AUTH_SECRET_KEY` into `wp-config.php`; signing secret is auto-generated and preserved across upgrades via `lookup`
+  - `wordpress.init.jwt.secret` / `wordpress.init.jwt.existingSecret` + `wordpress.init.jwt.secretKey`: bring your own signing secret (inline or from an existing K8s Secret)
+  - `wordpress.init.applicationPassword` / `wordpress.users[].applicationPassword`: WP-CLI in the init container creates WordPress Application Passwords per user and stores credentials in a Kubernetes Secret (persists after `helm uninstall`)
+  - New template: `app-password-rbac.yaml` (Role + RoleBinding granting the WordPress ServiceAccount write access to the output Secrets)
+
 ## 4.0.0 - 2026-05-22
 
 - Update docker.io/wordpress to 7.0.0

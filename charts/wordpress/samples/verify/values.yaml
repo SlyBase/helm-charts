@@ -7,6 +7,15 @@ wordpress:
     title: "verify chart"
     customInitConfigMap:
       name: "wordpress-verify-config"
+    jwt:
+      enabled: true
+    applicationPassword:
+      name: "API Access"
+      outputSecret:
+        name: "wordpress-verify-token-johndoe"
+        usernameKey: "WP_USERNAME"
+        passwordKey: "WP_APP_PASSWORD"
+        urlKey: "WP_SITE_URL"
   language: "de_DE"
   muPluginsConfigMaps:
     - name: wordpress-verify-config
@@ -37,6 +46,13 @@ wordpress:
       lastname: "Smith"
       role: "contributor"
       sendEmail: false
+      applicationPassword:
+        name: "API Access"
+        outputSecret:
+          name: "wordpress-verify-token-johnsmith"
+          usernameKey: "WP_USERNAME"
+          passwordKey: "WP_APP_PASSWORD"
+          urlKey: "WP_SITE_URL"
   configExtraSecret:
     name: "wordpress-verify-secret"
   htaccessConfigMap: "wordpress-verify-config"

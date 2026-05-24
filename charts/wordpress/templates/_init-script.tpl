@@ -902,6 +902,22 @@ if [ -n "${WORDPRESS_METRICS}" ]; then
 {{- end }}
 fi
 
+{{- if .Values.wordpress.init.jwt.enabled }}
+# JWT Authentication plugin (jwt-authentication-for-wp-rest-api)
+JWT_PLUGIN="jwt-authentication-for-wp-rest-api"
+echo "Checking JWT Authentication plugin..."
+if ! echo "$INSTALLED_PLUGINS" | grep -q "^${JWT_PLUGIN}$"; then
+  echo "Installing ${JWT_PLUGIN}..."
+  run wp plugin install "${JWT_PLUGIN}" --activate
+  PLUGINS_MODIFIED=true
+elif ! echo "$ACTIVE_PLUGINS" | grep -q "^${JWT_PLUGIN}$"; then
+  echo "Activating ${JWT_PLUGIN}..."
+  run wp plugin activate "${JWT_PLUGIN}"
+else
+  echo "${JWT_PLUGIN} already installed and active."
+fi
+{{- end }}
+
 # Handle custom plugins
 {{- if .Values.wordpress.plugins }}
 echo "========================================="
@@ -2278,6 +2294,143 @@ else
 fi
 {{- end }}
 
+
+{{- $hasAdminAppPass := not (empty .Values.wordpress.init.applicationPassword) }}
+{{- $hasUserAppPass := false }}
+{{- range .Values.wordpress.users }}
+{{- if .applicationPassword }}{{- $hasUserAppPass = true }}{{- end }}
+{{- end }}
+{{- if or $hasAdminAppPass $hasUserAppPass }}
+# ============================================================================
+# Application Password Setup
+# ============================================================================
+apk add --no-cache curl > /dev/null 2>&1 || true
+
+KUBE_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token 2>/dev/null || echo "")
+KUBE_NS=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace 2>/dev/null || echo {{ .Release.Namespace | quote }})
+KUBE_API="https://kubernetes.default.svc"
+KUBE_CA="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+
+ap_k8s_secret_exists() {
+  curl -sf --cacert "$KUBE_CA" \
+    -H "Authorization: Bearer $KUBE_TOKEN" \
+    "${KUBE_API}/api/v1/namespaces/${KUBE_NS}/secrets/${1}" \
+    > /dev/null 2>&1
+}
+
+ap_k8s_secret_write() {
+  local name="$1" wp_user="$2" app_pass="$3" url="$4"
+  local u_key="$5" p_key="$6" l_key="$7"
+  local enc_user enc_pass enc_url payload http_status
+  enc_user=$(printf '%s' "$wp_user"  | base64 | tr -d '\n')
+  enc_pass=$(printf '%s' "$app_pass" | base64 | tr -d '\n')
+  enc_url=$(printf '%s'  "$url"      | base64 | tr -d '\n')
+  payload="{\"apiVersion\":\"v1\",\"kind\":\"Secret\",\"metadata\":{\"name\":\"${name}\",\"namespace\":\"${KUBE_NS}\"},\"data\":{\"${u_key}\":\"${enc_user}\",\"${p_key}\":\"${enc_pass}\",\"${l_key}\":\"${enc_url}\"}}"
+  http_status=$(curl -s --cacert "$KUBE_CA" \
+      -H "Authorization: Bearer $KUBE_TOKEN" \
+      -H "Content-Type: application/json" \
+      -X POST "${KUBE_API}/api/v1/namespaces/${KUBE_NS}/secrets" \
+      -d "$payload" \
+      -o /dev/null -w "%{http_code}")
+  if [ "$http_status" = "201" ]; then
+    return 0
+  fi
+  echo "POST returned ${http_status}, trying PUT..."
+  http_status=$(curl -s --cacert "$KUBE_CA" \
+      -H "Authorization: Bearer $KUBE_TOKEN" \
+      -H "Content-Type: application/json" \
+      -X PUT "${KUBE_API}/api/v1/namespaces/${KUBE_NS}/secrets/${name}" \
+      -d "$payload" \
+      -o /dev/null -w "%{http_code}")
+  if [ "$http_status" = "200" ] || [ "$http_status" = "201" ]; then
+    return 0
+  fi
+  echo "ERROR: Failed to write Secret '${name}' (HTTP ${http_status})"
+  return 1
+}
+
+ap_k8s_secret_delete() {
+  curl -sf --cacert "$KUBE_CA" \
+    -H "Authorization: Bearer $KUBE_TOKEN" \
+    -X DELETE "${KUBE_API}/api/v1/namespaces/${KUBE_NS}/secrets/${1}" \
+    > /dev/null 2>&1 || true
+}
+
+create_app_password() {
+  local wp_user="$1" pass_name="$2" secret_name="$3"
+  local u_key="$4" p_key="$5" l_key="$6"
+  echo "--- Application Password '${pass_name}' for user '${wp_user}' ---"
+
+  local existing_uuid
+  existing_uuid=$(wp user application-password list "$wp_user" --fields=name,uuid --format=json 2>/dev/null | \
+    php -r "
+      \$list = json_decode(file_get_contents('php://stdin'), true) ?: [];
+      \$name = '${pass_name}';
+      foreach (\$list as \$p) {
+        if ((\$p['name'] ?? '') === \$name) { echo \$p['uuid']; exit; }
+      }
+    " 2>/dev/null || echo "")
+
+  local secret_exists=false
+  if ap_k8s_secret_exists "$secret_name"; then
+    secret_exists=true
+  fi
+
+  if [ -n "$existing_uuid" ] && [ "$secret_exists" = "true" ]; then
+    echo "Already configured — skipping."
+    return 0
+  fi
+
+  if [ -n "$existing_uuid" ]; then
+    echo "App password exists but Secret '${secret_name}' missing — recreating both..."
+    wp user application-password delete "$wp_user" "$existing_uuid" 2>/dev/null || true
+  fi
+
+  if [ "$secret_exists" = "true" ]; then
+    echo "Secret '${secret_name}' exists but WP app password missing — deleting stale Secret..."
+    ap_k8s_secret_delete "$secret_name"
+  fi
+
+  local raw_pass wpcli_out
+  wpcli_out=$(wp user application-password create "$wp_user" "$pass_name" --porcelain 2>&1)
+  raw_pass=$(printf '%s' "$wpcli_out" | tr -d '\n ')
+
+  if [ -z "$raw_pass" ]; then
+    echo "ERROR: Failed to create application password for '${wp_user}'"
+    echo "WP-CLI output: ${wpcli_out}"
+    return 1
+  fi
+
+  echo "Created application password, writing to Secret '${secret_name}'..."
+  ap_k8s_secret_write "$secret_name" "$wp_user" "$raw_pass" {{ include "wordpress.normalizedUrl" . | quote }} "$u_key" "$p_key" "$l_key"
+  echo "Credentials stored in Secret '${secret_name}'."
+}
+
+{{- if .Values.wordpress.init.applicationPassword }}
+{{- $ap := .Values.wordpress.init.applicationPassword }}
+{{- $sn := $ap.outputSecret.name | default (printf "%s-token-admin" .Release.Name) }}
+create_app_password \
+  "$WP_ADMIN_USER" \
+  {{ $ap.name | quote }} \
+  {{ $sn | quote }} \
+  {{ $ap.outputSecret.usernameKey | default "WP_USERNAME" | quote }} \
+  {{ $ap.outputSecret.passwordKey | default "WP_APP_PASSWORD" | quote }} \
+  {{ $ap.outputSecret.urlKey | default "WP_SITE_URL" | quote }}
+{{- end }}
+{{- range .Values.wordpress.users }}
+{{- if .applicationPassword }}
+{{- $ap := .applicationPassword }}
+{{- $sn := $ap.outputSecret.name | default (printf "%s-token-%s" $.Release.Name .username) }}
+create_app_password \
+  {{ .username | quote }} \
+  {{ $ap.name | quote }} \
+  {{ $sn | quote }} \
+  {{ $ap.outputSecret.usernameKey | default "WP_USERNAME" | quote }} \
+  {{ $ap.outputSecret.passwordKey | default "WP_APP_PASSWORD" | quote }} \
+  {{ $ap.outputSecret.urlKey | default "WP_SITE_URL" | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
 
 # ============================================================================
 # Final Rewrite Flush (single flush at the end)

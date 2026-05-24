@@ -115,6 +115,20 @@ helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples
 - Reference multiple ConfigMaps in `wordpress.muPluginsConfigMaps`
 - See `samples/muPlugins.configmap.yaml` and `samples/muPlugins.values.yaml`
 
+### Application Passwords (MCP / REST API access)
+- **Create Application Passwords** during init for the admin user and any additional users
+- The raw password (visible only once after creation) is stored in a Kubernetes Secret and survives `helm uninstall`
+- Idempotent: existing passwords are reused; only re-created when the K8s Secret is gone but the WP entry is missing (or vice-versa)
+- Uses WP-CLI in the init container — no REST API auth required during setup
+- See `samples/token.values.yaml`
+
+### JWT Authentication (MCP / REST API access)
+- **Auto-installs `jwt-authentication-for-wp-rest-api`** in the init container when `wordpress.init.jwt.enabled: true` — no manual entry in `wordpress.plugins` needed
+- The JWT signing secret is auto-generated on first install and preserved across `helm upgrade` via Helm's `lookup`
+- Bring your own secret: set `wordpress.init.jwt.secret` (inline value) or point to an existing K8s Secret via `wordpress.init.jwt.existingSecret` + `wordpress.init.jwt.secretKey` (key name within that Secret, default `JWT_AUTH_SECRET_KEY`)
+- The secret is injected into `wp-config.php` as `define('JWT_AUTH_SECRET_KEY', getenv('JWT_AUTH_SECRET_KEY'))` via the chart-managed Secret
+- See `samples/token.values.yaml`
+
 
 ## Security by default
 
@@ -298,6 +312,151 @@ kubectl apply -f ./samples/muPlugins.configmap.yaml
 helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples/muPlugins.values.yaml
 ```
 
+### Application Passwords + JWT (REST API / MCP access)
+Configure per-user Application Passwords and JWT auth in one step. See `samples/token.values.yaml`.
+
+```yaml
+# samples/token.values.yaml (excerpt)
+wordpress:
+  init:
+    existingSecret: "wordpress-secret"
+
+    # JWT: auto-installs jwt-authentication-for-wp-rest-api, auto-generates signing secret
+    jwt:
+      enabled: true
+      # secret: ""                        # inline signing secret — auto-generated if empty
+      # existingSecret: ""                # alternative: name of an existing K8s Secret
+      # secretKey: "JWT_AUTH_SECRET_KEY"  # key within existingSecret (default: JWT_AUTH_SECRET_KEY)
+
+    # Application Password for the admin user
+    applicationPassword:
+      name: "API Access"
+      outputSecret:
+        name: "wordpress-token-admin"
+        usernameKey: "WP_USERNAME"
+        passwordKey: "WP_APP_PASSWORD"
+        urlKey: "WP_SITE_URL"
+
+  users:
+    - username: "service-account"
+      email: "svc@example.com"
+      role: "editor"
+      sendEmail: false
+      applicationPassword:
+        name: "API Access"
+        outputSecret:
+          name: "wordpress-token-svc"
+          usernameKey: "WP_USERNAME"
+          passwordKey: "WP_APP_PASSWORD"
+          urlKey: "WP_SITE_URL"
+```
+
+```bash
+helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values samples/token.values.yaml
+```
+
+**Read credentials after install:**
+
+```bash
+# Application Password (admin)
+kubectl get secret wordpress-token-admin \
+  -o go-template='user={{ index .data "WP_USERNAME" | base64decode }}  pass={{ index .data "WP_APP_PASSWORD" | base64decode }}{{ "\n" }}'
+
+# Application Password (service account)
+kubectl get secret wordpress-token-svc \
+  -o go-template='user={{ index .data "WP_USERNAME" | base64decode }}  pass={{ index .data "WP_APP_PASSWORD" | base64decode }}{{ "\n" }}'
+```
+
+**Test Application Password against the REST API:**
+
+```bash
+USER=$(kubectl get secret wordpress-token-admin -o jsonpath='{.data.WP_USERNAME}' | base64 -d)
+PASS=$(kubectl get secret wordpress-token-admin -o jsonpath='{.data.WP_APP_PASSWORD}' | base64 -d)
+URL=$(kubectl get secret wordpress-token-admin -o jsonpath='{.data.WP_SITE_URL}' | base64 -d)
+
+curl -su "$USER:$PASS" "$URL/wp-json/wp/v2/users/me" | jq '{id,slug,roles}'
+```
+
+**Test JWT:**
+
+```bash
+WP_PASS=$(kubectl get secret wordpress-secret -o jsonpath='{.data.wordpress\.password}' | base64 -d)
+JWT=$(curl -sf -X POST "$URL/wp-json/jwt-auth/v1/token" \
+  -d "username=$USER&password=$WP_PASS" | jq -r '.token')
+
+curl -sf -H "Authorization: Bearer $JWT" "$URL/wp-json/wp/v2/users/me" | jq '{id,slug}'
+```
+
+> **HTTP sites:** WordPress 5.6+ disables Application Passwords on non-HTTPS sites. Add this filter to an MU-Plugin to allow it on HTTP (e.g. cluster-internal or local):
+> ```php
+> add_filter('wp_is_application_passwords_available', '__return_true');
+> ```
+> In production behind TLS this filter is not needed.
+
+---
+
+### MCP (Model Context Protocol) via WordPress
+
+The [`wordpress/mcp-adapter`](https://github.com/slybase/mcp-adapter) plugin exposes a **Streamable HTTP MCP server** at `/wp-json/mcp/mcp-adapter-default-server`.
+Both Application Password and JWT auth work as `Authorization` headers.
+
+Configure two named connections in your project's `.claude/settings.local.json`:
+
+```json
+{
+  "mcpServers": {
+    "wordpress-app-password": {
+      "type": "http",
+      "url": "https://example.com/wp-json/mcp/mcp-adapter-default-server",
+      "headers": {
+        "Authorization": "Basic <base64(username:app-password)>"
+      }
+    },
+    "wordpress-jwt": {
+      "type": "http",
+      "url": "https://example.com/wp-json/mcp/mcp-adapter-default-server",
+      "headers": {
+        "Authorization": "Bearer <jwt-token>"
+      }
+    }
+  }
+}
+```
+
+Generate the credentials from Kubernetes Secrets:
+
+```bash
+WP_URL=$(kubectl get secret wordpress-token-admin -o jsonpath='{.data.WP_SITE_URL}' | base64 -d)
+USER=$(kubectl get secret wordpress-token-admin -o jsonpath='{.data.WP_USERNAME}' | base64 -d)
+PASS=$(kubectl get secret wordpress-token-admin -o jsonpath='{.data.WP_APP_PASSWORD}' | base64 -d)
+WP_LOGIN_PASS=$(kubectl get secret wordpress-secret -o jsonpath='{.data.wordpress\.password}' | base64 -d)
+
+# Application Password → Basic Auth header value
+echo "Basic $(echo -n "$USER:$PASS" | base64)"
+
+# JWT → Bearer token (expires in ~7 days)
+curl -sf -X POST "$WP_URL/wp-json/jwt-auth/v1/token" \
+  -d "username=$USER&password=$WP_LOGIN_PASS" | jq -r '"Bearer " + .token'
+```
+
+> **Tip:** Application Passwords don't expire — prefer them for long-running automations.
+> JWT tokens expire after ~7 days; refresh by re-running the `jwt-auth/v1/token` request.
+
+Required plugins (add to `wordpress.plugins`):
+```yaml
+wordpress:
+  init:
+    jwt:
+      enabled: true        # auto-installs jwt-authentication-for-wp-rest-api
+  plugins:
+    - name: "wordpress/mcp-adapter"
+      activate: true
+    - name: "enable-abilities-for-mcp"
+      activate: true
+```
+
+---
+
 ### Composer Packages
 Install plugins and themes via Composer that aren't available in WordPress.org. See `samples/composer.values.yaml`.
 
@@ -410,6 +569,16 @@ Without `slug`, URL plugins/themes use `basename` of the URL as a best-effort gu
 - **Network activation** (`networkActivate` / `networkEnable`)
 
 ## Notable changes
+
+### To 4.1.0
+- Added **Application Passwords** (`wordpress.init.applicationPassword`, `wordpress.users[].applicationPassword`): WP-CLI in the init container creates Application Passwords per user and stores them in Kubernetes Secrets (persist after `helm uninstall`).
+- Added **JWT Authentication** (`wordpress.init.jwt`): auto-installs `jwt-authentication-for-wp-rest-api` in the init container, signing secret is auto-generated and preserved across upgrades via `lookup`.
+- New `wordpress.init.jwt.secret`: inline signing secret value (replaces the old `signingKey` field — it is the secret VALUE, not a key name).
+- New `wordpress.init.jwt.secretKey`: key name within `wordpress.init.jwt.existingSecret` (default: `JWT_AUTH_SECRET_KEY`).
+- New template `app-password-rbac.yaml`: Role + RoleBinding so the WordPress ServiceAccount can write Application Password output Secrets.
+
+### To 4.0.0
+- Update WordPress to 7.0.0 (PHP 8.3). WordPress 7.0 uses `$generic$` password hashing for Application Passwords (replaces phpass). Existing Application Passwords remain valid; new ones are created in the updated format automatically.
 
 ### To 3.4.0
 - Complete Memcached object-cache support for WordPress, including runtime bootstrap of `memcache`/`memcached` PHP extensions (no custom image required).
