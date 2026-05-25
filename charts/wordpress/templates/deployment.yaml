@@ -404,12 +404,17 @@ spec:
             {{- end }}
             {{- end }}
             {{- end }}
-            {{- if and .Values.wordpress.init.jwt.enabled .Values.wordpress.init.jwt.existingSecret }}
+            {{- if .Values.wordpress.init.jwt.enabled }}
             - name: JWT_AUTH_SECRET_KEY
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.wordpress.init.jwt.existingSecret }}
                   name: {{ .Values.wordpress.init.jwt.existingSecret }}
                   key: {{ .Values.wordpress.init.jwt.secretKey | default "JWT_AUTH_SECRET_KEY" }}
+                  {{- else }}
+                  name: {{ include "wordpress.fullname" . }}-jwt
+                  key: JWT_AUTH_SECRET_KEY
+                  {{- end }}
             {{- end }}
           {{- if and .Values.wordpress.configExtraConfigMap.name (not .Values.wordpress.configExtraSecret.name) }}
           {{- if .Values.wordpress.configExtraInject }}
@@ -634,12 +639,17 @@ spec:
                   name: {{ include "metrics.wordpress.fullname" . }}
                   key: wordpress.metrics.encryptionKey
           {{- end }}
-          {{- if and .Values.wordpress.init.jwt.enabled .Values.wordpress.init.jwt.existingSecret }}
+          {{- if .Values.wordpress.init.jwt.enabled }}
             - name: JWT_AUTH_SECRET_KEY
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.wordpress.init.jwt.existingSecret }}
                   name: {{ .Values.wordpress.init.jwt.existingSecret }}
+                  key: {{ .Values.wordpress.init.jwt.secretKey | default "JWT_AUTH_SECRET_KEY" }}
+                  {{- else }}
+                  name: {{ include "wordpress.fullname" . }}-jwt
                   key: JWT_AUTH_SECRET_KEY
+                  {{- end }}
           {{- end }}
           {{- if and .Values.wordpress.configExtraConfigMap.name (not .Values.wordpress.configExtraSecret.name) }}
           {{- if .Values.wordpress.configExtraInject }}
