@@ -9,6 +9,12 @@ helm uninstall wordpress-verify || true
 echo "==> Waiting for PVC deletion..."
 kubectl wait --for=delete pvc/wordpress-verify --timeout=60s 2>/dev/null || true
 
+echo "==> Deleting StatefulSet PVCs (not tracked by Helm)..."
+kubectl delete pvc \
+  data-wordpress-verify-mariadb-0 \
+  data-wordpress-verify-valkey-0 \
+  --ignore-not-found
+
 echo "==> Deleting ConfigMap..."
 kubectl delete -f "${SCRIPT_DIR}/cm.yaml" --ignore-not-found
 
