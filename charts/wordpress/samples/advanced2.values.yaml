@@ -1,3 +1,8 @@
+## Sample: Advanced setup with replicaCount > 1 (requires RWX storage)
+## Prerequisites:
+##   kubectl apply -f advanced.secrets.yaml
+##   kubectl apply -f advanced.configmap.yaml
+
 replicaCount: 2
 
 wordpress:

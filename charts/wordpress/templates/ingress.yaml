@@ -6,7 +6,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "wordpress.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- $ingressAnnotations := merge (dict) (.Values.ingress.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $ingressAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -44,4 +45,56 @@ spec:
     {{- with .Values.ingress.extraRules }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+{{- range $idx, $sec := .Values.ingress.secondary }}
+{{- if $sec.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "wordpress.fullname" $ }}-{{ $sec.name | default (printf "secondary-%d" $idx) }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "wordpress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: ingress-{{ $sec.name | default (printf "secondary-%d" $idx) }}
+  {{- $secAnnotations := merge (dict) ($sec.annotations | default dict) ($.Values.commonAnnotations | default dict) }}
+  {{- with $secAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with $sec.className }}
+  ingressClassName: {{ . }}
+  {{- end }}
+  {{- with $sec.tls }}
+  tls:
+    {{- range . }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range $sec.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- with .pathType }}
+            pathType: {{ . }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ include "wordpress.fullname" $ }}
+                port:
+                  number: {{ if $sec.useHttpsBackend }}{{ $.Values.service.ports.https }}{{ else }}{{ $.Values.service.ports.http }}{{ end }}
+          {{- end }}
+    {{- end }}
+    {{- with $sec.extraRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}
+{{- end }}
 {{- end }}

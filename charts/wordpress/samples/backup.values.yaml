@@ -1,0 +1,15 @@
+## Snippet: Backup CronJob — add these values to your existing values file.
+## Creates a daily backup of the database to a PVC.
+## Set includeFiles: true to also tar wp-content — only works when the
+## wordpress PVC supports multiple readers (RWX) or you use VolumeSnapshots.
+## With RWO storage (OpenEBS ZFS, Longhorn in RWO mode, etc.) leave this false.
+
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retentionDays: 14
+  includeFiles: false
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: ""

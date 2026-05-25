@@ -1,6 +1,6 @@
-# WordPress Multisite Sample Configuration (Subdomain Mode)
-# This example demonstrates a subdomain-based multisite setup
-# Sites: blog.example.com, shop.example.com
+## Sample: WordPress Multisite (subdomain mode)
+## Prerequisites:
+##   kubectl apply -f multisite-subdomain.secrets.yaml
 
 wordpress:
   init:

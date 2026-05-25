@@ -128,9 +128,45 @@ else
   ERRORS=$((ERRORS + 1))
 fi
 
-# ── 10. WordPress metrics endpoint ────────────────────────────────────────────
+# ── 10. NetworkPolicy smoke test ──────────────────────────────────────────────
 bold ""
-bold "==> Step 10: WordPress metrics endpoint"
+bold "==> Step 10: NetworkPolicy smoke test"
+NP_NAME="${RELEASE}"
+NP_SELECTOR=$(kubectl get networkpolicy "${NP_NAME}" -n default \
+  -o jsonpath='{.spec.podSelector.matchLabels}' 2>/dev/null || true)
+if [[ -n "${NP_SELECTOR}" ]]; then
+  green "  [OK] NetworkPolicy '${NP_NAME}' exists (podSelector: ${NP_SELECTOR})"
+else
+  red "  [FAIL] NetworkPolicy '${NP_NAME}' not found in default namespace"
+  ERRORS=$((ERRORS + 1))
+fi
+
+# ── 11. Secondary Ingress smoke test ──────────────────────────────────────────
+bold ""
+bold "==> Step 11: Secondary Ingress smoke test"
+INGRESS_COUNT=$(kubectl get ingress -n default \
+  -l "app.kubernetes.io/instance=${RELEASE}" \
+  --no-headers 2>/dev/null | wc -l | tr -d ' ')
+if [[ "${INGRESS_COUNT}" -ge 1 ]]; then
+  green "  [OK] Found ${INGRESS_COUNT} Ingress object(s) for release '${RELEASE}'"
+  kubectl get ingress -n default -l "app.kubernetes.io/instance=${RELEASE}" \
+    --no-headers 2>/dev/null | awk '{print "    -", $1}'
+else
+  echo "  [SKIP] No Ingress controller in this environment — object-existence check only"
+  # Check the secondary ingress object exists as a K8s resource
+  SEC_INGRESS=$(kubectl get ingress "${RELEASE}-verify-secondary" -n default \
+    --no-headers 2>/dev/null | wc -l | tr -d ' ')
+  if [[ "${SEC_INGRESS}" -ge 1 ]]; then
+    green "  [OK] Secondary Ingress object '${RELEASE}-verify-secondary' exists"
+  else
+    red "  [FAIL] Secondary Ingress object '${RELEASE}-verify-secondary' not found"
+    ERRORS=$((ERRORS + 1))
+  fi
+fi
+
+# ── 12. WordPress metrics endpoint ────────────────────────────────────────────
+bold ""
+bold "==> Step 12: WordPress metrics endpoint"
 # Uses /slymetrics/metrics (Apache rewrite path served by the slymetrics plugin)
 METRICS_CODE=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 \
   -H "Authorization: Bearer f5634d6a966856848e2f3f4a139e534b844805f7561d86642adb19060719e95d" \
@@ -139,6 +175,25 @@ if [[ "${METRICS_CODE}" =~ ^(200|401)$ ]]; then
   green "  [OK] Metrics endpoint reachable (HTTP ${METRICS_CODE})"
 else
   red "  [WARN] Metrics endpoint returned HTTP ${METRICS_CODE}"
+  ERRORS=$((ERRORS + 1))
+fi
+
+# ── 13. Backup CronJob smoke test ─────────────────────────────────────────────
+bold ""
+bold "==> Step 13: Backup CronJob smoke test"
+CRONJOB_NAME="${RELEASE}-backup"
+if kubectl get cronjob "${CRONJOB_NAME}" -n default --no-headers 2>/dev/null | grep -q "${CRONJOB_NAME}"; then
+  green "  [OK] CronJob '${CRONJOB_NAME}' exists"
+  # Check backup PVC
+  PVC_NAME="${RELEASE}-backup"
+  if kubectl get pvc "${PVC_NAME}" -n default --no-headers 2>/dev/null | grep -q "${PVC_NAME}"; then
+    green "  [OK] Backup PVC '${PVC_NAME}' exists"
+  else
+    red "  [FAIL] Backup PVC '${PVC_NAME}' not found"
+    ERRORS=$((ERRORS + 1))
+  fi
+else
+  red "  [FAIL] CronJob '${CRONJOB_NAME}' not found"
   ERRORS=$((ERRORS + 1))
 fi
 

@@ -8,16 +8,12 @@ metadata:
   labels:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- $ann := .Values.storage.annotations }}
+  {{- $pvcAnnotations := merge (dict) (.Values.storage.annotations | default dict) (.Values.commonAnnotations | default dict) }}
   {{- $rp := .Values.storage.resourcePolicy }}
-  {{- if or $ann $rp }}
+  {{- if $rp }}{{- $_ := set $pvcAnnotations "helm.sh/resource-policy" $rp }}{{- end }}
+  {{- with $pvcAnnotations }}
   annotations:
-    {{- if $ann }}
-    {{- toYaml $ann | nindent 4 }}
-    {{- end }}
-    {{- if $rp }}
-    helm.sh/resource-policy: {{ $rp | quote }}
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   accessModes:

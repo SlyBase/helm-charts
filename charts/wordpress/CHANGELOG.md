@@ -2,6 +2,15 @@
 
 All notable changes to this chart are documented here.
 
+## 4.2.0 - 2026-05-25
+
+- Add NetworkPolicy with configurable ingress sources and external egress control
+- Add PrometheusRule with default pod-down and Apache busy-worker alerts
+- Add commonLabels / commonAnnotations applied to all chart resources
+- Add ingress.secondary for independent admin/geo-routed Ingress objects
+- Add wordpress.smtp SMTP config via MU-plugin with existingSecret support
+- Add backup CronJob with PVC storage and optional S3 sync via rclone
+
 ## 4.1.0 - 2026-05-23
 
 - Add token-based authentication support for external connectivity (e.g. MCP):

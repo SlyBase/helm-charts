@@ -5,14 +5,15 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "metrics.wordpress.fullname" . }}
   namespace: {{ .Release.Namespace }}
-{{ with .Values.metrics.wordpress.serviceMonitor.labels }}
+  {{- with .Values.metrics.wordpress.serviceMonitor.labels }}
   labels:
-  {{ toYaml | nindent 4 }}
-{{ end }}
-{{ if .Values.metrics.wordpress.serviceMonitor.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- $smAnnotations := merge (dict) (.Values.metrics.wordpress.serviceMonitor.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $smAnnotations }}
   annotations:
-{{ toYaml .Values.metrics.wordpress.serviceMonitor.annotations | nindent 4 }}
-{{ end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   namespaceSelector:
     matchNames:
@@ -46,14 +47,15 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "metrics.apache.fullname" . }}
   namespace: {{ if .Values.metrics.apache.serviceMonitor.namespace }}{{ .Values.metrics.apache.serviceMonitor.namespace }}{{ else }}{{ .Release.Namespace }}{{ end }}
-{{ with .Values.metrics.apache.serviceMonitor.labels }}
+  {{- with .Values.metrics.apache.serviceMonitor.labels }}
   labels:
-  {{ toYaml | nindent 4 }}
-{{ end }}
-{{ if .Values.metrics.apache.serviceMonitor.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- $apacheSmAnnotations := merge (dict) (.Values.metrics.apache.serviceMonitor.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $apacheSmAnnotations }}
   annotations:
-{{ toYaml .Values.metrics.apache.serviceMonitor.annotations | nindent 4 }}
-{{ end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   namespaceSelector:
     matchNames:

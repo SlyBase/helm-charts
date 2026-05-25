@@ -40,6 +40,9 @@ helm.sh/chart: "{{ include "wordpress.chart" . }}"
 app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
 {{- end }}
 app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+{{- with .Values.commonLabels }}
+{{ toYaml . }}
+{{- end }}
 {{- end }}
 
 {{/*

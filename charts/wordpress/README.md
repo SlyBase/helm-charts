@@ -18,16 +18,22 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: wordpress-test-secret
+type: Opaque
 stringData:
+  wordpress.username: admin
+  wordpress.password: S3cr3tP@ssw0rd
+  wordpress.email: admin@example.com
   mariadb-root-password: S3cureDBP@ss
   mariadb-password: Sup3rS3cureP@ss
-type: Opaque
-
 ```
 
 ```yaml
 # ./samples/mariaDB.values.yaml
 wordpress:
+  init:
+    enabled: true
+    existingSecret: "wordpress-test-secret"
+    title: "My WordPress Site"
   url: "https://example.com"
 mariadb:
   auth:
@@ -114,6 +120,48 @@ helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples
 - Each ConfigMap data key becomes a PHP file in `wp-content/mu-plugins/`
 - Reference multiple ConfigMaps in `wordpress.muPluginsConfigMaps`
 - See `samples/muPlugins.configmap.yaml` and `samples/muPlugins.values.yaml`
+
+### SMTP
+- **MU-plugin based**: A PHP MU-plugin is generated from chart values and mounted directly into `wp-content/mu-plugins/` — no external plugin installation needed and always current on rolling updates.
+- Forces PHPMailer to use the configured SMTP server for all outgoing WordPress mail.
+- Credentials (password, username, from-address) are read from a Kubernetes Secret at runtime — nothing sensitive in values.
+- See `samples/smtp.values.yaml` and `samples/smtp.secrets.yaml`
+
+### NetworkPolicy
+- **Automatic traffic restriction**: Generates a `NetworkPolicy` for the WordPress pod when `networkPolicy.enabled: true`.
+- DB egress auto-wired to the MariaDB subchart or `externalDatabase.host`.
+- Cache egress auto-wired to whichever backend is active (Memcached, Redis, or Valkey).
+- DNS egress (UDP/TCP 53) always included.
+- Optional internet egress (`allowExternalEgress`) for wp-cli plugin downloads and SMTP.
+- Ingress `from` rules and extra egress rules are fully configurable.
+- See `samples/networkpolicy.values.yaml`
+
+### PrometheusRule
+- **Bundled alerting rules**: Creates a `PrometheusRule` resource when `metrics.prometheusRule.enabled: true` (requires `metrics.apache.enabled` or `metrics.wordpress.enabled`).
+- Default alerts: `WordPressPodDown`, `WordPressApacheExporterScrapeFailing`, `WordPressApacheHighBusyWorkers`.
+- Configurable `additionalLabels` to match your Prometheus Operator `ruleSelector`.
+- Extend with `extraRules` or disable individual default rules via `defaultRules.*`.
+- See `samples/prometheusrule.values.yaml`
+
+### Secondary Ingress
+- **Multiple Ingress objects** from one release: `ingress.secondary[]` generates additional Ingress resources alongside the primary one.
+- Typical use-case: separate `wp-admin` Ingress with IP allowlist and a different TLS certificate.
+- Each secondary entry supports its own `className`, `annotations`, `hosts`, and `tls`.
+- Annotations are merged with `commonAnnotations` (entry-specific wins).
+- See `samples/secondary-ingress.values.yaml`
+
+### Backup CronJob
+- **Scheduled database backup** to a PVC: a `CronJob` runs `mariadb-dump` and compresses the output with gzip.
+- Optional file backup (`backup.includeFiles: true`) tars `wp-content` — only enable when your PVC supports multiple concurrent readers (RWX or VolumeSnapshot). Leave `false` for RWO storage (default).
+- Optional **S3 sync** via rclone sidecar (`backup.s3.enabled`): after the dump completes the rclone container syncs the timestamped folder to any S3-compatible bucket.
+- Backup PVC is annotated `helm.sh/resource-policy: keep` — it survives `helm uninstall`.
+- See `samples/backup.values.yaml` and `samples/backup-s3.secrets.yaml`
+
+### commonLabels / commonAnnotations
+- **Apply labels or annotations to every resource** created by the chart via `commonLabels` and `commonAnnotations`.
+- Resource-specific annotations always win over `commonAnnotations` (merge: specific overrides common).
+- Useful for GitOps tools (ArgoCD), service-mesh sidecar injection, cost-allocation, and audit tags.
+- See `samples/commonLabels.values.yaml`
 
 ### Application Passwords (MCP / REST API access)
 - **Create Application Passwords** during init for the admin user and any additional users
@@ -457,6 +505,135 @@ wordpress:
 
 ---
 
+### SMTP
+Configure outgoing mail via any SMTP server. See `samples/smtp.values.yaml` and `samples/smtp.secrets.yaml`.
+
+```bash
+kubectl apply -f ./samples/smtp.secrets.yaml
+# then add the smtp snippet to your existing values file
+```
+
+```yaml
+# smtp snippet to merge into your values
+wordpress:
+  smtp:
+    enabled: true
+    host: smtp.gmail.com
+    port: 587
+    encryption: tls
+    fromName: "My WordPress Site"
+    auth: true
+    existingSecret: gmail-smtp-secret
+    existingSecretPasswordKey: password
+    existingSecretUsernameKey: username
+    existingSecretFromEmailKey: fromEmail
+```
+
+### NetworkPolicy
+Restrict pod traffic to only the required connections. See `samples/networkpolicy.values.yaml`.
+
+```yaml
+# snippet to merge into your values
+networkPolicy:
+  enabled: true
+  allowExternalEgress: true   # needed for wp-cli downloads and SMTP
+  ingress:
+    from:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: ingress-nginx
+```
+
+### PrometheusRule
+Deploy bundled alerting rules. Requires `metrics.apache.enabled` or `metrics.wordpress.enabled`. See `samples/prometheusrule.values.yaml`.
+
+```yaml
+# snippet to merge into your values
+metrics:
+  apache:
+    enabled: true
+  prometheusRule:
+    enabled: true
+    additionalLabels:
+      release: kube-prometheus-stack
+```
+
+### Secondary Ingress
+Separate Ingress for `wp-admin` with IP allowlist and its own TLS certificate. See `samples/secondary-ingress.values.yaml`.
+
+```yaml
+# snippet to merge into your values
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: blog.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  secondary:
+    - name: admin
+      enabled: true
+      className: nginx
+      annotations:
+        nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8"
+      hosts:
+        - host: admin.example.com
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: wp-admin-tls
+          hosts: [admin.example.com]
+```
+
+### Backup CronJob
+Daily database backup to a PVC, with optional S3 sync via rclone. See `samples/backup.values.yaml` and `samples/backup-s3.secrets.yaml`.
+
+```bash
+# S3 backup: create the rclone config secret first
+kubectl create secret generic my-rclone-config --from-file=rclone.conf=./rclone.conf
+```
+
+```yaml
+# snippet to merge into your values
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retentionDays: 14
+  persistence:
+    size: 20Gi
+  # Optional S3 sync after each run:
+  s3:
+    enabled: true
+    existingSecret: my-rclone-config   # Secret with rclone.conf
+    remote: s3
+    bucket: my-wordpress-backups
+    path: wordpress
+```
+
+**Trigger a manual backup run:**
+```bash
+kubectl create job --from=cronjob/<release>-backup manual-backup-1
+kubectl logs -l job-name=manual-backup-1 -c backup -f
+```
+
+> **Note:** `backup.includeFiles: true` tars `wp-content` in addition to the database dump. Only enable this when the WordPress PVC supports concurrent readers (RWX storage or VolumeSnapshot). With standard RWO storage (OpenEBS ZFS, Longhorn RWO, etc.) leave it `false` (default) to avoid mount conflicts.
+
+### commonLabels and commonAnnotations
+Apply uniform labels or annotations to every Kubernetes resource the chart creates. See `samples/commonLabels.values.yaml`.
+
+```yaml
+# snippet to merge into your values
+commonLabels:
+  team: platform
+  environment: production
+
+commonAnnotations:
+  owner: platform-team
+  contact: platform@example.com
+```
+
 ### Composer Packages
 Install plugins and themes via Composer that aren't available in WordPress.org. See `samples/composer.values.yaml`.
 
@@ -569,6 +746,14 @@ Without `slug`, URL plugins/themes use `basename` of the URL as a best-effort gu
 - **Network activation** (`networkActivate` / `networkEnable`)
 
 ## Notable changes
+
+### To 4.2.0
+- Added **SMTP** (`wordpress.smtp`): MU-plugin generated from chart values, mounted directly via subPath — no external plugin needed. Credentials (password, username, from-address) are read from a Kubernetes Secret.
+- Added **NetworkPolicy** (`networkPolicy`): automatically wires DB/cache/DNS egress; optional internet egress via `allowExternalEgress`.
+- Added **PrometheusRule** (`metrics.prometheusRule`): bundled alerts for pod-down, scrape-failing, and high busy-workers; extend via `extraRules`.
+- Added **Secondary Ingress** (`ingress.secondary[]`): generates additional Ingress objects per release (e.g. separate `wp-admin` with IP allowlist).
+- Added **Backup CronJob** (`backup`): daily `mariadb-dump` to PVC; optional rclone S3 sidecar (`backup.s3`). New `backup.includeFiles` flag (default `false`) controls whether `wp-content` is also archived.
+- Added **commonLabels / commonAnnotations**: applied to all chart resources; resource-specific annotations take precedence.
 
 ### To 4.1.0
 - Added **Application Passwords** (`wordpress.init.applicationPassword`, `wordpress.users[].applicationPassword`): WP-CLI in the init container creates Application Passwords per user and stores them in Kubernetes Secrets (persist after `helm uninstall`).

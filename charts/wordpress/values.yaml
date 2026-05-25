@@ -50,11 +50,17 @@ clusterDomain: cluster.local
 
 ## @section Deployment parameters
 
-## @param customLabels object Additional labels for deployment
+## @param customLabels object Additional labels for deployment (Deployment only — use commonLabels for all resources)
 customLabels: {}
 
-## @param customAnnotations object Additional annotations for deployment
+## @param customAnnotations object Additional annotations for deployment (Deployment only — use commonAnnotations for all resources)
 customAnnotations: {}
+
+## @section Common metadata
+## @param commonLabels object Labels applied to ALL resources (Service, Ingress, PVC, ServiceMonitor, HPA, PDB, ...)
+commonLabels: {}
+## @param commonAnnotations object Annotations applied to ALL resources
+commonAnnotations: {}
 
 ## @section Deployment strategy
 ## @descriptionStart
@@ -430,6 +436,57 @@ wordpress:
   ##   - name: another-mu-plugin  # mounts all keys from ConfigMap
   ## ```
   muPluginsConfigMaps: []
+
+  ## @section SMTP / Mail
+  ## @descriptionStart
+  ## Configures WordPress mail delivery via a mu-plugin that overrides PHPMailer settings
+  ## directly from environment variables. The password is mounted from existingSecret
+  ## or set inline via password (not recommended for production).
+  ##
+  ## Example with Gmail:
+  ## ```yaml
+  ## wordpress:
+  ##   smtp:
+  ##     enabled: true
+  ##     host: smtp.gmail.com
+  ##     port: 587
+  ##     encryption: tls
+  ##     fromEmail: noreply@example.com
+  ##     fromName: "My Site"
+  ##     auth: true
+  ##     username: noreply@example.com
+  ##     existingSecret: gmail-smtp
+  ##     existingSecretPasswordKey: password
+  ## ```
+  ## @descriptionEnd
+  smtp:
+    ## @param wordpress.smtp.enabled bool Enable SMTP configuration via MU-plugin
+    enabled: false
+    ## @param wordpress.smtp.host string SMTP server hostname
+    host: ""
+    ## @param wordpress.smtp.port int SMTP server port (25, 465, 587)
+    port: 587
+    ## @param wordpress.smtp.encryption string Encryption method (tls, ssl, or empty for none)
+    encryption: tls
+    ## @param wordpress.smtp.fromEmail string From address (use existingSecretFromEmailKey to avoid plain-text in values)
+    fromEmail: ""
+    ## @param wordpress.smtp.fromName string Display name in From header
+    fromName: ""
+    ## @param wordpress.smtp.auth bool Use SMTP authentication
+    auth: true
+    ## @param wordpress.smtp.username string SMTP auth username (use existingSecretUsernameKey to avoid plain-text in values)
+    username: ""
+    ## @param wordpress.smtp.password string SMTP auth password (use existingSecret in production)
+    password: ""
+    ## @param wordpress.smtp.existingSecret string Name of existing Secret containing SMTP credentials
+    existingSecret: ""
+    ## @param wordpress.smtp.existingSecretPasswordKey string Key in existingSecret for the SMTP password
+    existingSecretPasswordKey: "password"
+    ## @param wordpress.smtp.existingSecretUsernameKey string Key in existingSecret for the SMTP username (overrides username when set)
+    existingSecretUsernameKey: ""
+    ## @param wordpress.smtp.existingSecretFromEmailKey string Key in existingSecret for the From address (overrides fromEmail when set)
+    existingSecretFromEmailKey: ""
+
 ## @section Apache parameters
 ## @descriptionStart
 ## Custom Apache configuration for site, ports, and PHP.
@@ -661,6 +718,47 @@ ingress:
   useHttpsBackend: false
   ## @param ingress.extraRules list Additional ingress rules
   extraRules: []
+  ## @param ingress.secondary list Additional named Ingress objects with independent className, annotations, and TLS.
+  ## Useful for admin-only or geo-routed hostnames.
+  ## E.g.
+  ## ```yaml
+  ## ingress:
+  ##   secondary:
+  ##     - name: admin
+  ##       enabled: true
+  ##       className: nginx
+  ##       annotations:
+  ##         nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8"
+  ##         cert-manager.io/cluster-issuer: letsencrypt-prod
+  ##       hosts:
+  ##         - host: admin.example.com
+  ##           paths:
+  ##             - path: /
+  ##               pathType: Prefix
+  ##       tls:
+  ##         - secretName: wp-admin-tls
+  ##           hosts: [admin.example.com]
+  ## ```
+  secondary: []
+
+## @section NetworkPolicy parameters
+networkPolicy:
+  ## @param networkPolicy.enabled bool Create a NetworkPolicy for the WordPress pod
+  enabled: false
+  ## @param networkPolicy.allowExternalEgress bool Allow egress to public Internet (needed for wp-cli plugin/theme downloads and SMTP)
+  allowExternalEgress: true
+  ## @param networkPolicy.smtpPorts list TCP ports opened on external egress for SMTP
+  smtpPorts: [587]
+  ## @param networkPolicy.annotations object Additional annotations for the NetworkPolicy
+  annotations: {}
+  ingress:
+    ## @param networkPolicy.ingress.from list Ingress sources (empty = allow all). Use podSelector/namespaceSelector for nginx-ingress etc.
+    from: []
+    ## @param networkPolicy.ingress.extraRules list Extra raw ingress rule blocks appended verbatim
+    extraRules: []
+  egress:
+    ## @param networkPolicy.egress.extraRules list Extra raw egress rule blocks appended verbatim
+    extraRules: []
 
 ## @section Resource parameters
 ## @descriptionStart
@@ -1019,6 +1117,83 @@ metrics:
       metricsPath: /metrics
       ## @param metrics.apache.serviceMonitor.namespace string Namespace for ServiceMonitor (defaults to release namespace)
       namespace: ""
+
+## @section PrometheusRule
+  prometheusRule:
+    ## @param metrics.prometheusRule.enabled bool Create a PrometheusRule (requires metrics.apache or metrics.wordpress enabled)
+    enabled: false
+    ## @param metrics.prometheusRule.namespace string Namespace where the PrometheusRule is created (default: release namespace)
+    namespace: ""
+    ## @param metrics.prometheusRule.additionalLabels object Labels for Prometheus Operator selector (e.g. release: kube-prometheus-stack)
+    additionalLabels: {}
+    defaultRules:
+      ## @param metrics.prometheusRule.defaultRules.podDown bool Enable WordPressPodDown alert
+      podDown: true
+      ## @param metrics.prometheusRule.defaultRules.apacheScrapeFailing bool Enable scrape-failure and busy-worker alerts (requires metrics.apache.enabled)
+      apacheScrapeFailing: true
+    ## @param metrics.prometheusRule.extraRules list Additional alerting rules appended verbatim
+    extraRules: []
+
+## @section Backup
+backup:
+  ## @param backup.enabled bool Create a CronJob that backs up the database (and optionally wp-content) to a PVC
+  enabled: false
+  ## @param backup.includeFiles bool Also tar wp-content into the backup (requires a RWX PVC or snapshotting — set false when using RWO storage)
+  includeFiles: false
+  ## @param backup.schedule string Cron schedule (UTC)
+  schedule: "0 2 * * *"
+  ## @param backup.retentionDays int Delete local backups older than N days
+  retentionDays: 14
+  ## @param backup.successfulJobsHistoryLimit int Number of successful job records to keep
+  successfulJobsHistoryLimit: 3
+  ## @param backup.failedJobsHistoryLimit int Number of failed job records to keep
+  failedJobsHistoryLimit: 1
+  ## @param backup.backoffLimit int Number of retries before marking the backup job failed
+  backoffLimit: 2
+  ## @section Backup image
+  image:
+    ## @param backup.image.registry string Image registry
+    registry: docker.io
+    ## @param backup.image.repository string Image repository
+    repository: mariadb
+    ## @param backup.image.tag string Image tag
+    tag: "11"
+    ## @param backup.image.pullPolicy string Image pull policy
+    pullPolicy: IfNotPresent
+  ## @param backup.resources object Resource requests/limits for the backup container
+  resources: {}
+  ## @section Backup PVC
+  persistence:
+    ## @param backup.persistence.enabled bool Create a PVC for backup storage
+    enabled: true
+    ## @param backup.persistence.existingClaim string Use an existing PVC instead of creating one
+    existingClaim: ""
+    ## @param backup.persistence.size string Size of the backup PVC
+    size: 10Gi
+    ## @param backup.persistence.accessModes list Access modes for the backup PVC
+    accessModes: [ReadWriteOnce]
+    ## @param backup.persistence.storageClass string Storage class for the backup PVC
+    storageClass: ""
+  ## @section Backup S3 (rclone)
+  s3:
+    ## @param backup.s3.enabled bool Push backups to S3 via rclone after each run
+    enabled: false
+    ## @section Backup S3 image
+    image:
+      ## @param backup.s3.image.repository string rclone image repository
+      repository: rclone/rclone
+      ## @param backup.s3.image.tag string rclone image tag
+      tag: "1.69"
+      ## @param backup.s3.image.pullPolicy string Pull policy for rclone image
+      pullPolicy: IfNotPresent
+    ## @param backup.s3.existingSecret string Secret containing key rclone.conf with the configured remote
+    existingSecret: ""
+    ## @param backup.s3.remote string rclone remote name (must match rclone.conf)
+    remote: "s3"
+    ## @param backup.s3.bucket string S3 bucket name
+    bucket: ""
+    ## @param backup.s3.path string Sub-path inside the bucket
+    path: "wordpress-backups"
 
 ## @section External Database configuration
 ## @descriptionStart

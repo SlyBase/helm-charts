@@ -9,7 +9,8 @@ metadata:
     {{- with .Values.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- with .Values.service.annotations }}
+  {{- $svcAnnotations := merge (dict) (.Values.service.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $svcAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -47,7 +48,8 @@ metadata:
     {{- with .Values.metrics.apache.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- with .Values.metrics.apache.service.annotations }}
+  {{- $apacheSvcAnnotations := merge (dict) (.Values.metrics.apache.service.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $apacheSvcAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -55,10 +57,10 @@ spec:
   type: {{ .Values.metrics.apache.service.type }}
   ports:
     - port: {{ .Values.metrics.apache.service.ports.metrics }}
-      targetPort: 9117
+      targetPort: {{ .Values.metrics.apache.service.ports.metrics }}
       protocol: TCP
       name: metrics
-      {{- if eq .Values.metrics.apache.service.type "NodePort" }}
+      {{- if and (eq .Values.metrics.apache.service.type "NodePort") .Values.metrics.apache.service.nodePorts.metrics }}
       nodePort: {{ .Values.metrics.apache.service.nodePorts.metrics }}
       {{- end }}
   {{- if .Values.metrics.apache.service.clusterIP }}

@@ -1,0 +1,40 @@
+{{- if .Values.wordpress.smtp.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "wordpress.fullname" . }}-smtp-mu-plugin
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wordpress.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  smtp-override.php: |
+    <?php
+    /**
+     * Plugin Name: K8s SMTP Override
+     * Description: Forces SMTP settings from environment variables (managed by Helm).
+     */
+    add_action('phpmailer_init', function ($phpmailer) {
+        $host = getenv('WP_SMTP_HOST');
+        if (!$host) { return; }
+        $phpmailer->isSMTP();
+        $phpmailer->Host       = $host;
+        $phpmailer->Port       = (int) getenv('WP_SMTP_PORT') ?: 587;
+        $phpmailer->SMTPSecure = getenv('WP_SMTP_ENCRYPTION') ?: '';
+        $phpmailer->SMTPAuth   = filter_var(getenv('WP_SMTP_AUTH'), FILTER_VALIDATE_BOOLEAN);
+        if ($phpmailer->SMTPAuth) {
+            $phpmailer->Username = getenv('WP_SMTP_USERNAME');
+            $phpmailer->Password = getenv('WP_SMTP_PASSWORD');
+        }
+        $from = getenv('WP_SMTP_FROM_EMAIL');
+        if ($from) {
+            $phpmailer->From     = $from;
+            $phpmailer->Sender   = $from;
+        }
+        $fromName = getenv('WP_SMTP_FROM_NAME');
+        if ($fromName) { $phpmailer->FromName = $fromName; }
+    }, 10, 1);
+{{- end }}

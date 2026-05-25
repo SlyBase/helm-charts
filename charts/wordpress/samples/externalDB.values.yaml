@@ -1,5 +1,16 @@
+## Sample: WordPress with an external (pre-existing) database
+## Prerequisites:
+##   kubectl apply -f externalDB.secrets.yaml
+##
+## The secret must contain the keys matching externalDatabase.secretKeys
+## (defaults: db.username, db.password).
+
 wordpress:
   url: "https://example.com"
+  init:
+    enabled: true
+    existingSecret: "wordpress-test-secret"
+    title: "My WordPress Site"
 externalDatabase:
   host: "db-server"
   database: "wordpress_db"

@@ -1,3 +1,8 @@
+## Sample: Advanced install with plugins, themes, users, metrics, and custom PHP/htaccess
+## Prerequisites:
+##   kubectl apply -f advanced.secrets.yaml
+##   kubectl apply -f advanced.configmap.yaml
+
 wordpress:
   init:
     enabled: true
