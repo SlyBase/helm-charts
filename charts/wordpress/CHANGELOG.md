@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 4.3.0 - 2026-05-25
+
+- Update rclone/rclone to 1.74
+
 ## 4.2.1 - 2026-05-25
 
 - Update redis to 0.29.2
