@@ -1118,7 +1118,7 @@ metrics:
       ## @param metrics.apache.serviceMonitor.namespace string Namespace for ServiceMonitor (defaults to release namespace)
       namespace: ""
 
-## @section PrometheusRule
+  ## @section PrometheusRule
   prometheusRule:
     ## @param metrics.prometheusRule.enabled bool Create a PrometheusRule (requires metrics.apache or metrics.wordpress enabled)
     enabled: false
@@ -1153,11 +1153,11 @@ backup:
   ## @section Backup image
   image:
     ## @param backup.image.registry string Image registry
-    registry: docker.io
+    registry: ""
     ## @param backup.image.repository string Image repository
-    repository: mariadb
+    repository: docker.io/mariadb
     ## @param backup.image.tag string Image tag
-    tag: "11"
+    tag: "12.2.2-noble@sha256:350261292d0129fd4b24f537dcf05ecd3ebe34d39d5b592af551f38310e7a167"
     ## @param backup.image.pullPolicy string Image pull policy
     pullPolicy: IfNotPresent
   ## @param backup.resources object Resource requests/limits for the backup container
