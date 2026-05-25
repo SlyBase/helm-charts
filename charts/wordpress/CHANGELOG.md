@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 5.0.0 - 2026-05-25
+
+- Update docker.io/mariadb to 12
+
 ## 4.3.0 - 2026-05-25
 
 - Update rclone/rclone to 1.74

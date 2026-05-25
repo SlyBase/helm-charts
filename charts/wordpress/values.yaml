@@ -1157,7 +1157,7 @@ backup:
     ## @param backup.image.repository string Image repository
     repository: mariadb
     ## @param backup.image.tag string Image tag
-    tag: "11"
+    tag: "12"
     ## @param backup.image.pullPolicy string Image pull policy
     pullPolicy: IfNotPresent
   ## @param backup.resources object Resource requests/limits for the backup container
