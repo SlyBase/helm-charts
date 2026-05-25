@@ -1136,8 +1136,10 @@ metrics:
 
 ## @section Backup
 backup:
-  ## @param backup.enabled bool Create a CronJob that backs up DB and wp-content to a PVC
+  ## @param backup.enabled bool Create a CronJob that backs up the database (and optionally wp-content) to a PVC
   enabled: false
+  ## @param backup.includeFiles bool Also tar wp-content into the backup (requires a RWX PVC or snapshotting — set false when using RWO storage)
+  includeFiles: false
   ## @param backup.schedule string Cron schedule (UTC)
   schedule: "0 2 * * *"
   ## @param backup.retentionDays int Delete local backups older than N days

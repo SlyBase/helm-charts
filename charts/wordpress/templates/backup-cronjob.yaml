@@ -85,8 +85,10 @@ spec:
                     -u "$DB_USER" -p"$DB_PASSWORD" \
                     --single-transaction --quick --routines --triggers \
                     "$DB_NAME" | gzip > "$OUT/${DB_NAME}.sql.gz"
+                  {{- if .Values.backup.includeFiles }}
                   echo "==> tar wp-content"
                   tar -czf "$OUT/wp-content.tar.gz" -C /var/www/html/wp-content .
+                  {{- end }}
                   echo "==> prune older than ${RETENTION_DAYS}d"
                   find /backup -maxdepth 1 -mindepth 1 -type d -mtime +${RETENTION_DAYS} -exec rm -rf {} +
                   echo "==> done: $OUT"
@@ -98,9 +100,11 @@ spec:
               volumeMounts:
                 - name: backup
                   mountPath: /backup
+                {{- if .Values.backup.includeFiles }}
                 - name: wordpress
                   mountPath: /var/www/html
                   readOnly: true
+                {{- end }}
                 - name: tmp
                   mountPath: /tmp
               {{- with .Values.backup.resources }}
@@ -111,6 +115,10 @@ spec:
             - name: s3-sync
               image: {{ .Values.backup.s3.image.repository }}:{{ .Values.backup.s3.image.tag }}
               imagePullPolicy: {{ .Values.backup.s3.image.pullPolicy | default "IfNotPresent" }}
+              {{- with .Values.containerSecurityContext }}
+              securityContext:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
               env:
                 - name: RCLONE_CONFIG
                   value: /config/rclone.conf
@@ -138,14 +146,18 @@ spec:
                 - name: rclone-config
                   mountPath: /config
                   readOnly: true
+                - name: tmp
+                  mountPath: /tmp
             {{- end }}
           volumes:
             - name: backup
               persistentVolumeClaim:
                 claimName: {{ .Values.backup.persistence.existingClaim | default (printf "%s-backup" $fullName) }}
+            {{- if .Values.backup.includeFiles }}
             - name: wordpress
               persistentVolumeClaim:
                 claimName: {{ .Values.storage.existingClaim | default $fullName }}
+            {{- end }}
             - name: tmp
               emptyDir: {}
             {{- if .Values.backup.s3.enabled }}
