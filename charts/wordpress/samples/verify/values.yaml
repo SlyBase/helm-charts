@@ -68,37 +68,11 @@ wordpress:
     existingSecretPasswordKey: smtp.password
     existingSecretUsernameKey: smtp.username
     existingSecretFromEmailKey: smtp.fromEmail
-networkPolicy:
-  enabled: true
-  allowExternalEgress: true
-ingress:
-  secondary:
-    - name: verify-secondary
-      enabled: true
-      className: ""
-      annotations:
-        nginx.ingress.kubernetes.io/rewrite-target: /
-      hosts:
-        - host: verify-secondary.local
-          paths:
-            - path: /
-              pathType: Prefix
 service:
   nodePorts:
     http: 30911
 storage:
   resourcePolicy: "" # Delete PVC on helm uninstall
-backup:
-  enabled: true
-  schedule: "0 3 * * *"
-  persistence:
-    size: 5Gi
-  s3:
-    enabled: true
-    existingSecret: "wordpress-verify-rclone"
-    remote: "garage"
-    bucket: "wordpress-verify-backup"
-    path: "verify"
 apache:
   customPhpConfigMap: "wordpress-verify-config"
 metrics:

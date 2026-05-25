@@ -5,16 +5,17 @@ repos:
       - id: yamllint
         args: [-c=.yamllint.yml]
 
-  - repo: https://github.com/gruntwork-io/pre-commit
-    rev: v0.1.23
-    hooks:
-      - id: helmlint
-
   # Validate ArtifactHub annotations in Chart.yaml files
   # Catches: invalid YAML in annotations, wrong 'kind' values, missing required fields,
   # and special characters that need quotes: {}:[],&*#?|-<>=!%@
   - repo: local
     hooks:
+      - id: helmlint
+        name: Helm Lint
+        entry: scripts/helmlint.sh
+        language: script
+        pass_filenames: true
+
       - id: validate-artifacthub-annotations
         name: Validate ArtifactHub annotations
         entry: python scripts/validate-artifacthub-annotations.py
