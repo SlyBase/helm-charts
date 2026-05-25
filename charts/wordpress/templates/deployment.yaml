@@ -697,9 +697,23 @@ spec:
             - name: WP_SMTP_AUTH
               value: {{ .Values.wordpress.smtp.auth | quote }}
             - name: WP_SMTP_USERNAME
+              {{- if and .Values.wordpress.smtp.existingSecret .Values.wordpress.smtp.existingSecretUsernameKey }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.wordpress.smtp.existingSecret }}
+                  key: {{ .Values.wordpress.smtp.existingSecretUsernameKey }}
+              {{- else }}
               value: {{ .Values.wordpress.smtp.username | quote }}
+              {{- end }}
             - name: WP_SMTP_FROM_EMAIL
+              {{- if and .Values.wordpress.smtp.existingSecret .Values.wordpress.smtp.existingSecretFromEmailKey }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.wordpress.smtp.existingSecret }}
+                  key: {{ .Values.wordpress.smtp.existingSecretFromEmailKey }}
+              {{- else }}
               value: {{ .Values.wordpress.smtp.fromEmail | quote }}
+              {{- end }}
             - name: WP_SMTP_FROM_NAME
               value: {{ .Values.wordpress.smtp.fromName | quote }}
             - name: WP_SMTP_PASSWORD

@@ -468,20 +468,24 @@ wordpress:
     port: 587
     ## @param wordpress.smtp.encryption string Encryption method (tls, ssl, or empty for none)
     encryption: tls
-    ## @param wordpress.smtp.fromEmail string From address
+    ## @param wordpress.smtp.fromEmail string From address (use existingSecretFromEmailKey to avoid plain-text in values)
     fromEmail: ""
     ## @param wordpress.smtp.fromName string Display name in From header
     fromName: ""
     ## @param wordpress.smtp.auth bool Use SMTP authentication
     auth: true
-    ## @param wordpress.smtp.username string SMTP auth username
+    ## @param wordpress.smtp.username string SMTP auth username (use existingSecretUsernameKey to avoid plain-text in values)
     username: ""
     ## @param wordpress.smtp.password string SMTP auth password (use existingSecret in production)
     password: ""
-    ## @param wordpress.smtp.existingSecret string Name of existing Secret containing the SMTP password
+    ## @param wordpress.smtp.existingSecret string Name of existing Secret containing SMTP credentials
     existingSecret: ""
-    ## @param wordpress.smtp.existingSecretPasswordKey string Key in existingSecret holding the SMTP password
+    ## @param wordpress.smtp.existingSecretPasswordKey string Key in existingSecret for the SMTP password
     existingSecretPasswordKey: "password"
+    ## @param wordpress.smtp.existingSecretUsernameKey string Key in existingSecret for the SMTP username (overrides username when set)
+    existingSecretUsernameKey: ""
+    ## @param wordpress.smtp.existingSecretFromEmailKey string Key in existingSecret for the From address (overrides fromEmail when set)
+    existingSecretFromEmailKey: ""
 
 ## @section Apache parameters
 ## @descriptionStart

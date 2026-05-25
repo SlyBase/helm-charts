@@ -10,9 +10,9 @@ wordpress:
     host: smtp.gmail.com
     port: 587
     encryption: tls
-    fromEmail: noreply@example.com
     fromName: "My WordPress Site"
     auth: true
-    username: noreply@example.com
     existingSecret: gmail-smtp-secret
     existingSecretPasswordKey: password
+    existingSecretUsernameKey: username
+    existingSecretFromEmailKey: fromEmail

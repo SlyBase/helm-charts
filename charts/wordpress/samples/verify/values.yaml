@@ -57,6 +57,17 @@ wordpress:
     name: "wordpress-verify-secret"
   htaccessConfigMap: "wordpress-verify-config"
   url: "http://192.168.178.21:30911"
+  smtp:
+    enabled: true
+    host: smtp.gmail.com
+    port: 587
+    encryption: tls
+    fromName: "Wordpress Verify"
+    auth: true
+    existingSecret: wordpress-verify-secret
+    existingSecretPasswordKey: smtp.password
+    existingSecretUsernameKey: smtp.username
+    existingSecretFromEmailKey: smtp.fromEmail
 service:
   nodePorts:
     http: 30911

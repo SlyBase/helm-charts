@@ -858,6 +858,12 @@
             },
             "existingSecretPasswordKey": {
               "type": "string"
+            },
+            "existingSecretUsernameKey": {
+              "type": "string"
+            },
+            "existingSecretFromEmailKey": {
+              "type": "string"
             }
           }
         }
