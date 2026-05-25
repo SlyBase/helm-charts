@@ -25,7 +25,7 @@ spec:
         - port: {{ .Values.containerPorts.http }}
           protocol: TCP
         {{- if .Values.metrics.apache.enabled }}
-        - port: 9117
+        - port: {{ .Values.metrics.apache.service.ports.metrics }}
           protocol: TCP
         {{- end }}
       {{- with .Values.networkPolicy.ingress.from }}
@@ -38,10 +38,9 @@ spec:
   egress:
     # DNS
     - to:
-        - namespaceSelector: {}
-          podSelector:
+        - namespaceSelector:
             matchLabels:
-              k8s-app: kube-dns
+              kubernetes.io/metadata.name: kube-system
       ports:
         - port: 53
           protocol: UDP

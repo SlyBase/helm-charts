@@ -42,7 +42,7 @@ spec:
           annotations:
             summary: "Apache workers >= 90% busy"
           expr: |
-            (apache_workers{state="busy"} / apache_scoreboard_total) > 0.9
+            (apache_workers{state="busy",job=~".*{{ include "metrics.apache.fullname" . }}.*"} / apache_scoreboard_total{job=~".*{{ include "metrics.apache.fullname" . }}.*"}) > 0.9
           for: 10m
           labels:
             severity: warning

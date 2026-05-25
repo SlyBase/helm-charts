@@ -722,11 +722,13 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.wordpress.smtp.existingSecret }}
                   key: {{ .Values.wordpress.smtp.existingSecretPasswordKey }}
-              {{- else }}
+              {{- else if .Values.wordpress.smtp.password }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "wordpress.fullname" . }}
                   key: WP_SMTP_PASSWORD
+              {{- else }}
+              value: ""
               {{- end }}
           {{- end }}
           envFrom:

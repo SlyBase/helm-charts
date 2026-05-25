@@ -54,10 +54,13 @@ spec:
                     secretKeyRef:
                       {{- if .Values.mariadb.enabled }}
                       name: {{ .Values.mariadb.auth.existingSecret | default (printf "%s-mariadb" .Release.Name) }}
-                      key: mariadb-password
+                      key: {{ .Values.mariadb.auth.secretKeys.userPasswordKey | default "mariadb-password" }}
+                      {{- else if .Values.externalDatabase.existingSecret }}
+                      name: {{ .Values.externalDatabase.existingSecret }}
+                      key: {{ .Values.externalDatabase.secretKeys.userPasswordKey | default "db.password" }}
                       {{- else }}
-                      name: {{ .Values.externalDatabase.existingSecret | default $fullName }}
-                      key: mariadb-password
+                      name: {{ $fullName }}
+                      key: WORDPRESS_DB_PASSWORD
                       {{- end }}
                 - name: RETENTION_DAYS
                   value: {{ .Values.backup.retentionDays | quote }}
@@ -134,7 +137,14 @@ spec:
                 - |
                   set -e
                   echo "==> waiting for backup to complete..."
-                  until [ -f /backup/.backup_complete ]; do sleep 5; done
+                  DEADLINE=$(( $(date +%s) + 3600 ))
+                  until [ -f /backup/.backup_complete ]; do
+                    sleep 5
+                    if [ "$(date +%s)" -ge "$DEADLINE" ]; then
+                      echo "==> timeout: backup did not complete within 1h" >&2
+                      exit 1
+                    fi
+                  done
                   TS=$(cat /backup/.backup_complete)
                   echo "==> syncing $TS to ${S3_REMOTE}:${S3_BUCKET}/${S3_PATH}/${TS}/"
                   rclone copy "/backup/${TS}" "${S3_REMOTE}:${S3_BUCKET}/${S3_PATH}/${TS}/" --transfers=2
@@ -163,7 +173,7 @@ spec:
             {{- if .Values.backup.s3.enabled }}
             - name: rclone-config
               secret:
-                secretName: {{ .Values.backup.s3.existingSecret }}
+                secretName: {{ required "backup.s3.existingSecret is required when backup.s3.enabled=true" .Values.backup.s3.existingSecret }}
             {{- end }}
 ---
 {{- if and (not .Values.backup.persistence.existingClaim) .Values.backup.persistence.enabled }}

@@ -45,7 +45,6 @@ spec:
     {{- with .Values.ingress.extraRules }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-{{- end }}
 {{- range $idx, $sec := .Values.ingress.secondary }}
 {{- if $sec.enabled }}
 ---
@@ -96,5 +95,6 @@ spec:
     {{- with $sec.extraRules }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
