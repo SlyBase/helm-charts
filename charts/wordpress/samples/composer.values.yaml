@@ -1,5 +1,6 @@
-# Example configuration for using Composer packages with WordPress
-# This demonstrates how to install plugins and themes via Composer that are not available in the WordPress.org repository
+## Sample: WordPress plugins/themes via Composer (wpackagist, GitHub, private repos)
+## Prerequisites:
+##   kubectl apply -f advanced.secrets.yaml
 
 wordpress:
   init:
@@ -9,7 +10,7 @@ wordpress:
     firstname: "John"
     lastname: "Doe"
     title: "John Does's Blog"
-  url: "http://192.168.178.31:30111"
+  url: "https://example.com"
 
   permalinks:
     structure: postName

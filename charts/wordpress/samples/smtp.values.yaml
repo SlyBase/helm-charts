@@ -1,8 +1,8 @@
-## Sample: SMTP configuration
+## Snippet: SMTP configuration — add these values to your existing values file.
 ## The MU-plugin is mounted directly into wp-content/mu-plugins/ and
 ## forces PHPMailer to use the configured SMTP server.
-##
-## For production, use existingSecret instead of password.
+## Prerequisites:
+##   kubectl apply -f smtp.secrets.yaml
 
 wordpress:
   smtp:

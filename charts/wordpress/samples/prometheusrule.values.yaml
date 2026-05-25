@@ -1,4 +1,4 @@
-## Sample: PrometheusRule
+## Snippet: PrometheusRule — add these values to your existing values file.
 ## Requires metrics.apache.enabled or metrics.wordpress.enabled.
 ## additionalLabels must match your Prometheus Operator's ruleSelector.
 

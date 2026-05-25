@@ -1,4 +1,4 @@
-## Sample: Backup CronJob
+## Snippet: Backup CronJob — add these values to your existing values file.
 ## Creates a daily backup of the database to a PVC.
 ## Set includeFiles: true to also tar wp-content — only works when the
 ## wordpress PVC supports multiple readers (RWX) or you use VolumeSnapshots.

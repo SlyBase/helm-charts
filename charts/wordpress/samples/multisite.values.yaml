@@ -1,6 +1,6 @@
-# WordPress Multisite Sample Configuration
-# This example demonstrates a full multisite setup with 3 sites (main, company-blog, shop)
-# using subdirectory configuration
+## Sample: WordPress Multisite (subdirectory mode, 3 sites)
+## Prerequisites:
+##   kubectl apply -f multisite.secrets.yaml
 
 wordpress:
   init:

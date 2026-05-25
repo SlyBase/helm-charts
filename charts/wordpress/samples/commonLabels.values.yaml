@@ -1,4 +1,4 @@
-## Sample: commonLabels and commonAnnotations
+## Snippet: commonLabels and commonAnnotations — add these values to your existing values file.
 ## These are applied to ALL Kubernetes resources created by the chart.
 ## Useful for GitOps (ArgoCD), service mesh, cost allocation, and audit.
 

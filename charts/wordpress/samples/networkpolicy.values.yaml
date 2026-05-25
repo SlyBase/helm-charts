@@ -1,4 +1,4 @@
-## Sample: NetworkPolicy
+## Snippet: NetworkPolicy — add these values to your existing values file.
 ## Restricts ingress/egress traffic for the WordPress pod.
 
 networkPolicy:

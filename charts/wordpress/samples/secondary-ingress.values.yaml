@@ -1,4 +1,4 @@
-## Sample: Secondary Ingress
+## Snippet: Secondary Ingress — add these values to your existing values file.
 ## Separate ingress for wp-admin with IP whitelist and different TLS cert.
 
 ingress:

@@ -1,3 +1,8 @@
+## Sample: Memcached object cache
+## Prerequisites:
+##   kubectl apply -f advanced.secrets.yaml
+##   kubectl apply -f advanced.configmap.yaml
+
 wordpress:
   init:
     enabled: true

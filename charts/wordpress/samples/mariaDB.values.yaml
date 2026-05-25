@@ -1,9 +1,14 @@
+## Sample: Minimal install with MariaDB subchart
+## Prerequisites:
+##   kubectl apply -f mariaDB.secrets.yaml
+
 wordpress:
   init:
+    enabled: true
     existingSecret: "wordpress-test-secret"
     firstname: "John"
     lastname: "Doe"
-    title: "John Does's Blog"
+    title: "John Doe's Blog"
   url: "https://example.com"
 mariadb:
   auth:

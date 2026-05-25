@@ -1,4 +1,6 @@
-## Token Authentication Sample
+## Sample: Token Authentication (JWT + Application Passwords)
+## Prerequisites:
+##   kubectl apply -f token.secrets.yaml
 ##
 ## Demonstrates both authentication methods for external connectivity (e.g. MCP):
 ##   1. JWT via jwt-authentication-for-wp-rest-api (wordpress.init.jwt.enabled)
