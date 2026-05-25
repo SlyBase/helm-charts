@@ -1,0 +1,18 @@
+## Sample: SMTP configuration
+## The MU-plugin is mounted directly into wp-content/mu-plugins/ and
+## forces PHPMailer to use the configured SMTP server.
+##
+## For production, use existingSecret instead of password.
+
+wordpress:
+  smtp:
+    enabled: true
+    host: smtp.gmail.com
+    port: 587
+    encryption: tls
+    fromEmail: noreply@example.com
+    fromName: "My WordPress Site"
+    auth: true
+    username: noreply@example.com
+    existingSecret: gmail-smtp-secret
+    existingSecretPasswordKey: password

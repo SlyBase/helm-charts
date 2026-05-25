@@ -8,7 +8,8 @@ metadata:
     {{- with .Values.customLabels }}
       {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- with .Values.customAnnotations }}
+  {{- $depAnnotations := merge (dict) (.Values.customAnnotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $depAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -127,6 +128,9 @@ spec:
         {{- end }}
         {{- if gt (len $muChecks) 0 }}
         checksum/wordpress-muPlugins-combined: {{ include "wordpress.checksum.combine" (list $muChecks) }}
+        {{- end }}
+        {{- if .Values.wordpress.smtp.enabled }}
+        checksum/smtp-config: {{ toJson .Values.wordpress.smtp | sha256sum }}
         {{- end }}
 
         {{- /* combined configmaps checksum */}}
@@ -683,6 +687,34 @@ spec:
                   key: {{ .Values.wordpress.configExtraSecret.key | default "wordpress.configExtra" }}
           {{- end }}
           {{- end }}
+          {{- if .Values.wordpress.smtp.enabled }}
+            - name: WP_SMTP_HOST
+              value: {{ .Values.wordpress.smtp.host | quote }}
+            - name: WP_SMTP_PORT
+              value: {{ .Values.wordpress.smtp.port | quote }}
+            - name: WP_SMTP_ENCRYPTION
+              value: {{ .Values.wordpress.smtp.encryption | quote }}
+            - name: WP_SMTP_AUTH
+              value: {{ .Values.wordpress.smtp.auth | quote }}
+            - name: WP_SMTP_USERNAME
+              value: {{ .Values.wordpress.smtp.username | quote }}
+            - name: WP_SMTP_FROM_EMAIL
+              value: {{ .Values.wordpress.smtp.fromEmail | quote }}
+            - name: WP_SMTP_FROM_NAME
+              value: {{ .Values.wordpress.smtp.fromName | quote }}
+            - name: WP_SMTP_PASSWORD
+              {{- if .Values.wordpress.smtp.existingSecret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.wordpress.smtp.existingSecret }}
+                  key: {{ .Values.wordpress.smtp.existingSecretPasswordKey }}
+              {{- else }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress.fullname" . }}
+                  key: WP_SMTP_PASSWORD
+              {{- end }}
+          {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "wordpress.fullname" . }}
@@ -765,6 +797,12 @@ spec:
             {{- end }}
             {{- if .Values.extraVolumeMounts }}
             {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+            {{- end }}
+            {{- if .Values.wordpress.smtp.enabled }}
+            - name: smtp-mu-plugin
+              mountPath: /var/www/html/wp-content/mu-plugins/smtp-override.php
+              subPath: smtp-override.php
+              readOnly: true
             {{- end }}
             - name: {{ include "wordpress.fullname" . }}-configfiles
               mountPath: /etc/apache2/sites-enabled/000-default.conf
@@ -943,6 +981,12 @@ spec:
       - name: mu-plugins-{{ .name }}
         configMap:
           name: {{ .name }}
+          defaultMode: 0644
+      {{- end }}
+      {{- if .Values.wordpress.smtp.enabled }}
+      - name: smtp-mu-plugin
+        configMap:
+          name: {{ include "wordpress.fullname" . }}-smtp-mu-plugin
           defaultMode: 0644
       {{- end }}
       {{- if .Values.extraVolumes }}

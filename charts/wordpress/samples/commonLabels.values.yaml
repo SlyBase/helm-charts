@@ -1,0 +1,12 @@
+## Sample: commonLabels and commonAnnotations
+## These are applied to ALL Kubernetes resources created by the chart.
+## Useful for GitOps (ArgoCD), service mesh, cost allocation, and audit.
+
+commonLabels:
+  team: platform
+  environment: production
+  app.kubernetes.io/part-of: my-stack
+
+commonAnnotations:
+  owner: platform-team
+  contact: platform@example.com

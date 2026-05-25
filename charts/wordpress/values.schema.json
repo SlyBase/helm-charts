@@ -97,6 +97,20 @@
       "description": "Additional annotations for deployment",
       "default": {}
     },
+    "commonLabels": {
+      "type": "object",
+      "description": "Labels applied to ALL resources",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "commonAnnotations": {
+      "type": "object",
+      "description": "Annotations applied to ALL resources",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
     "updateStrategy": {
       "type": "object",
       "properties": {
@@ -806,6 +820,46 @@
             ]
           },
           "default": []
+        },
+        "smtp": {
+          "type": "object",
+          "description": "SMTP configuration via MU-plugin",
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "host": {
+              "type": "string"
+            },
+            "port": {
+              "type": "integer"
+            },
+            "encryption": {
+              "type": "string"
+            },
+            "fromEmail": {
+              "type": "string"
+            },
+            "fromName": {
+              "type": "string"
+            },
+            "auth": {
+              "type": "boolean"
+            },
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            },
+            "existingSecret": {
+              "type": "string"
+            },
+            "existingSecretPasswordKey": {
+              "type": "string"
+            }
+          }
         }
       }
     },
@@ -1268,6 +1322,111 @@
             "type": "object"
           },
           "default": []
+        },
+        "secondary": {
+          "type": "array",
+          "description": "Additional named Ingress objects",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "className": {
+                "type": "string"
+              },
+              "annotations": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "hosts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "tls": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "useHttpsBackend": {
+                "type": "boolean"
+              },
+              "extraRules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "networkPolicy": {
+      "type": "object",
+      "description": "NetworkPolicy configuration",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "allowExternalEgress": {
+          "type": "boolean"
+        },
+        "smtpPorts": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "from": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "extraRules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "egress": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "extraRules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
         }
       }
     },
@@ -1928,6 +2087,83 @@
               }
             }
           }
+        },
+        "prometheusRule": {
+          "type": "object",
+          "description": "PrometheusRule configuration",
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "namespace": {
+              "type": "string"
+            },
+            "additionalLabels": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "defaultRules": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "podDown": {
+                  "type": "boolean"
+                },
+                "apacheScrapeFailing": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "extraRules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "backup": {
+      "type": "object",
+      "description": "Backup CronJob configuration",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "schedule": {
+          "type": "string"
+        },
+        "retentionDays": {
+          "type": "integer"
+        },
+        "successfulJobsHistoryLimit": {
+          "type": "integer"
+        },
+        "failedJobsHistoryLimit": {
+          "type": "integer"
+        },
+        "backoffLimit": {
+          "type": "integer"
+        },
+        "image": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "persistence": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "s3": {
+          "type": "object",
+          "additionalProperties": true
         }
       }
     },

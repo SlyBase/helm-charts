@@ -1,0 +1,15 @@
+## Sample: PrometheusRule
+## Requires metrics.apache.enabled or metrics.wordpress.enabled.
+## additionalLabels must match your Prometheus Operator's ruleSelector.
+
+metrics:
+  apache:
+    enabled: true
+  prometheusRule:
+    enabled: true
+    additionalLabels:
+      release: kube-prometheus-stack
+    defaultRules:
+      podDown: true
+      apacheScrapeFailing: true
+    extraRules: []

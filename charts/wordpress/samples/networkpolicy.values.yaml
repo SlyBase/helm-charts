@@ -1,0 +1,17 @@
+## Sample: NetworkPolicy
+## Restricts ingress/egress traffic for the WordPress pod.
+
+networkPolicy:
+  enabled: true
+  # Allow internet egress for wp-cli plugin downloads and SMTP
+  allowExternalEgress: true
+  smtpPorts: [587]
+  ingress:
+    # Allow only from the nginx-ingress namespace
+    from:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: ingress-nginx
+    extraRules: []
+  egress:
+    extraRules: []

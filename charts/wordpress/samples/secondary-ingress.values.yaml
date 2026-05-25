@@ -1,0 +1,29 @@
+## Sample: Secondary Ingress
+## Separate ingress for wp-admin with IP whitelist and different TLS cert.
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: blog.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: wp-public-tls
+      hosts: [blog.example.com]
+  secondary:
+    - name: admin
+      enabled: true
+      className: nginx
+      annotations:
+        nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,192.168.0.0/16"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+      hosts:
+        - host: admin.example.com
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: wp-admin-tls
+          hosts: [admin.example.com]

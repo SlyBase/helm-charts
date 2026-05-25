@@ -1,0 +1,180 @@
+{{- if .Values.backup.enabled }}
+{{- $fullName := include "wordpress.fullname" . -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $fullName }}-backup
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wordpress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backup
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.backup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.backup.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.backup.backoffLimit }}
+      template:
+        metadata:
+          labels:
+            {{- include "wordpress.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: {{ include "wordpress.serviceAccountName" . }}
+          {{- with .Values.podSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+            - name: backup
+              image: {{ include "slycharts.image" (dict "image" .Values.backup.image) }}
+              imagePullPolicy: {{ .Values.backup.image.pullPolicy }}
+              {{- with .Values.containerSecurityContext }}
+              securityContext:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              env:
+                - name: DB_HOST
+                  value: {{ ternary (include "wordpress.mariadb.fullname" .) .Values.externalDatabase.host .Values.mariadb.enabled | quote }}
+                - name: DB_PORT
+                  value: {{ ternary (.Values.mariadb.service.port | toString) (.Values.externalDatabase.port | toString) .Values.mariadb.enabled | quote }}
+                - name: DB_NAME
+                  value: {{ ternary .Values.mariadb.auth.database .Values.externalDatabase.database .Values.mariadb.enabled | quote }}
+                - name: DB_USER
+                  value: {{ ternary .Values.mariadb.auth.username .Values.externalDatabase.username .Values.mariadb.enabled | quote }}
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      {{- if .Values.mariadb.enabled }}
+                      name: {{ .Values.mariadb.auth.existingSecret | default (printf "%s-mariadb" .Release.Name) }}
+                      key: mariadb-password
+                      {{- else }}
+                      name: {{ .Values.externalDatabase.existingSecret | default $fullName }}
+                      key: mariadb-password
+                      {{- end }}
+                - name: RETENTION_DAYS
+                  value: {{ .Values.backup.retentionDays | quote }}
+                {{- if .Values.backup.s3.enabled }}
+                - name: S3_ENABLED
+                  value: "1"
+                - name: S3_REMOTE
+                  value: {{ .Values.backup.s3.remote | quote }}
+                - name: S3_BUCKET
+                  value: {{ .Values.backup.s3.bucket | quote }}
+                - name: S3_PATH
+                  value: {{ .Values.backup.s3.path | quote }}
+                {{- end }}
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -euo pipefail
+                  TS=$(date +%Y%m%d-%H%M%S)
+                  OUT=/backup/${TS}
+                  mkdir -p "$OUT"
+                  echo "==> mysqldump"
+                  mariadb-dump \
+                    -h "$DB_HOST" -P "$DB_PORT" \
+                    -u "$DB_USER" -p"$DB_PASSWORD" \
+                    --single-transaction --quick --routines --triggers \
+                    "$DB_NAME" | gzip > "$OUT/${DB_NAME}.sql.gz"
+                  echo "==> tar wp-content"
+                  tar -czf "$OUT/wp-content.tar.gz" -C /var/www/html/wp-content .
+                  echo "==> prune older than ${RETENTION_DAYS}d"
+                  find /backup -maxdepth 1 -mindepth 1 -type d -mtime +${RETENTION_DAYS} -exec rm -rf {} +
+                  echo "==> done: $OUT"
+                  ls -lh "$OUT"
+                  # Signal s3-sync container if S3 is enabled
+                  if [ "${S3_ENABLED:-0}" = "1" ]; then
+                    echo "$TS" > /backup/.backup_complete
+                  fi
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: wordpress
+                  mountPath: /var/www/html
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+              {{- with .Values.backup.resources }}
+              resources:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+            {{- if .Values.backup.s3.enabled }}
+            - name: s3-sync
+              image: {{ .Values.backup.s3.image.repository }}:{{ .Values.backup.s3.image.tag }}
+              imagePullPolicy: {{ .Values.backup.s3.image.pullPolicy | default "IfNotPresent" }}
+              env:
+                - name: RCLONE_CONFIG
+                  value: /config/rclone.conf
+                - name: S3_REMOTE
+                  value: {{ .Values.backup.s3.remote | quote }}
+                - name: S3_BUCKET
+                  value: {{ .Values.backup.s3.bucket | quote }}
+                - name: S3_PATH
+                  value: {{ .Values.backup.s3.path | quote }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  echo "==> waiting for backup to complete..."
+                  until [ -f /backup/.backup_complete ]; do sleep 5; done
+                  TS=$(cat /backup/.backup_complete)
+                  echo "==> syncing $TS to ${S3_REMOTE}:${S3_BUCKET}/${S3_PATH}/${TS}/"
+                  rclone copy "/backup/${TS}" "${S3_REMOTE}:${S3_BUCKET}/${S3_PATH}/${TS}/" --transfers=2
+                  rm -f /backup/.backup_complete
+                  echo "==> S3 sync complete"
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: rclone-config
+                  mountPath: /config
+                  readOnly: true
+            {{- end }}
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: {{ .Values.backup.persistence.existingClaim | default (printf "%s-backup" $fullName) }}
+            - name: wordpress
+              persistentVolumeClaim:
+                claimName: {{ .Values.storage.existingClaim | default $fullName }}
+            - name: tmp
+              emptyDir: {}
+            {{- if .Values.backup.s3.enabled }}
+            - name: rclone-config
+              secret:
+                secretName: {{ .Values.backup.s3.existingSecret }}
+            {{- end }}
+---
+{{- if and (not .Values.backup.persistence.existingClaim) .Values.backup.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullName }}-backup
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wordpress.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: keep
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  accessModes:
+    {{- toYaml .Values.backup.persistence.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.backup.persistence.size }}
+  {{- with .Values.backup.persistence.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+{{- end }}
+{{- end }}

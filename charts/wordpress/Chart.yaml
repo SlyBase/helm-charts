@@ -2,7 +2,7 @@ apiVersion: v2
 name: wordpress
 description: "Using the official WordPress image. This chart provides automation for installation, user management, plugin installation, and metrics."
 type: application
-version: 4.1.0
+version: 4.2.0
 appVersion: "7.0.0" # renovate: image=docker.io/wordpress
 icon: https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
 home: https://github.com/slydlake/helm-charts
@@ -27,7 +27,17 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: added
-      description: "Token-based auth: Application Passwords (stored in K8s Secrets) and JWT signing key injection via jwt-authentication-for-wp-rest-api"
+      description: "Add NetworkPolicy with configurable ingress sources and external egress"
+    - kind: added
+      description: "Add PrometheusRule with default pod-down and Apache busy-worker alerts"
+    - kind: added
+      description: "Add commonLabels and commonAnnotations applied to all chart resources"
+    - kind: added
+      description: "Add ingress.secondary for independent admin/geo-routed Ingress objects"
+    - kind: added
+      description: "Add wordpress.smtp SMTP config via MU-plugin (PHPMailer override, existingSecret support)"
+    - kind: added
+      description: "Add backup CronJob with PVC storage and optional S3 sync via rclone"
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache

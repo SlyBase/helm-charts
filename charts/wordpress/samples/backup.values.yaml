@@ -1,0 +1,11 @@
+## Sample: Backup CronJob
+## Creates a daily backup of the database and wp-content to a PVC.
+
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retentionDays: 14
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: ""

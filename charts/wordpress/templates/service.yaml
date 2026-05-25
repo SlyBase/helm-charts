@@ -9,7 +9,8 @@ metadata:
     {{- with .Values.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- with .Values.service.annotations }}
+  {{- $svcAnnotations := merge (dict) (.Values.service.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $svcAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -47,7 +48,8 @@ metadata:
     {{- with .Values.metrics.apache.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- with .Values.metrics.apache.service.annotations }}
+  {{- $apacheSvcAnnotations := merge (dict) (.Values.metrics.apache.service.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $apacheSvcAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
