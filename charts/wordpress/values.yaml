@@ -1183,7 +1183,7 @@ backup:
       ## @param backup.s3.image.repository string rclone image repository
       repository: rclone/rclone
       ## @param backup.s3.image.tag string rclone image tag
-      tag: "1.69"
+      tag: "1.74"
       ## @param backup.s3.image.pullPolicy string Pull policy for rclone image
       pullPolicy: IfNotPresent
     ## @param backup.s3.existingSecret string Secret containing key rclone.conf with the configured remote
