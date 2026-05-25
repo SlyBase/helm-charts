@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 4.2.1 - 2026-05-25
+
+- Update redis to 0.29.2
+
 ## 4.2.0 - 2026-05-25
 
 - Add NetworkPolicy with configurable ingress sources and external egress control
