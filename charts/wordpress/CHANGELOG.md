@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 4.4.0 - 2026-05-27
+
+- Update docker.io/redis to 8.8.0
+
 ## 4.3.0 - 2026-05-25
 
 - Update rclone/rclone to 1.74
