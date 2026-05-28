@@ -2,6 +2,9 @@
   <a href="https://artifacthub.io/packages/search?org=slybase">
     <img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/slybase" alt="Artifact Hub">
   </a>
+  <a href="https://github.com/sponsors/slydlake">
+    <img src="https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?logo=github" alt="Sponsor on GitHub">
+  </a>
 </p>
 
 # 🚀 SlyCharts - Helm charts, the sly way
