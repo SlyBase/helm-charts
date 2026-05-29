@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 4.4.1 - 2026-05-29
+
+- Update redis to 0.29.3
+
 ## 4.4.0 - 2026-05-27
 
 - Update docker.io/redis to 8.8.0
