@@ -1194,6 +1194,12 @@ backup:
     bucket: ""
     ## @param backup.s3.path string Sub-path inside the bucket
     path: "wordpress-backups"
+    ## @section Custom CA certificate for S3 connections
+    ca:
+      ## @param backup.s3.ca.existingSecret string Name of an existing secret containing the CA certificate
+      existingSecret: ""
+      ## @param backup.s3.ca.existingSecretKey string Key in the secret that holds the CA certificate (PEM)
+      existingSecretKey: ""
 
 ## @section External Database configuration
 ## @descriptionStart
