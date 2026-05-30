@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 4.4.4 - 2026-05-30
+
+- Add `backup.s3.ca.existingSecret` / `existingSecretKey` to support custom CA certificates for S3 backup sync via rclone (thanks to [Julien Sabatier](https://github.com/jusabatier))
+
 ## 4.4.3 - 2026-05-30
 
 - Update docker.io/mariadb digest to 6a4c4bb

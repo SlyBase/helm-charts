@@ -2169,7 +2169,49 @@
         },
         "s3": {
           "type": "object",
-          "additionalProperties": true
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Enable S3 sync after backup"
+            },
+            "existingSecret": {
+              "type": "string",
+              "description": "Secret containing rclone.conf with the configured remote",
+              "default": ""
+            },
+            "remote": {
+              "type": "string",
+              "description": "rclone remote name (must match rclone.conf)",
+              "default": "s3"
+            },
+            "bucket": {
+              "type": "string",
+              "description": "S3 bucket name",
+              "default": ""
+            },
+            "path": {
+              "type": "string",
+              "description": "Sub-path inside the bucket",
+              "default": "wordpress-backups"
+            },
+            "ca": {
+              "type": "object",
+              "description": "Custom CA certificate for S3 connections",
+              "properties": {
+                "existingSecret": {
+                  "type": "string",
+                  "description": "Name of an existing secret containing the CA certificate",
+                  "default": ""
+                },
+                "existingSecretKey": {
+                  "type": "string",
+                  "description": "Key in the secret that holds the CA certificate (PEM)",
+                  "default": ""
+                }
+              }
+            }
+          }
         }
       }
     },

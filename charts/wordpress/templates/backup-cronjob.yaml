@@ -131,6 +131,10 @@ spec:
                   value: {{ .Values.backup.s3.bucket | quote }}
                 - name: S3_PATH
                   value: {{ .Values.backup.s3.path | quote }}
+                {{- if and .Values.backup.s3.ca.existingSecret .Values.backup.s3.ca.existingSecretKey }}
+                - name: RCLONE_CA_CERT
+                  value: /etc/rclone/custom-ca/ca.crt
+                {{- end }}
               command:
                 - /bin/sh
                 - -c
@@ -156,6 +160,11 @@ spec:
                 - name: rclone-config
                   mountPath: /config
                   readOnly: true
+                {{- if and .Values.backup.s3.ca.existingSecret .Values.backup.s3.ca.existingSecretKey }}
+                - name: rclone-custom-ca
+                  mountPath: /etc/rclone/custom-ca
+                  readOnly: true
+                {{- end }}
                 - name: tmp
                   mountPath: /tmp
             {{- end }}
@@ -174,6 +183,14 @@ spec:
             - name: rclone-config
               secret:
                 secretName: {{ required "backup.s3.existingSecret is required when backup.s3.enabled=true" .Values.backup.s3.existingSecret }}
+            {{- if and .Values.backup.s3.ca.existingSecret .Values.backup.s3.ca.existingSecretKey }}
+            - name: rclone-custom-ca
+              secret:
+                secretName: {{ .Values.backup.s3.ca.existingSecret | quote }}
+                items:
+                  - key: {{ .Values.backup.s3.ca.existingSecretKey | quote }}
+                    path: ca.crt
+            {{- end }}
             {{- end }}
 ---
 {{- if and (not .Values.backup.persistence.existingClaim) .Values.backup.persistence.enabled }}
