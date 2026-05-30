@@ -1157,7 +1157,7 @@ backup:
     ## @param backup.image.repository string Image repository
     repository: docker.io/mariadb
     ## @param backup.image.tag string Image tag
-    tag: "12.2.2-noble@sha256:e86a2f4b2e2dc59d5136cf6308058dc3a6caeb59fc9dec7984024be2b9b97ab8"
+    tag: "12.2.2-noble@sha256:6a4c4bbf0447c2247801309513fcc0dd17c3f35390368139ce419387fdd1144d"
     ## @param backup.image.pullPolicy string Image pull policy
     pullPolicy: IfNotPresent
   ## @param backup.resources object Resource requests/limits for the backup container
@@ -1253,7 +1253,7 @@ mariadb:
     ## @param mariadb.image.repository string MariaDB image repository
     repository: "docker.io/mariadb"
     ## @param mariadb.image.tag string MariaDB image tag
-    tag: "12.2.2-noble@sha256:e86a2f4b2e2dc59d5136cf6308058dc3a6caeb59fc9dec7984024be2b9b97ab8"
+    tag: "12.2.2-noble@sha256:6a4c4bbf0447c2247801309513fcc0dd17c3f35390368139ce419387fdd1144d"
     ## @param mariadb.image.imagePullPolicy string MariaDB image pull policy
     imagePullPolicy: IfNotPresent
 

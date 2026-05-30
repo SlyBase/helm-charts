@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 4.4.3 - 2026-05-30
+
+- Update docker.io/mariadb digest to 6a4c4bb
+
 ## 4.4.2 - 2026-05-30
 
 - Update docker.io/mariadb digest to e86a2f4
