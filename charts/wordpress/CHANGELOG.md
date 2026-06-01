@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 4.4.5 - 2026-06-01
+
+- Update redis to 0.29.4
+
 ## 4.4.4 - 2026-05-30
 
 - Add `backup.s3.ca.existingSecret` / `existingSecretKey` to support custom CA certificates for S3 backup sync via rclone (thanks to [Julien Sabatier](https://github.com/jusabatier))
