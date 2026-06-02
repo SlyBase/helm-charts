@@ -36,6 +36,38 @@ spec:
   {{- end }}
   selector:
     {{- include "wordpress.selectorLabels" . | nindent 4 }}
+{{- if eq .Values.controllerType "statefulset" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "wordpress.headlessServiceName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wordpress.labels" . | nindent 4 }}
+    {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: {{ .Values.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: {{ .Values.service.ports.https }}
+      targetPort: https
+      protocol: TCP
+      name: https
+  selector:
+    {{- include "wordpress.selectorLabels" . | nindent 4 }}
+{{- end }}
 {{- if .Values.metrics.apache.enabled }}
 ---
 apiVersion: v1

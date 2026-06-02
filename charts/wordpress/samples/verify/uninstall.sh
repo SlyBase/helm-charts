@@ -6,11 +6,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "==> Uninstalling wordpress-verify..."
 helm uninstall wordpress-verify || true
 
-echo "==> Waiting for PVC deletion..."
-kubectl wait --for=delete pvc/wordpress-verify --timeout=60s 2>/dev/null || true
-
 echo "==> Deleting StatefulSet PVCs (not tracked by Helm)..."
 kubectl delete pvc \
+  wordpress-verify-wordpress-verify-0 \
+  wordpress-verify-wordpress-verify-1 \
   data-wordpress-verify-mariadb-0 \
   data-wordpress-verify-valkey-0 \
   --ignore-not-found

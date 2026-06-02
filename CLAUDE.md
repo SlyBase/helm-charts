@@ -24,6 +24,13 @@ Local testing helpers: `.github/scripts/README.md` (`test-renovate.sh`, `test-ap
 
 The most complex chart — uses init containers and ConfigMaps/Secrets for plugins, themes, MU-plugins, and custom init scripts. Integrates with MariaDB (subchart or external), Memcached, and Prometheus exporters. See [charts/wordpress/README.md](charts/wordpress/README.md) and [charts/wordpress/samples/](charts/wordpress/samples/).
 
+**Workload controller (`controllerType`):** the chart renders either a Deployment or a StatefulSet:
+
+- `controllerType: deployment` (default, backwards-compatible) — single shared PVC (`pvc.yaml`), suitable for `replicaCount: 1` or RWX storage.
+- `controllerType: statefulset` — each replica gets its own ReadWriteOnce volume via `volumeClaimTemplates` (true HA without an RWX share-manager SPOF). Adds a headless Service and `statefulset.*` tunables (`podManagementPolicy`, `updateStrategy`, `persistentVolumeClaimRetentionPolicy`). `storage.existingClaim` is not supported here.
+
+The Pod spec is shared between both controllers via the `wordpress.podTemplate` partial in [templates/_pod.tpl](charts/wordpress/templates/_pod.tpl) — **edit pod-level changes there, not in `deployment.yaml`/`statefulset.yaml`** (those only hold controller-level fields). After editing `_pod.tpl`, confirm the Deployment render is unchanged with a `helm template` before/after diff.
+
 **After every change to the WordPress chart, run the verify script before committing:**
 
 ```bash

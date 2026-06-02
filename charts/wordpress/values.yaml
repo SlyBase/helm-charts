@@ -1,7 +1,22 @@
 ## @section Global parameters
 
+## @param controllerType string Workload controller: "deployment" (shared PVC) or "statefulset" (per-Pod RWO volume via volumeClaimTemplates)
+controllerType: deployment
+
 ## @param replicaCount int Number of replicas for the deployment
 replicaCount: 1
+
+## @section StatefulSet parameters (only used when controllerType=statefulset)
+statefulset:
+  ## @param statefulset.podManagementPolicy string Pod management policy (Parallel for independent Pods, OrderedReady to serialize startup)
+  podManagementPolicy: Parallel
+  ## @param statefulset.updateStrategy object Update strategy for the StatefulSet
+  updateStrategy:
+    type: RollingUpdate
+  ## @param statefulset.persistentVolumeClaimRetentionPolicy object Retention policy for per-Pod PVCs on scale-down/delete
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
 
 ## @section Image parameters
 image:
