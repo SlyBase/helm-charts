@@ -2,6 +2,10 @@
 
 All notable changes to this chart are documented here.
 
+## 4.5.2 - 2026-06-02
+
+- Update docker.io/mariadb digest to b1c7bf8
+
 ## 4.5.1 - 2026-06-02
 
 - Update redis to 0.30.0
