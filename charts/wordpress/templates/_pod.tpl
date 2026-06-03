@@ -157,12 +157,13 @@
       hostNetwork: {{ .Values.hostNetwork }}
       {{- end }}
       initContainers:
-        {{- if has "ReadWriteMany" .Values.storage.accessModes }}
-        # Fixes PVC ownership for RWX storage (NFS, Longhorn, CephFS, etc.)
+        {{- if and (has "ReadWriteMany" .Values.storage.accessModes) (ne .Values.controllerType "statefulset") }}
+        # Fixes PVC ownership for RWX shared storage (NFS, Longhorn, CephFS, etc.)
         # that doesn't respect Kubernetes fsGroup settings.
         # Requires root user because DAC_OVERRIDE cannot change ownership of root-owned
         # directories (e.g., lost+found) on network storage.
-        # Only enabled for ReadWriteMany - not needed for ReadWriteOnce.
+        # Only for Deployment + ReadWriteMany. StatefulSet provisions fresh per-Pod
+        # RWO volumes where fsGroup is honoured by the CSI driver — no chown needed.
         - name: {{ .Chart.Name }}-rwx-permissions
           image: {{ include "slycharts.image" (dict "image" .Values.image "defaultTag" .Chart.AppVersion) }}
           securityContext:
