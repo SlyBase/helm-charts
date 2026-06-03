@@ -2,6 +2,11 @@
 
 All notable changes to this chart are documented here.
 
+## 4.6.0 - 2026-06-03
+
+- Add `controllerType: deployment|statefulset` (default `deployment`, backwards-compatible). With `statefulset`, each replica gets its own `ReadWriteOnce` volume via `volumeClaimTemplates`, removing the Longhorn RWX share-manager single point of failure; adds a headless Service and `statefulset.*` tunables (`podManagementPolicy`, `updateStrategy`, `persistentVolumeClaimRetentionPolicy`)
+- Extract the Pod spec into a shared `wordpress.podTemplate` partial (`templates/_pod.tpl`) reused by both `deployment.yaml` and the new `statefulset.yaml`
+
 ## 4.5.2 - 2026-06-02
 
 - Update docker.io/mariadb digest to b1c7bf8

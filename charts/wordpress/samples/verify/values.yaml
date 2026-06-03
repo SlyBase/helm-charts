@@ -68,10 +68,14 @@ wordpress:
     existingSecretPasswordKey: smtp.password
     existingSecretUsernameKey: smtp.username
     existingSecretFromEmailKey: smtp.fromEmail
+controllerType: statefulset
+replicaCount: 2
 service:
   nodePorts:
     http: 30911
 storage:
+  accessModes:
+    - ReadWriteOnce
   resourcePolicy: "" # Delete PVC on helm uninstall
 apache:
   customPhpConfigMap: "wordpress-verify-config"

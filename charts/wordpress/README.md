@@ -92,6 +92,11 @@ helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples
 - **Redis**: Enable Redis as alternative caching.
 - **Valkey**: Enable Valkey (Redis fork) as alternative caching.
 
+### High Availability / Workload Controller
+- **`controllerType`**: Run WordPress as a `deployment` (default, single shared PVC) or a `statefulset`.
+- **Per-Pod ReadWriteOnce storage**: With `controllerType: statefulset`, each replica gets its own RWO volume via `volumeClaimTemplates` — true HA without depending on a single RWX share-manager (no shared single point of failure).
+- **Headless Service** for stable Pod DNS, plus `statefulset.*` tunables: `podManagementPolicy`, `updateStrategy`, and `persistentVolumeClaimRetentionPolicy`.
+
 ### Metrics and Monitoring
 - **WordPress Metrics**: Automatically install a WordPress Plugin for Prometheus metrics.
   - See details on GitHub Repo of (SlyMetrics Plugin from slydlake)[https://github.com/slydlake/slymetrics]
@@ -316,6 +321,8 @@ This setup includes everything from the advanced installation plus:
 **Requirements:**
 * Your cluster must support ReadWriteMany (RWX) storage class (e.g., NFS, Ceph, cloud provider shared storage)
 * LoadBalancer or Ingress for distributing traffic across replicas
+
+> **Recommended for true HA: `controllerType: statefulset`.** Instead of one shared RWX volume (whose single share-manager/NFS server is a single point of failure for *all* replicas), set `controllerType: statefulset` so each replica gets its own **ReadWriteOnce** volume via `volumeClaimTemplates`. A storage outage then affects at most one replica, and you can use any RWO storage class (no RWX required). WordPress files (core/plugins/themes) are reproduced per volume on init; keep uploads on S3/object storage and the database external/shared. See the **High Availability / Workload Controller** feature above.
 
 ```bash
 kubectl apply -f ./samples/advanced.secrets.yaml
@@ -746,6 +753,10 @@ Without `slug`, URL plugins/themes use `basename` of the URL as a best-effort gu
 - **Network activation** (`networkActivate` / `networkEnable`)
 
 ## Notable changes
+
+### To 4.6.0
+- Added **StatefulSet controller** (`controllerType: statefulset`): each replica runs on its own **ReadWriteOnce** volume via `volumeClaimTemplates`, removing the Longhorn RWX share-manager single point of failure that could take down all replicas at once during a rebuild/share-manager recreation. Adds a headless Service and `statefulset.*` tunables (`podManagementPolicy`, `updateStrategy`, `persistentVolumeClaimRetentionPolicy`). Default remains `controllerType: deployment` (backwards-compatible).
+- Pod spec extracted into a shared `wordpress.podTemplate` partial (`templates/_pod.tpl`) reused by both the Deployment and the new StatefulSet.
 
 ### To 4.2.0
 - Added **SMTP** (`wordpress.smtp`): MU-plugin generated from chart values, mounted directly via subPath — no external plugin needed. Credentials (password, username, from-address) are read from a Kubernetes Secret.

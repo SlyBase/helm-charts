@@ -24,6 +24,13 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Headless service name used by the StatefulSet for stable Pod DNS.
+*/}}
+{{- define "wordpress.headlessServiceName" -}}
+{{- printf "%s-headless" (include "wordpress.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "wordpress.chart" -}}

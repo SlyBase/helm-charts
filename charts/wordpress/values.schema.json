@@ -2,10 +2,70 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "controllerType": {
+      "type": "string",
+      "enum": [
+        "deployment",
+        "statefulset"
+      ],
+      "description": "Workload controller: 'deployment' (shared PVC) or 'statefulset' (per-Pod ReadWriteOnce volume via volumeClaimTemplates)",
+      "default": "deployment"
+    },
     "replicaCount": {
       "type": "integer",
       "description": "Number of replicas for the deployment",
       "default": 1
+    },
+    "statefulset": {
+      "type": "object",
+      "description": "StatefulSet parameters (only used when controllerType=statefulset)",
+      "properties": {
+        "podManagementPolicy": {
+          "type": "string",
+          "enum": [
+            "OrderedReady",
+            "Parallel"
+          ],
+          "description": "Pod management policy (Parallel for independent Pods, OrderedReady to serialize startup)",
+          "default": "Parallel"
+        },
+        "updateStrategy": {
+          "type": "object",
+          "description": "Update strategy for the StatefulSet",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "RollingUpdate",
+                "OnDelete"
+              ],
+              "default": "RollingUpdate"
+            }
+          }
+        },
+        "persistentVolumeClaimRetentionPolicy": {
+          "type": "object",
+          "description": "Retention policy for per-Pod PVCs on scale-down/delete",
+          "properties": {
+            "whenDeleted": {
+              "type": "string",
+              "enum": [
+                "Retain",
+                "Delete"
+              ],
+              "default": "Retain"
+            },
+            "whenScaled": {
+              "type": "string",
+              "enum": [
+                "Retain",
+                "Delete"
+              ],
+              "default": "Retain"
+            }
+          }
+        }
+      }
     },
     "image": {
       "type": "object",
