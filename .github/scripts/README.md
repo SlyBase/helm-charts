@@ -1,24 +1,30 @@
 # GitHub Scripts
 
-This directory contains helpers used during the Renovate PR workflow.
+Helper scripts used by the release automation.
 
-## Invoked by Renovate
+## sync-artifacthub-changes.py
 
-### update-chart-metadata.py
-
-Invoked via `postUpgradeTasks` in `renovate.json` during PR creation (before merge).
+Bridges release-please (single source of truth for chart version + CHANGELOG)
+to ArtifactHub. Invoked by `.github/workflows/release-please.yml` on each release
+PR, after release-please has bumped `Chart.yaml:version` and written the new
+`CHANGELOG.md` section.
 
 What it does:
-- Bumps the chart version from Renovate labels.
-- Applies the subchart mapping rule: subchart major -> chart minor, subchart minor/patch -> chart patch.
-- Rewrites the current artifacthub.io/changes block.
-- Adds or removes artifacthub.io/prerelease based on the chart version.
-- Prepends the new entry to the chart CHANGELOG.md.
+- Reads the top (newest) section of `charts/<chart>/CHANGELOG.md`.
+- Renders the matching `artifacthub.io/changes` block in `Chart.yaml`
+  (Features → `added`, Bug Fixes → `fixed`, everything else → `changed`),
+  including the PR/commit link when present.
+- Adds or removes `artifacthub.io/prerelease` based on the chart version suffix
+  (`-alpha`/`-beta`/`-rc`).
+
+It does **not** touch `version`, `appVersion` or `artifacthub.io/images` — those
+are owned by release-please (`version`) and Renovate (`appVersion`, `images`).
 
 Arguments:
-- --chart-dir
-- --pr-url
-- --pr-labels
-- --change-descriptions
+- `--chart-dir` — path to the chart directory, e.g. `charts/wordpress`
 
-Changed-chart detection is shared through [.github/actions/detect-changed-charts/action.yml](.github/actions/detect-changed-charts/action.yml), so the workflow logic stays consistent across validation, metadata generation, and OCI release.
+Usage:
+
+```bash
+python3 .github/scripts/sync-artifacthub-changes.py --chart-dir charts/wordpress
+```
