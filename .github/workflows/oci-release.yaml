@@ -41,9 +41,9 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   HELM_VERSION: v3.18.3
   ORAS_VERSION: 1.2.0
-  # Phase 0 safety net: tag-triggered runs publish NOTHING while this is "false".
-  # Set to "true" in Phase 1 to enable real OCI releases on release tags.
-  RELEASE_ENABLED: "false"
+  # Tag-triggered releases publish live when this is "true".
+  # Set to "false" to revert to dry-run mode (Phase 0 safety net).
+  RELEASE_ENABLED: "true"
 
 jobs:
   oci-release:
