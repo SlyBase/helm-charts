@@ -12,13 +12,19 @@ Charts are distributed via OCI (`ghcr.io/slybase/charts`) and signed with Cosign
 - `charts/<chart>/samples/` — sample values used for installs and doc examples; update alongside template/value changes
 - `charts/<chart>/CHANGELOG.md` — human-readable release history
 
-## Dependency update workflow
+## Release & versioning workflow
 
-1. Renovate opens a PR with dependency bumps (regex updates `appVersion` directly in `Chart.yaml`)
-2. Renovate's `postUpgradeTasks` (configured in `renovate.json`) runs `.github/scripts/update-chart-metadata.py` during PR creation
-3. That script bumps the chart version, updates `artifacthub.io/changes`, and appends to `CHANGELOG.md`
+Releases are driven by **release-please** + **git tags**, not by hand-editing `version:` in `Chart.yaml`.
 
-Local testing helpers: `.github/scripts/README.md` (`test-renovate.sh`, `test-appversion-regex.sh`, `test-renovate-full.sh`)
+1. **Renovate** opens PRs with dependency bumps as conventional commits. The commit type encodes the chart bump (see `renovate.json` packageRules):
+   - subchart (`helmv3`) major → `feat` (chart **minor**); subchart minor/patch/digest → `fix` (chart **patch**)
+   - direct dep (`helm-values`/`custom.regex`) major → `feat!` breaking (chart **major**); minor → `feat`; patch/digest → `fix`
+   - Renovate edits `appVersion` / `artifacthub.io/images` / subchart versions directly, but does **not** touch `version:`.
+2. **release-please** (`.github/workflows/release-please.yml`, config `release-please-config.json` + `.release-please-manifest.json`) keeps one release PR per chart, bumping `Chart.yaml:version` (via `extra-files`) and generating `CHANGELOG.md`.
+3. A bridge step runs `.github/scripts/sync-artifacthub-changes.py` on the release PR to derive the `artifacthub.io/changes` (+ `artifacthub.io/prerelease`) annotation from the new CHANGELOG entry — single source of truth.
+4. Merging a release PR creates a per-chart tag (`<chart>-v<version>`, e.g. `wordpress-v4.5.0`) + GitHub Release, which triggers `oci-release.yaml` to package, push, Cosign-sign and upload ArtifactHub metadata.
+
+Feature PRs use conventional commits (`feat:`/`fix:`/`feat!:`) the same way to drive their chart's bump. PR validation (lint/template) lives in `pr-chart-validate.yml`.
 
 ## WordPress chart
 
@@ -48,6 +54,8 @@ This script installs the chart via `install.sh`, waits for all pods (WordPress, 
 | Purpose | Path |
 |---|---|
 | Detect changed charts in CI | `.github/actions/detect-changed-charts/action.yml` |
-| Post-merge metadata updater | `.github/scripts/update-chart-metadata.py` |
+| Release automation (per-chart) | `.github/workflows/release-please.yml`, `release-please-config.json`, `.release-please-manifest.json` |
+| OCI publish on release tag | `.github/workflows/oci-release.yaml` |
+| CHANGELOG → ArtifactHub annotation bridge | `.github/scripts/sync-artifacthub-changes.py` |
 | Script usage docs | `.github/scripts/README.md` |
 | Signing docs | `README-SIGNING.md` |
