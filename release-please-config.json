@@ -23,21 +23,21 @@
       "component": "wordpress",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        { "type": "yaml", "path": "charts/wordpress/Chart.yaml", "jsonpath": "$.version" }
+        { "type": "yaml", "path": "Chart.yaml", "jsonpath": "$.version" }
       ]
     },
     "charts/wireguard": {
       "component": "wireguard",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        { "type": "yaml", "path": "charts/wireguard/Chart.yaml", "jsonpath": "$.version" }
+        { "type": "yaml", "path": "Chart.yaml", "jsonpath": "$.version" }
       ]
     },
     "charts/wg-easy": {
       "component": "wg-easy",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        { "type": "yaml", "path": "charts/wg-easy/Chart.yaml", "jsonpath": "$.version" }
+        { "type": "yaml", "path": "Chart.yaml", "jsonpath": "$.version" }
       ]
     }
   }
