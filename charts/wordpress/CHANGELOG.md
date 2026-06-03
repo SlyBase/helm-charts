@@ -2,6 +2,14 @@
 
 All notable changes to this chart are documented here.
 
+## [4.6.1](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.6.0...wordpress-v4.6.1) (2026-06-03)
+
+
+### Bug Fixes
+
+* **deps:** update subchart/wordpress/valkey/0.21.2 to v0.21.2 ([#372](https://github.com/SlyBase/helm-charts/issues/372)) ([bf7dcb8](https://github.com/SlyBase/helm-charts/commit/bf7dcb822bca0db381dca02260c7b5310b1f22b8))
+* **wordpress:** skip rwx-permissions init container for StatefulSet ([#370](https://github.com/SlyBase/helm-charts/issues/370)) ([912b295](https://github.com/SlyBase/helm-charts/commit/912b295cf13f9833cc0781ba29bbd4744f306e28))
+
 ## 4.6.0 - 2026-06-03
 
 - Add `controllerType: deployment|statefulset` (default `deployment`, backwards-compatible). With `statefulset`, each replica gets its own `ReadWriteOnce` volume via `volumeClaimTemplates`, removing the Longhorn RWX share-manager single point of failure; adds a headless Service and `statefulset.*` tunables (`podManagementPolicy`, `updateStrategy`, `persistentVolumeClaimRetentionPolicy`)

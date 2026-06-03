@@ -1,10 +1,13 @@
 apiVersion: v2
 name: wordpress
-description: "Using the official WordPress image. This chart provides automation for installation, user management, plugin installation, and metrics."
+description: >-
+  Using the official WordPress image. This chart provides automation for
+  installation, user management, plugin installation, and metrics.
 type: application
-version: 4.6.0
-appVersion: "7.0.0" # renovate: image=docker.io/wordpress
-icon: https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
+version: 4.6.1
+appVersion: 7.0.0
+icon: >-
+  https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
 home: https://github.com/slydlake/helm-charts
 maintainers:
   - name: slydlake
@@ -26,10 +29,16 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: added
-      description: "controllerType=statefulset runs each replica with its own ReadWriteOnce volume (per-Pod volumeClaimTemplates) for true HA without an RWX share-manager single point of failure"
-    - kind: changed
-      description: "Pod spec extracted into a shared template partial (_pod.tpl) reused by both the Deployment and the new StatefulSet"
+    - kind: fixed
+      description: "deps: update subchart/wordpress/valkey/0.21.2 to v0.21.2"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/bf7dcb822bca0db381dca02260c7b5310b1f22b8
+    - kind: fixed
+      description: "wordpress: skip rwx-permissions init container for StatefulSet"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/912b295cf13f9833cc0781ba29bbd4744f306e28
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
