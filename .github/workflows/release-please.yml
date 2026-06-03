@@ -1,0 +1,89 @@
+name: Release Please
+
+# Maintains one "release PR" per chart: aggregates conventional commits landed on
+# main, bumps the chart version (Chart.yaml via extra-files) and CHANGELOG.md.
+# Merging a release PR creates the git tag (e.g. wordpress-v4.5.0) + GitHub Release,
+# which in turn triggers oci-release.yaml to publish + sign the chart.
+#
+# IMPORTANT: this workflow must use a PAT (SLYBASE_GHCR_TOKEN), not GITHUB_TOKEN.
+# Tags/releases created with the built-in GITHUB_TOKEN do NOT trigger other
+# workflows, so the OCI release would never fire.
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.SLYBASE_GHCR_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      # After release-please opens/updates a release PR, derive the ArtifactHub
+      # changes annotation from the freshly generated CHANGELOG so the changelog
+      # only has to be maintained in one place.
+      - name: Checkout for ArtifactHub sync
+        if: steps.release.outputs.prs_created == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          token: ${{ secrets.SLYBASE_GHCR_TOKEN }}
+          fetch-depth: 0
+
+      - name: Sync artifacthub.io/changes onto release PRs
+        if: steps.release.outputs.prs_created == 'true'
+        shell: bash
+        env:
+          PRS: ${{ steps.release.outputs.prs }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          echo "$PRS" | jq -c '.[]' | while read -r pr; do
+            branch=$(echo "$pr" | jq -r '.headBranchName')
+            # release-please (separate-pull-requests) names branches:
+            #   release-please--branches--main--components--<chart>
+            chart=$(echo "$branch" | sed -n 's/.*--components--//p')
+            if [ -z "$chart" ]; then
+              echo "Could not derive chart from branch '$branch'; skipping"
+              continue
+            fi
+
+            chart_dir="charts/$chart"
+            if [ ! -f "$chart_dir/Chart.yaml" ]; then
+              echo "No Chart.yaml at $chart_dir; skipping"
+              continue
+            fi
+
+            echo "::group::sync $chart_dir ($branch)"
+            git fetch origin "$branch"
+            git checkout -B "$branch" "origin/$branch"
+
+            python3 .github/scripts/sync-artifacthub-changes.py --chart-dir "$chart_dir"
+
+            if git diff --quiet -- "$chart_dir/Chart.yaml"; then
+              echo "artifacthub.io/changes already up to date for $chart"
+            else
+              git add "$chart_dir/Chart.yaml"
+              git commit -m "chore: sync artifacthub.io/changes for $chart"
+              git push origin "$branch"
+            fi
+            echo "::endgroup::"
+          done

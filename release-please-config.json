@@ -1,0 +1,44 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "bdd3ca18c0fcd4f7a1d8ac985659d2e2ca646214",
+  "release-type": "simple",
+  "include-component-in-tag": true,
+  "separate-pull-requests": true,
+  "include-v-in-tag": true,
+  "draft": false,
+  "changelog-sections": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance Improvements" },
+    { "type": "revert", "section": "Reverts" },
+    { "type": "deps", "section": "Dependencies" },
+    { "type": "docs", "section": "Documentation", "hidden": true },
+    { "type": "chore", "section": "Miscellaneous", "hidden": true },
+    { "type": "refactor", "section": "Code Refactoring", "hidden": true },
+    { "type": "test", "section": "Tests", "hidden": true },
+    { "type": "ci", "section": "Continuous Integration", "hidden": true }
+  ],
+  "packages": {
+    "charts/wordpress": {
+      "component": "wordpress",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        { "type": "yaml", "path": "Chart.yaml", "jsonpath": "$.version" }
+      ]
+    },
+    "charts/wireguard": {
+      "component": "wireguard",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        { "type": "yaml", "path": "Chart.yaml", "jsonpath": "$.version" }
+      ]
+    },
+    "charts/wg-easy": {
+      "component": "wg-easy",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        { "type": "yaml", "path": "Chart.yaml", "jsonpath": "$.version" }
+      ]
+    }
+  }
+}

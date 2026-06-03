@@ -8,7 +8,8 @@
     ],
     "platformAutomerge": true,
     "rebaseWhen": "conflicted",
-    "semanticCommits": "disabled",
+    "semanticCommits": "enabled",
+    "semanticCommitScope": "deps",
     "enabledManagers": [
         "github-actions",
         "helm-values",
@@ -16,16 +17,6 @@
         "custom.regex"
     ],
     "pinDigests": true,
-    "postUpgradeTasks": {
-        "commands": [
-            "{{#if (equals manager 'github-actions')}}pwd{{else}}python3 .github/scripts/update-chart-metadata.py --chart-dir {{{packageFileDir}}} --manager {{{manager}}} --update-type {{{updateType}}} --change-descriptions \"Update {{{depName}}} {{#if (equals updateType 'digest')}}digest to {{{newDigestShort}}}{{else}}to {{{newVersion}}}{{/if}}\"{{/if}}"
-        ],
-        "fileFilters": [
-            "charts/**/Chart.yaml",
-            "charts/**/CHANGELOG.md"
-        ],
-        "executionMode": "update"
-    },
     "prHourlyLimit": 5,
     "prConcurrentLimit": 3,
     "timezone": "Europe/Berlin",
@@ -111,7 +102,7 @@
             "enabled": false
         },
         {
-            "description": "Group direct dependency updates per chart and target version with consistent labels and commit messages",
+            "description": "Group direct dependency updates per chart and target version",
             "matchManagers": [
                 "helm-values",
                 "custom.regex"
@@ -127,12 +118,7 @@
             ],
             "addLabels": [
                 "{{#if isMajor}}major{{/if}}{{#if isMinor}}minor{{/if}}{{#if isPatch}}patch{{/if}}{{#if isDigest}}digest{{/if}}"
-            ],
-            "semanticCommits": "disabled",
-            "commitMessagePrefix": "",
-            "commitMessageAction": "charts/{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}} chore(deps): {{{depName}}}",
-            "commitMessageTopic": "",
-            "commitMessageExtra": " {{#if (equals updateType 'digest')}}digest {{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
+            ]
         },
         {
             "description": "Use short wireguard dependency name in direct update titles",
@@ -146,13 +132,10 @@
                 "docker.io/linuxserver/wireguard"
             ],
             "groupName": "chart/wireguard/wireguard/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
-            "branchTopic": "chart-wireguard-wireguard-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
-            "commitMessageAction": "charts/wireguard chore(deps): wireguard",
-            "commitMessageTopic": "",
-            "commitMessageExtra": " {{#if (equals updateType 'digest')}}digest {{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
+            "branchTopic": "chart-wireguard-wireguard-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
         },
         {
-            "description": "Group subchart updates per dependency with version-specific branch names and commit messages",
+            "description": "Group subchart updates per dependency with version-specific branch names",
             "matchManagers": [
                 "helmv3"
             ],
@@ -167,12 +150,7 @@
             ],
             "addLabels": [
                 "{{#if isMajor}}major{{/if}}{{#if isMinor}}minor{{/if}}{{#if isPatch}}patch{{/if}}{{#if isDigest}}digest{{/if}}"
-            ],
-            "semanticCommits": "disabled",
-            "commitMessagePrefix": "",
-            "commitMessageAction": "charts/{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}} chore(deps): {{{depName}}}",
-            "commitMessageTopic": "",
-            "commitMessageExtra": " {{#if (equals updateType 'digest')}}digest {{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
+            ]
         },
         {
             "description": "Group wordpress subchart updates per dependency to avoid long-lived grouped PRs",
@@ -183,90 +161,7 @@
                 "charts/wordpress/**"
             ],
             "groupName": "subchart/wordpress/{{{depName}}}/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
-            "branchTopic": "subchart-wordpress-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
-            "labels": [
-                "dependencies",
-                "renovate"
-            ],
-            "addLabels": [
-                "{{#if isMajor}}major{{/if}}{{#if isMinor}}minor{{/if}}{{#if isPatch}}patch{{/if}}{{#if isDigest}}digest{{/if}}"
-            ],
-            "semanticCommits": "disabled",
-            "commitMessagePrefix": "",
-            "commitMessageAction": "charts/wordpress chore(deps): {{{depName}}}",
-            "commitMessageTopic": "",
-            "commitMessageExtra": " {{#if (equals updateType 'digest')}}digest {{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
-        },
-        {
-            "description": "Label direct dependency minor updates for chart minor bumps",
-            "matchManagers": [
-                "helm-values",
-                "custom.regex"
-            ],
-            "matchUpdateTypes": [
-                "minor"
-            ],
-            "addLabels": [
-                "chart-bump-minor",
-                "direct-dependency-update"
-            ]
-        },
-        {
-            "description": "Label direct dependency patch and digest updates for chart patch bumps",
-            "matchManagers": [
-                "helm-values",
-                "custom.regex"
-            ],
-            "matchUpdateTypes": [
-                "patch",
-                "digest"
-            ],
-            "addLabels": [
-                "chart-bump-patch",
-                "direct-dependency-update"
-            ]
-        },
-        {
-            "description": "Label direct dependency major updates",
-            "matchManagers": [
-                "helm-values",
-                "custom.regex"
-            ],
-            "matchUpdateTypes": [
-                "major"
-            ],
-            "addLabels": [
-                "chart-bump-major",
-                "direct-dependency-update"
-            ]
-        },
-        {
-            "description": "Label subchart non-major updates for chart patch bumps",
-            "matchManagers": [
-                "helmv3"
-            ],
-            "matchUpdateTypes": [
-                "minor",
-                "patch",
-                "digest"
-            ],
-            "addLabels": [
-                "chart-bump-patch",
-                "subchart-update"
-            ]
-        },
-        {
-            "description": "Label subchart major updates",
-            "matchManagers": [
-                "helmv3"
-            ],
-            "matchUpdateTypes": [
-                "major"
-            ],
-            "addLabels": [
-                "chart-bump-minor",
-                "subchart-update"
-            ]
+            "branchTopic": "subchart-wordpress-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
         },
         {
             "description": "Per-package GitHub Actions workflow updates with version-specific branches",
@@ -284,11 +179,80 @@
             "addLabels": [
                 "{{#if isMajor}}major{{/if}}{{#if isMinor}}minor{{/if}}{{#if isPatch}}patch{{/if}}{{#if isDigest}}digest{{/if}}"
             ],
-            "semanticCommits": "disabled",
-            "commitMessagePrefix": "",
-            "commitMessageAction": "github workflows chore(deps): {{{depName}}}",
-            "commitMessageTopic": "",
-            "commitMessageExtra": " {{#if (equals updateType 'digest')}}digest {{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
+            "semanticCommitType": "chore"
+        },
+        {
+            "description": "Chart bump mapping: subchart (helmv3) major dependency bump -> chart MINOR bump (feat)",
+            "matchManagers": [
+                "helmv3"
+            ],
+            "matchFileNames": [
+                "charts/**"
+            ],
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "semanticCommitType": "feat"
+        },
+        {
+            "description": "Chart bump mapping: subchart (helmv3) minor/patch/digest -> chart PATCH bump (fix)",
+            "matchManagers": [
+                "helmv3"
+            ],
+            "matchFileNames": [
+                "charts/**"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch",
+                "digest"
+            ],
+            "semanticCommitType": "fix"
+        },
+        {
+            "description": "Chart bump mapping: direct dependency major -> chart MAJOR bump (breaking feat!)",
+            "matchManagers": [
+                "helm-values",
+                "custom.regex"
+            ],
+            "matchFileNames": [
+                "charts/**"
+            ],
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "semanticCommitType": "feat",
+            "commitMessagePrefix": "feat!:",
+            "commitBody": "BREAKING CHANGE: {{{depName}}} major update to {{{newVersion}}}"
+        },
+        {
+            "description": "Chart bump mapping: direct dependency minor -> chart MINOR bump (feat)",
+            "matchManagers": [
+                "helm-values",
+                "custom.regex"
+            ],
+            "matchFileNames": [
+                "charts/**"
+            ],
+            "matchUpdateTypes": [
+                "minor"
+            ],
+            "semanticCommitType": "feat"
+        },
+        {
+            "description": "Chart bump mapping: direct dependency patch/digest -> chart PATCH bump (fix)",
+            "matchManagers": [
+                "helm-values",
+                "custom.regex"
+            ],
+            "matchFileNames": [
+                "charts/**"
+            ],
+            "matchUpdateTypes": [
+                "patch",
+                "digest"
+            ],
+            "semanticCommitType": "fix"
         },
         {
             "description": "Auto-merge minor, patch, and digest updates",
