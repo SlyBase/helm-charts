@@ -1,26 +1,20 @@
 name: Release Charts to OCI Registry
 
+# Triggered by per-chart release tags (e.g. wordpress-v4.5.0) created by
+# release-please when a release PR is merged. The chart name + version are parsed
+# from the tag; the chart is packaged, pushed to ghcr.io/slybase/charts, signed
+# with Cosign and its ArtifactHub metadata is uploaded via ORAS.
+#
+# PR validation (helm lint/template) lives in pr-chart-validate.yml.
+
 on:
   push:
-    branches:
-      - main
-      - prerelease
-    paths:
-      - "charts/**"
-      - ".github/actions/detect-changed-charts/**"
-      - ".github/workflows/oci-release.yaml"
-  pull_request:
-    branches:
-      - main
-      - prerelease
-    paths:
-      - "charts/**"
-      - ".github/actions/detect-changed-charts/**"
-      - ".github/workflows/oci-release.yaml"
+    tags:
+      - "*-v*"
   workflow_dispatch:
     inputs:
       chart:
-        description: "Chart to test (wg-easy, wireguard, wordpress)"
+        description: "Chart to publish"
         required: true
         default: "wg-easy"
         type: choice
@@ -28,8 +22,17 @@ on:
           - wg-easy
           - wireguard
           - wordpress
+      version:
+        description: "Version to publish (defaults to the chart's Chart.yaml version)"
+        required: false
+        type: string
+      dry_run:
+        description: "Package only — skip push/sign/publish"
+        required: false
+        default: true
+        type: boolean
       force:
-        description: "Force push even if version exists"
+        description: "Force push even if the version already exists"
         required: false
         default: false
         type: boolean
@@ -38,88 +41,67 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   HELM_VERSION: v3.18.3
   ORAS_VERSION: 1.2.0
+  # Phase 0 safety net: tag-triggered runs publish NOTHING while this is "false".
+  # Set to "true" in Phase 1 to enable real OCI releases on release tags.
+  RELEASE_ENABLED: "false"
 
 jobs:
-  discover-charts:
-    name: Discover Charts
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
-    outputs:
-      charts_json: ${{ steps.charts.outputs.charts_json }}
-      has_charts: ${{ steps.charts.outputs.has_charts }}
-    steps:
-      - name: Checkout workflow sources
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Resolve chart matrix
-        id: charts
-        uses: ./.github/actions/detect-changed-charts
-        with:
-          manual-chart: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.chart || '' }}
-
-  pr-preview:
-    name: Release Preview
-    if: github.event_name == 'pull_request' && needs.discover-charts.outputs.has_charts == 'true'
-    needs: discover-charts
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    strategy:
-      matrix:
-        chart_dir: ${{ fromJson(needs.discover-charts.outputs.charts_json) }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          fetch-depth: 0
-
-      - name: Install Helm
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          archive="helm-${HELM_VERSION}-linux-amd64.tar.gz"
-          curl -fsSLO "https://get.helm.sh/${archive}"
-          tar -zxf "$archive"
-          sudo mv linux-amd64/helm /usr/local/bin/helm
-          rm -rf "$archive" linux-amd64
-
-          helm version --short
-
-      - name: Package chart preview
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          mkdir -p packages
-
-          echo "::group::${{ matrix.chart_dir }}"
-          helm dependency build "${{ matrix.chart_dir }}"
-          helm package "${{ matrix.chart_dir }}" --destination ./packages
-          echo "::endgroup::"
-
   oci-release:
     name: Release to OCI Registry
-    if: github.event_name != 'pull_request' && needs.discover-charts.outputs.has_charts == 'true'
-    needs: discover-charts
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      FORCE_PUBLISH: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.force || 'false' }}
-    strategy:
-      matrix:
-        chart_dir: ${{ fromJson(needs.discover-charts.outputs.charts_json) }}
-
     steps:
+      - name: Resolve release context
+        id: ctx
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_CHART: ${{ github.event.inputs.chart }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          INPUT_FORCE: ${{ github.event.inputs.force }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            chart_name="$INPUT_CHART"
+            chart_version="$INPUT_VERSION"   # may be empty -> resolved from Chart.yaml later
+            dry_run="$INPUT_DRY_RUN"
+            force="$INPUT_FORCE"
+            checkout_ref="${{ github.ref }}"
+          else
+            # Tag push, e.g. "wordpress-v4.5.0" -> name=wordpress version=4.5.0
+            tag="$REF_NAME"
+            chart_name="${tag%-v*}"
+            chart_version="${tag##*-v}"
+            if [ "$RELEASE_ENABLED" = "true" ]; then dry_run="false"; else dry_run="true"; fi
+            force="false"
+            checkout_ref="$tag"
+          fi
+
+          chart_dir="charts/${chart_name}"
+
+          {
+            echo "chart_name=$chart_name"
+            echo "chart_version=$chart_version"
+            echo "chart_dir=$chart_dir"
+            echo "dry_run=$dry_run"
+            echo "force=$force"
+            echo "checkout_ref=$checkout_ref"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Chart:   $chart_name"
+          echo "Version: ${chart_version:-<from Chart.yaml>}"
+          echo "Dry run: $dry_run (RELEASE_ENABLED=$RELEASE_ENABLED)"
+
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
+          ref: ${{ steps.ctx.outputs.checkout_ref }}
           fetch-depth: 1
 
       - name: Install Helm
@@ -135,7 +117,42 @@ jobs:
 
           helm version --short
 
+      - name: Resolve chart version from Chart.yaml (if not provided)
+        id: chart
+        shell: bash
+        env:
+          CHART_DIR: ${{ steps.ctx.outputs.chart_dir }}
+          CHART_NAME: ${{ steps.ctx.outputs.chart_name }}
+          CHART_VERSION: ${{ steps.ctx.outputs.chart_version }}
+        run: |
+          set -euo pipefail
+
+          if [ ! -f "$CHART_DIR/Chart.yaml" ]; then
+            echo "::error::No Chart.yaml found at $CHART_DIR"
+            exit 1
+          fi
+
+          file_version=$(helm show chart "$CHART_DIR" | awk '/^version:/ { print $2 }')
+          chart_version="${CHART_VERSION:-$file_version}"
+
+          if [ -z "$chart_version" ]; then
+            echo "::error::Could not resolve chart version"
+            exit 1
+          fi
+
+          # On tag pushes the tag version must match Chart.yaml (release-please keeps them in sync).
+          if [ -n "$CHART_VERSION" ] && [ "$CHART_VERSION" != "$file_version" ]; then
+            echo "::warning::Tag/input version ($CHART_VERSION) differs from Chart.yaml ($file_version)"
+          fi
+
+          {
+            echo "chart_dir=$CHART_DIR"
+            echo "chart_name=$CHART_NAME"
+            echo "chart_version=$chart_version"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Install ORAS
+        if: steps.ctx.outputs.dry_run != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -149,10 +166,12 @@ jobs:
           oras version
 
       - name: Install Cosign
+        if: steps.ctx.outputs.dry_run != 'true'
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
       - name: Generate GitHub App Token (with fallback)
         id: app-token
+        if: steps.ctx.outputs.dry_run != 'true'
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         with:
           client-id: ${{ secrets.SLYBASE_APP_ID }}
@@ -162,6 +181,7 @@ jobs:
 
       - name: Resolve registry authentication
         id: registry-auth
+        if: steps.ctx.outputs.dry_run != 'true'
         shell: bash
         env:
           GHCR_PAT: ${{ secrets.SLYBASE_GHCR_TOKEN }}
@@ -187,221 +207,60 @@ jobs:
             echo "source=$token_source"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Debug authentication and registry access
-        shell: bash
-        env:
-          REGISTRY_TOKEN: ${{ steps.registry-auth.outputs.token }}
-          REGISTRY_TOKEN_SOURCE: ${{ steps.registry-auth.outputs.source }}
-        run: |
-          set -euo pipefail
-
-          echo "=== Debug Info ==="
-          echo "GitHub Actor: ${{ github.actor }}"
-          echo "Event: ${{ github.event_name }}"
-          echo "Target registry: ghcr.io/slybase/charts"
-
-          if [ "$REGISTRY_TOKEN_SOURCE" = 'pat' ]; then
-            echo "Using Personal Access Token (preferred for package creation)"
-          elif [ "$REGISTRY_TOKEN_SOURCE" = 'app' ]; then
-            echo "Using GitHub App token (may have limitations for new packages)"
-          else
-            echo "Using built-in GITHUB_TOKEN"
-          fi
-
-          if curl -s -f -H "Authorization: Bearer $REGISTRY_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/orgs/SlyBase >/dev/null; then
-            echo "✅ Token can access SlyBase org"
-          else
-            echo "❌ Token cannot access SlyBase org"
-          fi
-
       - name: Login to GitHub Container Registry
+        if: steps.ctx.outputs.dry_run != 'true'
         uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ steps.registry-auth.outputs.token }}
 
-      - name: Resolve chart context
-        id: chart
+      - name: Package chart
+        id: package
         shell: bash
+        env:
+          CHART_DIR: ${{ steps.chart.outputs.chart_dir }}
+          CHART_NAME: ${{ steps.chart.outputs.chart_name }}
+          CHART_VERSION: ${{ steps.chart.outputs.chart_version }}
         run: |
           set -euo pipefail
 
-          chart_dir="${{ matrix.chart_dir }}"
-          chart_name=$(basename "$chart_dir")
-          chart_version=$(helm show chart "$chart_dir" | awk '/^version:/ { print $2 }')
+          echo "Packaging chart $CHART_NAME version $CHART_VERSION"
+          mkdir -p packages
+          helm dependency build "$CHART_DIR"
+          helm package "$CHART_DIR" --destination ./packages
 
-          {
-            echo "chart_dir=$chart_dir"
-            echo "chart_name=$chart_name"
-            echo "chart_version=$chart_version"
-          } >> "$GITHUB_OUTPUT"
+          echo "package_file=./packages/${CHART_NAME}-${CHART_VERSION}.tgz" >> "$GITHUB_OUTPUT"
+          ls -la ./packages
 
-      - name: Check release policy and registry state
-        id: publish-check
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+      - name: Dry run summary
+        if: steps.ctx.outputs.dry_run == 'true'
+        shell: bash
         env:
           CHART_NAME: ${{ steps.chart.outputs.chart_name }}
           CHART_VERSION: ${{ steps.chart.outputs.chart_version }}
-          CURRENT_BRANCH: ${{ github.ref_name }}
-          FORCE_PUBLISH: ${{ env.FORCE_PUBLISH }}
-        with:
-          github-token: ${{ steps.registry-auth.outputs.token }}
-          retries: 3
-          script: |
-            const chartName = process.env.CHART_NAME;
-            const chartVersion = process.env.CHART_VERSION;
-            const currentBranch = process.env.CURRENT_BRANCH;
-            const forcePublish = process.env.FORCE_PUBLISH === 'true';
-            const versionPattern = /^(\d+)\.(\d+)\.(\d+)(-.+)?$/;
+        run: |
+          echo "🧪 DRY RUN — chart packaged but NOT published."
+          echo "Would push: oci://ghcr.io/slybase/charts/${CHART_NAME}:${CHART_VERSION}"
+          echo "Would sign + upload ArtifactHub metadata."
+          echo "Set RELEASE_ENABLED=true (tag push) or dry_run=false (manual) to publish."
 
-            function parseVersion(version) {
-              const match = versionPattern.exec(version.trim());
-              if (!match) {
-                throw new Error(`Unsupported chart version: ${version}`);
-              }
-
-              return {
-                major: Number(match[1]),
-                minor: Number(match[2]),
-                patch: Number(match[3]),
-                suffix: (match[4] ?? '').replace(/^-/, ''),
-              };
-            }
-
-            function compareVersions(left, right) {
-              const lhs = parseVersion(left);
-              const rhs = parseVersion(right);
-
-              for (const key of ['major', 'minor', 'patch']) {
-                if (lhs[key] !== rhs[key]) {
-                  return lhs[key] - rhs[key];
-                }
-              }
-
-              const lhsStable = lhs.suffix === '';
-              const rhsStable = rhs.suffix === '';
-
-              if (lhsStable !== rhsStable) {
-                return lhsStable ? 1 : -1;
-              }
-
-              return lhs.suffix.localeCompare(rhs.suffix);
-            }
-
-            const isPrerelease = /-(alpha|beta|rc)/.test(chartVersion);
-            core.setOutput('is_prerelease', String(isPrerelease));
-            core.setOutput('skip', 'false');
-
-            let packageVersions = [];
-            try {
-              packageVersions = await github.paginate(
-                'GET /orgs/{org}/packages/{package_type}/{package_name}/versions',
-                {
-                  org: 'SlyBase',
-                  package_type: 'container',
-                  package_name: `charts/${chartName}`,
-                  per_page: 100,
-                  headers: {
-                    'X-GitHub-Api-Version': '2022-11-28',
-                  },
-                },
-              );
-            } catch (error) {
-              if (error.status !== 404) {
-                throw error;
-              }
-
-              core.info(`No published package found yet for ${chartName}.`);
-            }
-
-            const versions = [...new Set(
-              packageVersions
-                .flatMap((item) => item.metadata?.container?.tags ?? [])
-                .filter((tag) => versionPattern.test(tag)),
-            )];
-
-            const latestPublishedVersion = versions.reduce(
-              (latest, version) => {
-                if (!latest || compareVersions(version, latest) > 0) {
-                  return version;
-                }
-
-                return latest;
-              },
-              '',
-            );
-
-            const exactVersionExists = versions.includes(chartVersion);
-
-            core.setOutput('latest_published_version', latestPublishedVersion);
-
-            if (latestPublishedVersion) {
-              core.info(`Latest published version for ${chartName} is ${latestPublishedVersion}.`);
-            } else {
-              core.info(`No published chart versions found for ${chartName}.`);
-            }
-
-            if (latestPublishedVersion && compareVersions(chartVersion, latestPublishedVersion) <= 0) {
-              const message = `Chart version ${chartVersion} must be newer than latest published version ${latestPublishedVersion}`;
-              if (forcePublish) {
-                core.warning(`${message}; continuing because force=true`);
-              } else {
-                core.setFailed(message);
-                return;
-              }
-            }
-
-            if (!forcePublish) {
-              if (currentBranch === 'main' && isPrerelease) {
-                core.notice(`Skipping: Prerelease version ${chartVersion} not allowed on main branch (use force to override)`);
-                core.setOutput('skip', 'true');
-                return;
-              }
-
-              if (currentBranch === 'prerelease' && !isPrerelease) {
-                core.notice(`Skipping: Stable version ${chartVersion} not allowed on prerelease branch (use force to override)`);
-                core.setOutput('skip', 'true');
-                return;
-              }
-            }
-
-            if (exactVersionExists) {
-              core.info(`Chart ${chartName}:${chartVersion} already exists in registry.`);
-              if (forcePublish) {
-                core.info('Force flag set - will overwrite existing version.');
-                return;
-              }
-
-              core.setOutput('skip', 'true');
-              return;
-            }
-
-            core.info(`Chart ${chartName}:${chartVersion} does not exist, will publish.`);
-
-      - name: Package and push chart to OCI registry
-        if: steps.publish-check.outputs.skip == 'false'
+      - name: Push chart to OCI registry
+        if: steps.ctx.outputs.dry_run != 'true'
         id: push
         shell: bash
+        env:
+          CHART_NAME: ${{ steps.chart.outputs.chart_name }}
+          CHART_VERSION: ${{ steps.chart.outputs.chart_version }}
+          PACKAGE_FILE: ${{ steps.package.outputs.package_file }}
         run: |
           set -euo pipefail
 
-          chart_dir="${{ steps.chart.outputs.chart_dir }}"
-          chart_name="${{ steps.chart.outputs.chart_name }}"
-          chart_version="${{ steps.chart.outputs.chart_version }}"
-
-          echo "Packaging chart $chart_name version $chart_version"
-          mkdir -p packages
-          helm dependency build "$chart_dir"
-          helm package "$chart_dir" --destination ./packages
-
           echo "Pushing to OCI registry: oci://ghcr.io/slybase/charts"
-          echo "Chart file: ./packages/${chart_name}-${chart_version}.tgz"
+          echo "Chart file: $PACKAGE_FILE"
 
           set -x
-          push_output=$(helm push "./packages/${chart_name}-${chart_version}.tgz" "oci://ghcr.io/slybase/charts" 2>&1) || {
+          push_output=$(helm push "$PACKAGE_FILE" "oci://ghcr.io/slybase/charts" 2>&1) || {
             echo "Helm push failed with exit code $?"
             echo "$push_output"
             exit 1
@@ -416,28 +275,28 @@ jobs:
             exit 1
           fi
 
-          chart_ref="ghcr.io/slybase/charts/${chart_name}@${digest}"
+          chart_ref="ghcr.io/slybase/charts/${CHART_NAME}@${digest}"
           {
             echo "chart_digest=$digest"
             echo "chart_ref=$chart_ref"
           } >> "$GITHUB_OUTPUT"
 
       - name: Sign chart with Cosign
-        if: steps.publish-check.outputs.skip == 'false' && steps.push.outputs.chart_ref != ''
+        if: steps.ctx.outputs.dry_run != 'true' && steps.push.outputs.chart_ref != ''
         run: |
           chart_ref="${{ steps.push.outputs.chart_ref }}"
           cosign sign --yes "$chart_ref"
 
       - name: Verify chart signature
-        if: steps.publish-check.outputs.skip == 'false' && steps.push.outputs.chart_ref != ''
+        if: steps.ctx.outputs.dry_run != 'true' && steps.push.outputs.chart_ref != ''
         run: |
           chart_ref="${{ steps.push.outputs.chart_ref }}"
           cosign verify "$chart_ref" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/oci-release.yaml@refs/heads/${{ github.ref_name }}"
+            --certificate-identity-regexp "^https://github.com/${{ github.repository }}/.github/workflows/oci-release.yaml@refs/(tags|heads)/.+$"
 
       - name: Output chart information
-        if: steps.publish-check.outputs.skip == 'false'
+        if: steps.ctx.outputs.dry_run != 'true'
         run: |
           chart_name="${{ steps.chart.outputs.chart_name }}"
           chart_version="${{ steps.chart.outputs.chart_version }}"
@@ -452,15 +311,15 @@ jobs:
           echo "helm install my-release oci://ghcr.io/slybase/charts/$chart_name --version $chart_version"
 
       - name: Upload ArtifactHub metadata for this chart
-        if: steps.publish-check.outputs.skip == 'false'
+        if: steps.ctx.outputs.dry_run != 'true'
         shell: bash
+        env:
+          CHART_NAME: ${{ steps.chart.outputs.chart_name }}
         run: |
           set -euo pipefail
 
-          chart_name="${{ steps.chart.outputs.chart_name }}"
-
-          if [ -f "charts/$chart_name/artifacthub-repo.yml" ]; then
-            metadata_file="charts/$chart_name/artifacthub-repo.yml"
+          if [ -f "charts/$CHART_NAME/artifacthub-repo.yml" ]; then
+            metadata_file="charts/$CHART_NAME/artifacthub-repo.yml"
           else
             metadata_file="artifacthub-repo.yml"
           fi
@@ -475,9 +334,9 @@ jobs:
           printf '{}' > "$tmp_config"
 
           oras push \
-            "ghcr.io/slybase/charts/$chart_name:artifacthub.io" \
+            "ghcr.io/slybase/charts/$CHART_NAME:artifacthub.io" \
             --config "$tmp_config:application/vnd.cncf.artifacthub.config.v1+yaml" \
             "$metadata_file:application/vnd.cncf.artifacthub.repository-metadata.layer.v1.yaml"
 
-          oras manifest fetch "ghcr.io/slybase/charts/$chart_name:artifacthub.io" > "$tmp_manifest"
+          oras manifest fetch "ghcr.io/slybase/charts/$CHART_NAME:artifacthub.io" > "$tmp_manifest"
           jq -e '.config.size > 0 and .config.mediaType == "application/vnd.cncf.artifacthub.config.v1+yaml" and (.layers | length) == 1' "$tmp_manifest"
