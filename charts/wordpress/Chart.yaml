@@ -30,15 +30,20 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update subchart/wordpress/valkey/0.21.2 to v0.21.2"
+      description: "deps: update subchart/wordpress/mariadb/0.16.5 to v0.16.5"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/bf7dcb822bca0db381dca02260c7b5310b1f22b8
+          url: https://github.com/SlyBase/helm-charts/commit/8bd27f1b1668bfeee72e9414829b292efbb8b151
     - kind: fixed
-      description: "wordpress: skip rwx-permissions init container for StatefulSet"
+      description: "deps: update subchart/wordpress/redis/0.30.2 to v0.30.2"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/912b295cf13f9833cc0781ba29bbd4744f306e28
+          url: https://github.com/SlyBase/helm-charts/commit/44eb62508b54da18564da6119220f4da535240f9
+    - kind: fixed
+      description: "deps: update subchart/wordpress/valkey/0.21.3 to v0.21.3"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/45333a574b6ff25d2249858845c62612619f9158
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
