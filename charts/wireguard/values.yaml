@@ -1,4 +1,3 @@
-# ci-test: trigger chart-install-test workflow (temporary, will be reverted)
 ## @section Image configuration
 ## @descriptionStart
 ## Container image settings. More info: https://kubernetes.io/docs/concepts/containers/images/

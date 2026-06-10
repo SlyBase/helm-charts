@@ -1,4 +1,3 @@
-# ci-test: trigger chart-install-test workflow (temporary, will be reverted)
 ## @section Global parameters
 
 ## @param controllerType string Workload controller: "deployment" (shared PVC) or "statefulset" (per-Pod RWO volume via volumeClaimTemplates)
