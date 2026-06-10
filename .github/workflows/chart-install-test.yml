@@ -1,0 +1,121 @@
+name: Chart Install Test
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: "Base branch to diff against"
+        default: "main"
+        required: false
+        type: string
+
+concurrency:
+  group: chart-install-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect:
+    name: detect-changed-charts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      charts_json: ${{ steps.charts.outputs.charts_json }}
+      has_charts: ${{ steps.charts.outputs.has_charts }}
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed charts
+        id: charts
+        uses: ./.github/actions/detect-changed-charts
+        with:
+          base-ref: ${{ github.event.inputs.base_ref || github.base_ref || github.event.repository.default_branch || 'main' }}
+
+  kind-install-test:
+    name: kind-install-test (${{ matrix.chart_dir }})
+    needs: detect
+    if: needs.detect.outputs.has_charts == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        chart_dir: ${{ fromJson(needs.detect.outputs.charts_json) }}
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5
+
+      - name: Build chart dependencies
+        shell: bash
+        run: helm dependency build "${{ matrix.chart_dir }}"
+
+      - name: Create kind cluster
+        uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
+        with:
+          cluster_name: chart-install-test
+
+      - name: Install and verify chart
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          chart_dir="${{ matrix.chart_dir }}"
+          chart_name="$(basename "${chart_dir}")"
+
+          case "${chart_name}" in
+            wordpress)
+              # Heaviest chart (incl. MariaDB subchart): real install, wait for all
+              # pods to become Ready.
+              kubectl create namespace wordpress-test
+              kubectl apply -n wordpress-test -f "${chart_dir}/samples/mariaDB.secrets.yaml"
+              helm install wordpress-test "${chart_dir}" \
+                --namespace wordpress-test \
+                --values "${chart_dir}/samples/mariaDB.values.yaml" \
+                --wait --timeout 8m
+              kubectl get pods -n wordpress-test
+              ;;
+            wireguard|wg-easy)
+              # NET_ADMIN/privileged WireGuard workloads need kernel module access that
+              # hosted runners don't reliably provide inside kind nodes, so only validate
+              # the rendered manifests against the live API server (RBAC, CRDs, PSS, ...).
+              kubectl apply -f "${chart_dir}/samples/namespace.yaml"
+              if [ "${chart_name}" = "wireguard" ]; then
+                values_file="${chart_dir}/samples/server.values.yaml"
+              else
+                values_file="${chart_dir}/samples/simple.values.yaml"
+              fi
+              helm install "${chart_name}-test" "${chart_dir}" \
+                --namespace "${chart_name}" \
+                --values "${values_file}" \
+                --dry-run=server
+              ;;
+            *)
+              echo "No install-test recipe for chart '${chart_name}'"
+              exit 1
+              ;;
+          esac
+
+      - name: Debug on failure
+        if: failure()
+        shell: bash
+        run: |
+          set +e
+          echo "::group::kubectl get all -A"
+          kubectl get all -A
+          echo "::endgroup::"
+          echo "::group::kubectl describe pods -A"
+          kubectl describe pods -A
+          echo "::endgroup::"
