@@ -49,6 +49,26 @@ This script installs the chart via `install.sh`, waits for all pods (WordPress, 
 ./charts/wordpress/samples/verify/uninstall.sh
 ```
 
+## WireGuard and wg-easy charts
+
+Both charts require a namespace with `pod-security.kubernetes.io/enforce: privileged` (see each chart's `readme.md` "Prerequisites" section).
+
+**After every change to the wireguard or wg-easy chart, run the matching verify script before committing:**
+
+```bash
+./charts/wireguard/samples/verify/verify.sh
+./charts/wg-easy/samples/verify/verify.sh
+```
+
+Each script installs the chart via `install.sh` into a dedicated `*-verify` namespace, waits for the pod to become Ready, checks container logs for errors, verifies the `wg0` interface comes up (and for wireguard, that `wg show` reports the expected listening port and peer count), and smoke-tests the Service(s)/NodePort(s). Fix any reported failures before pushing. Clean up afterwards with:
+
+```bash
+./charts/wireguard/samples/verify/uninstall.sh
+./charts/wg-easy/samples/verify/uninstall.sh
+```
+
+> **Note:** wg-easy's verify currently fails on nftables-only kernels (e.g. Talos) due to an upstream wg-easy v15 image issue — see [charts/wg-easy/readme.md](charts/wg-easy/readme.md#known-issues). This is expected and not a chart regression.
+
 ## Key files
 
 | Purpose | Path |

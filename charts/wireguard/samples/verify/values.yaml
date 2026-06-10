@@ -1,0 +1,12 @@
+wireguard:
+  timezone: "Europe/Berlin"
+  server:
+    enabled: true
+    config:
+      address: "192.168.178.21"
+      peers: "peer1,peer2"
+
+service:
+  type: NodePort
+  port: 51820
+  nodePort: 31920
