@@ -173,7 +173,7 @@ serviceAccount:
   ## @param serviceAccount.create bool Specifies whether a service account should be created
   create: true
   ## @param serviceAccount.automount bool Automatically mount ServiceAccount API credentials
-  automount: true
+  automount: false
   ## @param serviceAccount.annotations object Annotations to add to the service account
   annotations: {}
   ## @param serviceAccount.name string Name of the service account. If not set and create is true, a name is generated
@@ -225,14 +225,33 @@ podLabels: {}
 ##       - NET_ADMIN
 ##       - SYS_MODULE
 ## ```
+##
+## Alternative without `privileged: true` (only works if the WireGuard kernel
+## module is already loaded on the host node - untested, see readme.md "Security"):
+## ```yaml
+## securityContext:
+##   privileged: false
+##   capabilities:
+##     add:
+##       - NET_ADMIN
+##       - SYS_MODULE
+##     drop:
+##       - ALL
+##   seccompProfile:
+##     type: RuntimeDefault
+## ```
 ## @descriptionEnd
 
 ## @param podSecurityContext object Security context for the pod
-podSecurityContext: {}
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
 
 ## @param securityContext object Security context for the container
 securityContext:
   privileged: true
+  seccompProfile:
+    type: RuntimeDefault
 
 ## @section Service configuration
 service:
