@@ -5,7 +5,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "wg-easy.labels" . | nindent 4 }}
-  {{- with .Values.service.ui.annotations }}
+  {{- $uiAnnotations := merge (dict) (.Values.service.ui.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $uiAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -30,7 +31,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "wg-easy.labels" . | nindent 4 }}
-  {{- with .Values.service.wireguard.annotations }}
+  {{- $wgAnnotations := merge (dict) (.Values.service.wireguard.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $wgAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
