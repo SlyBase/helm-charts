@@ -18,6 +18,7 @@ concurrency:
 
 env:
   KUBECONFORM_VERSION: "0.8.0"
+  HELM_UNITTEST_VERSION: "1.1.1"
 
 jobs:
   chart-validate:
@@ -65,6 +66,14 @@ jobs:
 
           kubeconform -v
 
+      - name: Install helm-unittest
+        if: steps.charts.outputs.has_charts == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git --version "v${HELM_UNITTEST_VERSION}"
+
       - name: Validate changed charts
         if: steps.charts.outputs.has_charts == 'true'
         shell: bash
@@ -96,6 +105,10 @@ jobs:
               -schema-location default \
               -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
               "rendered-manifests/${chart_name}.yaml"
+
+            if [ -d "${chart_dir}/tests" ]; then
+              helm unittest "${chart_dir}"
+            fi
 
             echo "::endgroup::"
           done

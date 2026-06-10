@@ -1,0 +1,60 @@
+suite: StatefulSet rendering and securityContext defaults
+
+tests:
+  - it: renders a single StatefulSet with the wg-easy container
+    template: statefulset.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: StatefulSet
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: wg-easy
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/name"]
+          value: wg-easy
+
+  - it: defaults the container securityContext to privileged
+    template: statefulset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.privileged
+          value: true
+
+  - it: does not set a pod securityContext by default
+    template: statefulset.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+
+  - it: allows overriding the container securityContext
+    template: statefulset.yaml
+    set:
+      securityContext:
+        privileged: false
+        runAsNonRoot: true
+        capabilities:
+          drop:
+            - ALL
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.privileged
+          value: false
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+
+  - it: allows setting a pod securityContext
+    template: statefulset.yaml
+    set:
+      podSecurityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 1000
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 1000
