@@ -1,3 +1,4 @@
+# ci-test: trigger chart-install-test workflow (temporary, will be reverted)
 ## @section General configuration
 
 ## @param replicaCount int Number of replicas for the deployment
