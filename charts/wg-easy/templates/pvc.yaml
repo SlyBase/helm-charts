@@ -4,11 +4,12 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "wg-easy.fullname" . }}
   namespace: {{ .Release.Namespace }}
-  {{- with .Values.storage.labels }}
+  {{- $pvcLabels := merge (dict) (.Values.storage.labels | default dict) (.Values.commonLabels | default dict) }}
+  {{- with $pvcLabels }}
   labels:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- $ann := .Values.storage.annotations }}
+  {{- $ann := merge (dict) (.Values.storage.annotations | default dict) (.Values.commonAnnotations | default dict) }}
   {{- $rp := .Values.storage.resourcePolicy }}
   {{- if or $ann $rp }}
   annotations:

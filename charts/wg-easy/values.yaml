@@ -21,6 +21,16 @@ nameOverride: ""
 ## @param fullnameOverride string Override the full chart name
 fullnameOverride: ""
 
+## @section Common metadata
+## @descriptionStart
+## Labels and annotations applied to all resources created by this chart.
+## @descriptionEnd
+
+## @param commonLabels object Labels applied to all resources (StatefulSet, Services, PVC, ServiceAccount, NetworkPolicy, ...)
+commonLabels: {}
+## @param commonAnnotations object Annotations applied to all resources
+commonAnnotations: {}
+
 ## @section DNS configuration
 ## @descriptionStart
 ## DNS policy and configuration of the pod.
@@ -450,3 +460,49 @@ tolerations: []
 
 ## @param affinity object Affinity rules for pod assignment
 affinity: {}
+
+## @param topologySpreadConstraints list Topology spread constraints for pods
+topologySpreadConstraints: []
+
+## @param priorityClassName string Priority class name for the pod
+priorityClassName: ""
+
+## @section NetworkPolicy
+## @descriptionStart
+## NetworkPolicy for the wg-easy pod. Disabled by default.
+## E.g.
+## ```yaml
+## networkPolicy:
+##   enabled: true
+##   ingress:
+##     from:
+##       - ipBlock:
+##           cidr: 0.0.0.0/0
+## ```
+## @descriptionEnd
+networkPolicy:
+  ## @param networkPolicy.enabled bool Create a NetworkPolicy for the wg-easy pod
+  enabled: false
+  ## @param networkPolicy.allowExternalEgress bool Allow UDP egress to the public Internet (needed for peer connectivity)
+  allowExternalEgress: true
+  ## @param networkPolicy.annotations object Additional annotations for the NetworkPolicy
+  annotations: {}
+  ingress:
+    ## @param networkPolicy.ingress.from list Allowed ingress sources for the WireGuard UDP and Web UI/metrics ports. Empty = allow from anywhere
+    from: []
+    ## @param networkPolicy.ingress.extraRules list Extra raw ingress rule blocks appended verbatim
+    extraRules: []
+  egress:
+    ## @param networkPolicy.egress.extraRules list Extra raw egress rule blocks appended verbatim
+    extraRules: []
+
+## @section Pod Disruption Budget
+## @param podDisruptionBudget object Pod disruption budget configuration (minAvailable or maxUnavailable)
+## E.g.
+## ```yaml
+## podDisruptionBudget:
+##   minAvailable: 1
+##   # or
+##   maxUnavailable: 1
+## ```
+podDisruptionBudget: {}

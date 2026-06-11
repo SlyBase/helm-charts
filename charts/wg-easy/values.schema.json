@@ -100,6 +100,16 @@
       "type": "string",
       "description": "Override the full resource name used for Kubernetes objects."
     },
+    "commonLabels": {
+      "type": "object",
+      "title": "Common Labels",
+      "description": "Labels applied to all resources created by this chart (StatefulSet, Services, PVC, ServiceAccount, NetworkPolicy, ...)."
+    },
+    "commonAnnotations": {
+      "type": "object",
+      "title": "Common Annotations",
+      "description": "Annotations applied to all resources created by this chart."
+    },
     "initContainers": {
       "type": "array",
       "title": "Init Containers",
@@ -939,6 +949,105 @@
       "title": "Affinity",
       "type": "object",
       "description": "Affinity and anti-affinity rules for pod scheduling."
+    },
+    "topologySpreadConstraints": {
+      "type": "array",
+      "title": "Topology Spread Constraints",
+      "description": "Topology spread constraints for pod scheduling.",
+      "items": {
+        "type": "object"
+      }
+    },
+    "priorityClassName": {
+      "type": "string",
+      "title": "Priority Class Name",
+      "description": "Priority class name for the pod."
+    },
+    "networkPolicy": {
+      "type": "object",
+      "title": "Network Policy",
+      "description": "NetworkPolicy for the wg-easy pod. Disabled by default.",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "title": "Enabled",
+          "description": "Create a NetworkPolicy for the wg-easy pod."
+        },
+        "allowExternalEgress": {
+          "type": "boolean",
+          "title": "Allow External Egress",
+          "description": "Allow UDP egress to the public Internet (needed for peer connectivity)."
+        },
+        "annotations": {
+          "type": "object",
+          "title": "Annotations",
+          "description": "Additional annotations for the NetworkPolicy."
+        },
+        "ingress": {
+          "type": "object",
+          "title": "Ingress Rules",
+          "additionalProperties": true,
+          "properties": {
+            "from": {
+              "type": "array",
+              "title": "Allowed Ingress Sources",
+              "description": "Allowed ingress sources for the WireGuard UDP and Web UI/metrics ports. Empty = allow from anywhere.",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "extraRules": {
+              "type": "array",
+              "title": "Extra Ingress Rules",
+              "description": "Extra raw ingress rule blocks appended verbatim.",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "egress": {
+          "type": "object",
+          "title": "Egress Rules",
+          "additionalProperties": true,
+          "properties": {
+            "extraRules": {
+              "type": "array",
+              "title": "Extra Egress Rules",
+              "description": "Extra raw egress rule blocks appended verbatim.",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "podDisruptionBudget": {
+      "type": "object",
+      "title": "Pod Disruption Budget",
+      "description": "Pod disruption budget configuration (minAvailable or maxUnavailable).",
+      "additionalProperties": true,
+      "properties": {
+        "minAvailable": {
+          "type": [
+            "integer",
+            "string"
+          ],
+          "title": "Min Available"
+        },
+        "maxUnavailable": {
+          "type": [
+            "integer",
+            "string"
+          ],
+          "title": "Max Unavailable"
+        }
+      }
     }
   },
   "allOf": [
