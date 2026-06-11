@@ -146,6 +146,8 @@ wireguard:
   ## @param wireguard.existingSecret string Existing secret with full wg0.conf. NOTE: Overrides server/client config
   existingSecret: ""
 
+  ## @extra wireguard.listenPort int Override the WireGuard listen port inside the container (server mode only). Default: service.port
+
   ## @section Wireguard Server Mode
   server:
     ## @param wireguard.server.enabled bool Enable WireGuard server mode (mutually exclusive with client mode)
