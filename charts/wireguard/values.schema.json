@@ -199,6 +199,11 @@
           "title": "Allowed IPs",
           "description": "IPs/networks reachable via VPN connection. Default: 0.0.0.0/0, ::0/0 (routes all traffic through VPN). For split tunneling, set only required networks including server WG IP."
         },
+        "listenPort": {
+          "type": "integer",
+          "title": "Listen Port",
+          "description": "Override the WireGuard listen port inside the container (server mode only). Defaults to service.port."
+        },
         "extraEnvVars": {
           "type": "array",
           "title": "Additional Environment Variables",

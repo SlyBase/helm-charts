@@ -127,7 +127,7 @@ spec:
             - name: SERVERURL
               value: {{ if .Values.wireguard.server.config.address }}"{{ .Values.wireguard.server.config.address }}"{{ else }}"auto"{{ end }}
             - name: SERVERPORT
-              value: "{{ .Values.wireguard.listenPort }}"
+              value: "{{ .Values.wireguard.listenPort | default .Values.service.port }}"
             - name: INTERNAL_SUBNET
               value: {{ if .Values.wireguard.server.config.subnet }}"{{ .Values.wireguard.server.config.subnet }}"{{ else }}"10.13.13.0/24"{{ end }}
             - name: PEER_DNS
