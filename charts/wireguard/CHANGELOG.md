@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [1.0.1](https://github.com/SlyBase/helm-charts/compare/wireguard-v1.0.0...wireguard-v1.0.1) (2026-06-11)
+
+
+### Bug Fixes
+
+* **wireguard:** make SERVERPORT default to service.port ([#400](https://github.com/SlyBase/helm-charts/issues/400)) ([dff1bac](https://github.com/SlyBase/helm-charts/commit/dff1bacf7fcb871ccfe8ea7b415b2981944ac162))
+
 ## [1.0.0](https://github.com/SlyBase/helm-charts/compare/wireguard-v0.4.11...wireguard-v1.0.0) (2026-06-11)
 
 
