@@ -2,6 +2,15 @@
 
 All notable changes to this chart are documented here.
 
+## [4.6.4](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.6.3...wordpress-v4.6.4) (2026-06-11)
+
+
+### Bug Fixes
+
+* **deps:** update chart/wordpress/docker.io/memcached/digest- ([#393](https://github.com/SlyBase/helm-charts/issues/393)) ([556bf84](https://github.com/SlyBase/helm-charts/commit/556bf84645b17b8a73931992090c3d03f41938bc))
+* **deps:** update chart/wordpress/docker.io/wordpress/digest- ([#394](https://github.com/SlyBase/helm-charts/issues/394)) ([02dc457](https://github.com/SlyBase/helm-charts/commit/02dc457a292ec5ef28193fd42c00933b66bde400))
+* **wordpress:** pin image tags to digests for supply-chain integrity ([#381](https://github.com/SlyBase/helm-charts/issues/381)) ([8b000b8](https://github.com/SlyBase/helm-charts/commit/8b000b872b0e286f01d3a2286f44c53e7d48ba86))
+
 ## [4.6.3](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.6.2...wordpress-v4.6.3) (2026-06-09)
 
 
