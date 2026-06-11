@@ -5,7 +5,7 @@ description: >-
   variables for K8S. Supporting server and client mode.
 type: application
 version: 1.0.1
-appVersion: 1.0.20250521-r1-ls113
+appVersion: 1.0.20250521-r1-ls114
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wireguard/app.png
 home: https://github.com/slydlake/helm-charts
@@ -33,7 +33,7 @@ annotations:
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wireguard
-      image: docker.io/linuxserver/wireguard:1.0.20250521-r1-ls113
+      image: docker.io/linuxserver/wireguard:1.0.20250521-r1-ls114
 keywords:
   - wireguard
   - vpn
