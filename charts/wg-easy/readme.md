@@ -138,3 +138,18 @@ Set `podDisruptionBudget.minAvailable` or `podDisruptionBudget.maxUnavailable` t
 ### Topology Spread Constraints and Priority Class
 
 `topologySpreadConstraints` and `priorityClassName` are passed through to the pod spec for advanced scheduling control.
+
+## Known Issues
+
+### CrashLoopBackOff on nftables-only kernels (e.g. Talos Linux)
+
+The wg-easy v15 image bundles `wg-quick`, which shells out to **iptables-legacy** to set up NAT/forwarding (`iptables -t nat -A POSTROUTING ...`). On hosts whose kernel does not provide the legacy `ip_tables`/`iptable_nat` modules and only supports nftables (e.g. Talos Linux, Debian 13+, recent Raspberry Pi/Ubuntu kernels), this fails with:
+
+```
+modprobe: FATAL: Module ip_tables not found in directory /lib/modules/<kernel>
+iptables v1.8.11 (legacy): can't initialize iptables table `nat': Table does not exist (do you need to insmod?)
+```
+
+As a result, `wg0` never comes up, the startup probe fails, and the pod CrashLoopBackOffs.
+
+This is an upstream limitation of the wg-easy v15 image (tracked in [wg-easy/wg-easy#2220](https://github.com/wg-easy/wg-easy/issues/2220)), not specific to this chart — there is currently no chart-level workaround. If your nodes only support nftables, wg-easy v15 will not run until upstream addresses this.

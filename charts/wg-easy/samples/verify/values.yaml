@@ -1,0 +1,16 @@
+config:
+  host: 0.0.0.0
+  insecure: true
+  disable_ipv6: true
+  init:
+    enabled: false
+
+service:
+  ui:
+    type: NodePort
+    port: 51821
+    nodePort: 30921
+  wireguard:
+    type: NodePort
+    port: 51820
+    nodePort: 30920
