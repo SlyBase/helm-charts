@@ -201,7 +201,7 @@ serviceAccount:
   ## @param serviceAccount.create bool Specifies whether a service account should be created
   create: true
   ## @param serviceAccount.automount bool Automatically mount ServiceAccount API credentials
-  automount: true
+  automount: false
   ## @param serviceAccount.annotations object Annotations to add to the service account
   annotations: {}
   ## @param serviceAccount.name string Name of the service account. If not set and create is true, a name is generated
@@ -228,7 +228,7 @@ podLabels: {}
 ##     add:
 ##       - NET_ADMIN
 ##       - SYS_MODULE
-##   privileged: false
+##   privileged: true # required by the linuxserver/wireguard s6-overlay init, see readme.md "Security"
 ## ```
 ## @descriptionEnd
 
