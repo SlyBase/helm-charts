@@ -25,18 +25,11 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: changed
-      description: "wireguard: serviceAccount.automount now defaults to false. The chart never talks to the Kubernetes API, so the ServiceAccount token no longer needs to be automounted. Set serviceAccount.automount: true to restore the previous behavior."
-    - kind: added
-      description: "wireguard: add NetworkPolicy, PDB, commonLabels/Annotations and scheduling controls"
+    - kind: fixed
+      description: "wireguard: make SERVERPORT default to service.port"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/2d7edc537ed6b721dedf9eff28d201710f1af6b9
-    - kind: added
-      description: "wireguard: harden pod/container security defaults"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/46375bfdf048a63d5880b91a94ad76f84b6e794f
+          url: https://github.com/SlyBase/helm-charts/commit/dff1bacf7fcb871ccfe8ea7b415b2981944ac162
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wireguard
