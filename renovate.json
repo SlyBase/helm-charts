@@ -38,6 +38,18 @@
         },
         {
             "customType": "regex",
+            "description": "Update appVersion in Chart.yaml for wireguard",
+            "managerFilePatterns": [
+                "/^charts/wireguard/Chart\\.yaml$/"
+            ],
+            "matchStrings": [
+                "appVersion:\\s+(?<currentValue>[^\\s]+)"
+            ],
+            "depNameTemplate": "docker.io/linuxserver/wireguard",
+            "datasourceTemplate": "docker"
+        },
+        {
+            "customType": "regex",
             "description": "Update appVersion in Chart.yaml",
             "managerFilePatterns": [
                 "/^charts/.*/Chart\\.yaml$/"
@@ -80,26 +92,10 @@
             "matchManagers": [
                 "custom.regex"
             ],
-            "matchFileNames": [
-                "charts/wireguard/values.yaml"
-            ],
             "matchPackageNames": [
                 "docker.io/linuxserver/wireguard"
             ],
             "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-r(?<prerelease>\\d+)-ls(?<build>\\d+)$"
-        },
-        {
-            "description": "Disable custom.regex Chart.yaml updates for wireguard (handled by values.yaml manager)",
-            "matchManagers": [
-                "custom.regex"
-            ],
-            "matchFileNames": [
-                "charts/wireguard/Chart.yaml"
-            ],
-            "matchPackageNames": [
-                "docker.io/linuxserver/wireguard"
-            ],
-            "enabled": false
         },
         {
             "description": "Group direct dependency updates per chart and target version",
@@ -126,7 +122,8 @@
                 "custom.regex"
             ],
             "matchFileNames": [
-                "charts/wireguard/values.yaml"
+                "charts/wireguard/values.yaml",
+                "charts/wireguard/Chart.yaml"
             ],
             "matchPackageNames": [
                 "docker.io/linuxserver/wireguard"
