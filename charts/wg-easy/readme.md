@@ -48,6 +48,20 @@ You have to set a namespace with privileged security (see sample namespace.yaml)
 kubectl create namespace wg-easy && kubectl label namespace wg-easy pod-security.kubernetes.io/enforce=privileged pod-security.kubernetes.io/warn=privileged --overwrite
 ```
 
+## Security
+
+By default the container runs `privileged: true` with the `NET_ADMIN` and `SYS_MODULE` capabilities. This is required by the [wg-easy](https://github.com/wg-easy/wg-easy) image to create the `wg0` interface and, if not already present on the host, to load the WireGuard kernel module.
+
+As a result:
+- `pod-security.kubernetes.io/enforce: privileged` is required on the namespace (see Prerequisites)
+- the chart **cannot** meet the `restricted` or `baseline` Pod Security Standard with the default `securityContext`
+
+What the chart hardens by default regardless:
+- `seccompProfile: RuntimeDefault` for the pod and the container
+- `serviceAccount.automount: false` — the chart never talks to the Kubernetes API
+
+If the WireGuard kernel module is already loaded on every host node, you can try running without `privileged: true` using `capabilities: {add: [NET_ADMIN, SYS_MODULE], drop: [ALL]}` instead - see the commented example in `values.yaml`. This is untested and not the default.
+
 ## Initialization Mode and Metrics
 
 To provide the secrets and values to set up init mode correctly and optionally enable the Prometheus metrics.

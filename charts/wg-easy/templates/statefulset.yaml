@@ -64,6 +64,8 @@ spec:
                 - NET_ADMIN
                 - SYS_MODULE
             privileged: true
+            seccompProfile:
+              type: RuntimeDefault
           {{- end }}
           image: {{ include "slycharts.image" (dict "image" .Values.image "defaultTag" .Chart.AppVersion) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
