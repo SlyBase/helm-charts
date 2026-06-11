@@ -1,10 +1,13 @@
 apiVersion: v2
 name: wireguard
-description: "Using the offical linuxserver/wireguard image with almost any environment variables for K8S. Supporting server and client mode."
+description: >-
+  Using the offical linuxserver/wireguard image with almost any environment
+  variables for K8S. Supporting server and client mode.
 type: application
-version: 0.4.11
-appVersion: 1.0.20250521-r1-ls113 # renovate: image=docker.io/linuxserver/wireguard
-icon: https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wireguard/app.png
+version: 1.0.0
+appVersion: 1.0.20250521-r1-ls113
+icon: >-
+  https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wireguard/app.png
 home: https://github.com/slydlake/helm-charts
 maintainers:
   - name: slydlake
@@ -23,7 +26,17 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: changed
-      description: "Update docker.io/linuxserver/wireguard to 1.0.20250521-r1-ls113"
+      description: "wireguard: serviceAccount.automount now defaults to false. The chart never talks to the Kubernetes API, so the ServiceAccount token no longer needs to be automounted. Set serviceAccount.automount: true to restore the previous behavior."
+    - kind: added
+      description: "wireguard: add NetworkPolicy, PDB, commonLabels/Annotations and scheduling controls"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/2d7edc537ed6b721dedf9eff28d201710f1af6b9
+    - kind: added
+      description: "wireguard: harden pod/container security defaults"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/46375bfdf048a63d5880b91a94ad76f84b6e794f
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wireguard
