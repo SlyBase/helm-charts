@@ -1,0 +1,94 @@
+suite: NetworkPolicy
+set:
+  wordpress:
+    url: "https://example.com"
+
+tests:
+  - it: does not render a NetworkPolicy by default
+    template: networkpolicy.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders a NetworkPolicy with Ingress and Egress policy types when enabled
+    template: networkpolicy.yaml
+    set:
+      networkPolicy:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: NetworkPolicy
+      - contains:
+          path: spec.policyTypes
+          content: Ingress
+      - contains:
+          path: spec.policyTypes
+          content: Egress
+      - equal:
+          path: spec.ingress[0].ports[0].port
+          value: 8080
+
+  - it: includes a DNS egress rule to kube-system by default
+    template: networkpolicy.yaml
+    set:
+      networkPolicy:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.egress[0].to[0].namespaceSelector.matchLabels["kubernetes.io/metadata.name"]
+          value: kube-system
+
+  - it: includes a mariadb egress rule when the mariadb subchart is enabled
+    template: networkpolicy.yaml
+    set:
+      networkPolicy:
+        enabled: true
+      mariadb:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.egress[1].to[0].podSelector.matchLabels["app.kubernetes.io/name"]
+          value: mariadb
+
+  - it: includes an internet egress rule with SMTP ports by default
+    template: networkpolicy.yaml
+    set:
+      networkPolicy:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.egress[2].to[0].ipBlock.cidr
+          value: 0.0.0.0/0
+      - contains:
+          path: spec.egress[2].ports
+          content:
+            port: 587
+            protocol: TCP
+
+  - it: omits the internet egress rule when allowExternalEgress is false
+    template: networkpolicy.yaml
+    set:
+      networkPolicy:
+        enabled: true
+        allowExternalEgress: false
+    asserts:
+      - lengthEqual:
+          path: spec.egress
+          count: 2
+
+  - it: adds a memcached egress rule when memcached is the selected cache backend
+    template: networkpolicy.yaml
+    set:
+      networkPolicy:
+        enabled: true
+      memcached:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.egress[2].to[0].podSelector.matchLabels["app.kubernetes.io/name"]
+          value: memcached
+      - equal:
+          path: spec.egress[2].ports[0].port
+          value: 11211

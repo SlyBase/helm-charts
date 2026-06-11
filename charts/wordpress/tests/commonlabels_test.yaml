@@ -1,0 +1,71 @@
+suite: commonLabels propagation
+set:
+  wordpress:
+    url: "https://example.com"
+
+tests:
+  - it: propagates commonLabels to the Deployment metadata and pod template
+    template: deployment.yaml
+    set:
+      commonLabels:
+        team: platform
+        environment: test
+    asserts:
+      - equal:
+          path: metadata.labels.team
+          value: platform
+      - equal:
+          path: metadata.labels.environment
+          value: test
+      - equal:
+          path: spec.template.metadata.labels.team
+          value: platform
+      - equal:
+          path: spec.template.metadata.labels.environment
+          value: test
+
+  - it: propagates commonLabels to the StatefulSet metadata and pod template
+    template: statefulset.yaml
+    set:
+      controllerType: statefulset
+      commonLabels:
+        team: platform
+    asserts:
+      - equal:
+          path: metadata.labels.team
+          value: platform
+      - equal:
+          path: spec.template.metadata.labels.team
+          value: platform
+
+  - it: propagates commonLabels to the Service
+    template: service.yaml
+    set:
+      commonLabels:
+        team: platform
+        environment: test
+    asserts:
+      - equal:
+          path: metadata.labels.team
+          value: platform
+      - equal:
+          path: metadata.labels.environment
+          value: test
+
+  - it: propagates commonLabels to the NetworkPolicy
+    template: networkpolicy.yaml
+    set:
+      networkPolicy:
+        enabled: true
+      commonLabels:
+        team: platform
+    asserts:
+      - equal:
+          path: metadata.labels.team
+          value: platform
+
+  - it: does not add extra labels when commonLabels is empty
+    template: deployment.yaml
+    asserts:
+      - notExists:
+          path: metadata.labels.team

@@ -1,0 +1,94 @@
+suite: SecurityContext defaults
+set:
+  wordpress:
+    url: "https://example.com"
+
+tests:
+  - it: sets the hardened default pod-level securityContext
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 33
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 33
+      - equal:
+          path: spec.template.spec.securityContext.runAsNonRoot
+          value: true
+      - equal:
+          path: spec.template.spec.securityContext.seccompProfile.type
+          value: RuntimeDefault
+
+  - it: sets the hardened default container securityContext on the main container
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: wordpress
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem
+          value: true
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.privileged
+          value: false
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.capabilities.drop[0]
+          value: ALL
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.seccompProfile.type
+          value: RuntimeDefault
+
+  - it: applies the hardened containerSecurityContext to init containers too
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.capabilities.drop[0]
+          value: ALL
+
+  - it: allows overriding podSecurityContext
+    template: deployment.yaml
+    set:
+      podSecurityContext:
+        fsGroup: 2000
+        runAsUser: 2000
+        runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2000
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 2000
+
+  - it: adds the rwx-permissions init container only for Deployment + ReadWriteMany
+    template: deployment.yaml
+    set:
+      storage:
+        accessModes:
+          - ReadWriteMany
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: wordpress-rwx-permissions
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 0
+
+  - it: does not add the rwx-permissions init container for StatefulSet even with ReadWriteMany
+    template: statefulset.yaml
+    set:
+      controllerType: statefulset
+      storage:
+        accessModes:
+          - ReadWriteMany
+    asserts:
+      - notEqual:
+          path: spec.template.spec.initContainers[0].name
+          value: wordpress-rwx-permissions
