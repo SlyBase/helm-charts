@@ -2,6 +2,18 @@
 
 All notable changes to this chart are documented here.
 
+## [1.0.0](https://github.com/SlyBase/helm-charts/compare/wg-easy-v0.9.1...wg-easy-v1.0.0) (2026-06-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **wg-easy:** serviceAccount.automount now defaults to false.
+
+### Features
+
+* **wg-easy:** add NetworkPolicy, PDB, commonLabels/Annotations and scheduling controls ([#385](https://github.com/SlyBase/helm-charts/issues/385)) ([bc5e3be](https://github.com/SlyBase/helm-charts/commit/bc5e3bedcf2cf6ba7430c9916dec7f6ccabe1d81))
+* **wg-easy:** harden pod/container security defaults ([#383](https://github.com/SlyBase/helm-charts/issues/383)) ([595ebca](https://github.com/SlyBase/helm-charts/commit/595ebca124c2e4942fb83c6aa80ca874f9a458a4))
+
 ## 0.9.1 - 2026-05-21
 
 - Fix schema validation failure when chart is used as a Helm dependency: added `global` property to `values.schema.json` so Helm's automatic global values injection no longer conflicts with `additionalProperties: false` at the root level
