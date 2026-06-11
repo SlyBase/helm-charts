@@ -1,0 +1,7 @@
+# CVE-2025-68121: Go stdlib crypto/tls cert validation issue
+# Affects docker.io/lusotycoon/apache-exporter:v1.0.12 (gobinary stdlib).
+# Sidecar is optional (metrics.apache.enabled: false by default) and
+# scraped over plain HTTP locally — TLS session resumption path not used.
+# No upstream apache_exporter image rebuild available yet (checked 2026-06-11).
+# Re-evaluate / remove after expiry.
+CVE-2025-68121 exp:2026-09-09
