@@ -25,8 +25,18 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: fixed
-      description: "Allow Helm global values injection when chart is used as a dependency"
+    - kind: changed
+      description: "wg-easy: serviceAccount.automount now defaults to false."
+    - kind: added
+      description: "wg-easy: add NetworkPolicy, PDB, commonLabels/Annotations and scheduling controls"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/bc5e3bedcf2cf6ba7430c9916dec7f6ccabe1d81
+    - kind: added
+      description: "wg-easy: harden pod/container security defaults"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/595ebca124c2e4942fb83c6aa80ca874f9a458a4
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wg-easy
