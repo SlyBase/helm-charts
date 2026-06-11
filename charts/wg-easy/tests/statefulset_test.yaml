@@ -22,11 +22,12 @@ tests:
           path: spec.template.spec.containers[0].securityContext.privileged
           value: true
 
-  - it: does not set a pod securityContext by default
+  - it: defaults the pod securityContext to seccompProfile RuntimeDefault
     template: statefulset.yaml
     asserts:
-      - notExists:
-          path: spec.template.spec.securityContext
+      - equal:
+          path: spec.template.spec.securityContext.seccompProfile.type
+          value: RuntimeDefault
 
   - it: allows overriding the container securityContext
     template: statefulset.yaml

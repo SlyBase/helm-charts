@@ -2,6 +2,18 @@
 
 All notable changes to this chart are documented here.
 
+## [1.0.0](https://github.com/SlyBase/helm-charts/compare/wireguard-v0.4.11...wireguard-v1.0.0) (2026-06-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **wireguard:** serviceAccount.automount now defaults to false. The chart never talks to the Kubernetes API, so the ServiceAccount token no longer needs to be automounted. Set serviceAccount.automount: true to restore the previous behavior.
+
+### Features
+
+* **wireguard:** add NetworkPolicy, PDB, commonLabels/Annotations and scheduling controls ([#384](https://github.com/SlyBase/helm-charts/issues/384)) ([2d7edc5](https://github.com/SlyBase/helm-charts/commit/2d7edc537ed6b721dedf9eff28d201710f1af6b9))
+* **wireguard:** harden pod/container security defaults ([#382](https://github.com/SlyBase/helm-charts/issues/382)) ([46375bf](https://github.com/SlyBase/helm-charts/commit/46375bfdf048a63d5880b91a94ad76f84b6e794f))
+
 ## 0.4.11 - 2026-05-21
 
 - Update docker.io/linuxserver/wireguard to 1.0.20250521-r1-ls113
