@@ -5,6 +5,13 @@ repos:
       - id: yamllint
         args: [-c=.yamllint.yml]
 
+  # Validate values.schema.json files against the JSON Schema metaschema
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.37.2
+    hooks:
+      - id: check-metaschema
+        files: ^charts/[^/]+/values\.schema\.json$
+
   # Validate ArtifactHub annotations in Chart.yaml files
   # Catches: invalid YAML in annotations, wrong 'kind' values, missing required fields,
   # and special characters that need quotes: {}:[],&*#?|-<>=!%@
