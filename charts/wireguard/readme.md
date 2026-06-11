@@ -155,3 +155,27 @@ kubectl apply -f ./samples/namespace.yaml
 kubectl apply -f ./samples/clientFullConfig.secret.yaml
 helm install wireguard-client oci://ghcr.io/slybase/charts/wireguard --values ./samples/clientFullConfig.values.yaml -n wireguard
 ```
+
+## Advanced Configuration
+
+### Common Labels and Annotations
+
+`commonLabels` and `commonAnnotations` are applied to every resource created by this chart (Deployment, Service, PVC, ServiceAccount, NetworkPolicy, ...). Useful for GitOps (ArgoCD), cost allocation, and audit. See `samples/commonLabels.values.yaml` for an example.
+
+### NetworkPolicy
+
+The chart can create a `NetworkPolicy` to restrict traffic to/from the WireGuard pod (disabled by default via `networkPolicy.enabled: false`):
+
+- **Ingress** (server mode only): allows UDP traffic to the WireGuard port (`service.port`). By default, traffic is allowed from anywhere; restrict it with `networkPolicy.ingress.from`.
+- **Egress**: always allows DNS lookups to `kube-system`. `networkPolicy.allowExternalEgress` (default `true`) additionally allows UDP egress to `0.0.0.0/0`, required for the server to reach peers and for clients to reach their configured endpoint.
+- `networkPolicy.ingress.extraRules` / `networkPolicy.egress.extraRules` allow appending raw NetworkPolicy rule blocks.
+
+See `samples/networkpolicy.values.yaml` for an example.
+
+### Pod Disruption Budget
+
+Set `podDisruptionBudget.minAvailable` or `podDisruptionBudget.maxUnavailable` to create a `PodDisruptionBudget` for the deployment. Empty (default) disables it.
+
+### Topology Spread Constraints and Priority Class
+
+`topologySpreadConstraints` and `priorityClassName` are passed through to the pod spec for advanced scheduling control.

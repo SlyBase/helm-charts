@@ -4,11 +4,12 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "wireguard.fullname" . }}
   namespace: {{ .Release.Namespace }}
-  {{- with .Values.wireguard.server.storage.labels }}
+  {{- $pvcLabels := merge (dict) (.Values.wireguard.server.storage.labels | default dict) (.Values.commonLabels | default dict) }}
+  {{- with $pvcLabels }}
   labels:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- $ann := .Values.wireguard.server.storage.annotations }}
+  {{- $ann := merge (dict) (.Values.wireguard.server.storage.annotations | default dict) (.Values.commonAnnotations | default dict) }}
   {{- $rp := .Values.wireguard.server.storage.resourcePolicy }}
   {{- if or $ann $rp }}
   annotations:
