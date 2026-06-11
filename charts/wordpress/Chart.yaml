@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 4.6.3
+version: 4.6.4
 appVersion: 7.0.0
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -30,15 +30,20 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update subchart/wordpress/redis/0.30.3 to v0.30.3"
+      description: "deps: update chart/wordpress/docker.io/memcached/digest-"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/f6762e6773a6410f6a9ee38b2e23058a19a357b1
+          url: https://github.com/SlyBase/helm-charts/commit/556bf84645b17b8a73931992090c3d03f41938bc
     - kind: fixed
-      description: "deps: update subchart/wordpress/valkey/0.21.4 to v0.21.4"
+      description: "deps: update chart/wordpress/docker.io/wordpress/digest-"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/4867527afdfb945eadd7a10d2818ea44ae2f6215
+          url: https://github.com/SlyBase/helm-charts/commit/02dc457a292ec5ef28193fd42c00933b66bde400
+    - kind: fixed
+      description: "wordpress: pin image tags to digests for supply-chain integrity"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/8b000b872b0e286f01d3a2286f44c53e7d48ba86
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache

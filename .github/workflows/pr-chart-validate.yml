@@ -12,6 +12,14 @@ on:
         required: false
         type: string
 
+concurrency:
+  group: pr-validate-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  KUBECONFORM_VERSION: "0.8.0"
+  HELM_UNITTEST_VERSION: "1.1.1"
+
 jobs:
   chart-validate:
     name: chart-validate
@@ -34,37 +42,114 @@ jobs:
         with:
           base-ref: ${{ github.event.inputs.base_ref || github.base_ref || github.event.repository.default_branch || 'main' }}
 
+      - name: Cache Helm dependencies
+        if: steps.charts.outputs.has_charts == 'true'
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: |
+            ~/.cache/helm
+            charts/*/charts
+          key: helm-deps-${{ runner.os }}-${{ hashFiles('charts/*/Chart.lock') }}
+          restore-keys: |
+            helm-deps-${{ runner.os }}-
+
+      - name: Install kubeconform
+        if: steps.charts.outputs.has_charts == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl -fsSL "https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" -o kubeconform.tar.gz
+          tar -xzf kubeconform.tar.gz kubeconform
+          sudo mv kubeconform /usr/local/bin/
+          rm -f kubeconform.tar.gz
+
+          kubeconform -v
+
+      - name: Install helm-unittest
+        if: steps.charts.outputs.has_charts == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git --version "v${HELM_UNITTEST_VERSION}" --verify=false
+
       - name: Validate changed charts
+        if: steps.charts.outputs.has_charts == 'true'
         shell: bash
         env:
           CHARTS_JSON: ${{ steps.charts.outputs.charts_json }}
         run: |
           set -euo pipefail
 
-          mapfile -t chart_dirs < <(printf '%s' "$CHARTS_JSON" | jq -r '.[]')
+          mkdir -p rendered-manifests
 
-          if [ "${#chart_dirs[@]}" -eq 0 ]; then
-            echo "No chart changes detected"
-            exit 0
-          fi
+          mapfile -t chart_dirs < <(printf '%s' "$CHARTS_JSON" | jq -r '.[]')
 
           printf 'Validating %s\n' "${chart_dirs[@]}"
 
           for chart_dir in "${chart_dirs[@]}"; do
             echo "::group::${chart_dir}"
+            chart_name="$(basename "${chart_dir}")"
             helm dependency build "${chart_dir}"
 
             if [ -f "${chart_dir}/linter_values.yaml" ]; then
               helm lint "${chart_dir}" -f "${chart_dir}/linter_values.yaml"
-              helm template smoke "${chart_dir}" -f "${chart_dir}/linter_values.yaml" >/dev/null
+              helm template smoke "${chart_dir}" -f "${chart_dir}/linter_values.yaml" > "rendered-manifests/${chart_name}.yaml"
             else
               helm lint "${chart_dir}"
-              helm template smoke "${chart_dir}" >/dev/null
+              helm template smoke "${chart_dir}" > "rendered-manifests/${chart_name}.yaml"
+            fi
+
+            kubeconform -strict -summary \
+              -schema-location default \
+              -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+              "rendered-manifests/${chart_name}.yaml"
+
+            if [ -d "${chart_dir}/tests" ]; then
+              helm unittest "${chart_dir}"
             fi
 
             echo "::endgroup::"
           done
 
+      - name: Trivy config scan (rendered manifests)
+        if: steps.charts.outputs.has_charts == 'true'
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: config
+          scan-ref: rendered-manifests/
+          format: table
+          exit-code: "0"
+
+      - name: Upload rendered manifests
+        if: always() && steps.charts.outputs.has_charts == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: rendered-manifests
+          path: rendered-manifests/
+          retention-days: 7
+
       # NOTE: chart version bumps are owned by release-please (release PRs), not by
       # feature/dependency PRs, so there is intentionally no "version must be bumped"
       # gate here — that would fail every Renovate and feature PR.
+
+  pre-commit:
+    name: pre-commit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Install Helm
+        uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.x"
+
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1

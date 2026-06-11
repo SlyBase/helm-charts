@@ -1,0 +1,60 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "wireguard.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wireguard.labels" . | nindent 4 }}
+  {{- $npAnnotations := merge (dict) (.Values.networkPolicy.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $npAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "wireguard.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- if or .Values.wireguard.server.enabled .Values.networkPolicy.ingress.extraRules }}
+  ingress:
+    {{- if .Values.wireguard.server.enabled }}
+    - ports:
+        - port: {{ .Values.service.port }}
+          protocol: UDP
+      {{- with .Values.networkPolicy.ingress.from }}
+      from:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- with .Values.networkPolicy.ingress.extraRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- else }}
+  ingress: []
+  {{- end }}
+  egress:
+    # DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    {{- if .Values.networkPolicy.allowExternalEgress }}
+    # WireGuard UDP egress (peer/server endpoint connectivity)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: UDP
+    {{- end }}
+    {{- with .Values.networkPolicy.egress.extraRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

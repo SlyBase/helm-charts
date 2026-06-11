@@ -48,6 +48,20 @@ You have to set a namespace with privileged security (see sample namespace.yaml)
 kubectl create namespace wg-easy && kubectl label namespace wg-easy pod-security.kubernetes.io/enforce=privileged pod-security.kubernetes.io/warn=privileged --overwrite
 ```
 
+## Security
+
+By default the container runs `privileged: true` with the `NET_ADMIN` and `SYS_MODULE` capabilities. This is required by the [wg-easy](https://github.com/wg-easy/wg-easy) image to create the `wg0` interface and, if not already present on the host, to load the WireGuard kernel module.
+
+As a result:
+- `pod-security.kubernetes.io/enforce: privileged` is required on the namespace (see Prerequisites)
+- the chart **cannot** meet the `restricted` or `baseline` Pod Security Standard with the default `securityContext`
+
+What the chart hardens by default regardless:
+- `seccompProfile: RuntimeDefault` for the pod and the container
+- `serviceAccount.automount: false` — the chart never talks to the Kubernetes API
+
+If the WireGuard kernel module is already loaded on every host node, you can try running without `privileged: true` using `capabilities: {add: [NET_ADMIN, SYS_MODULE], drop: [ALL]}` instead - see the commented example in `values.yaml`. This is untested and not the default.
+
 ## Initialization Mode and Metrics
 
 To provide the secrets and values to set up init mode correctly and optionally enable the Prometheus metrics.
@@ -100,6 +114,30 @@ kubectl apply -f ./samples/namespace.yaml
 kubectl apply -f ./samples/advanced.secrets.yaml
 helm install wgeasy oci://ghcr.io/slybase/charts/wg-easy --values ./samples/advanced.values.yaml -n wg-easy
 ```
+
+## Advanced Configuration
+
+### Common Labels and Annotations
+
+`commonLabels` and `commonAnnotations` are applied to every resource created by this chart (StatefulSet, Services, PVC, ServiceAccount, NetworkPolicy, ...). Useful for GitOps (ArgoCD), cost allocation, and audit. See `samples/commonLabels.values.yaml` for an example.
+
+### NetworkPolicy
+
+The chart can create a `NetworkPolicy` to restrict traffic to/from the wg-easy pod (disabled by default via `networkPolicy.enabled: false`):
+
+- **Ingress**: allows UDP traffic to the WireGuard port (`service.wireguard.port`) and TCP traffic to the Web UI/metrics port (`service.ui.port`). By default, traffic is allowed from anywhere; restrict it with `networkPolicy.ingress.from`.
+- **Egress**: always allows DNS lookups to `kube-system`. `networkPolicy.allowExternalEgress` (default `true`) additionally allows UDP egress to `0.0.0.0/0`, required for peer connectivity.
+- `networkPolicy.ingress.extraRules` / `networkPolicy.egress.extraRules` allow appending raw NetworkPolicy rule blocks.
+
+See `samples/networkpolicy.values.yaml` for an example.
+
+### Pod Disruption Budget
+
+Set `podDisruptionBudget.minAvailable` or `podDisruptionBudget.maxUnavailable` to create a `PodDisruptionBudget` for the StatefulSet. Empty (default) disables it.
+
+### Topology Spread Constraints and Priority Class
+
+`topologySpreadConstraints` and `priorityClassName` are passed through to the pod spec for advanced scheduling control.
 
 ## Known Issues
 

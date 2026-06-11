@@ -1,0 +1,51 @@
+suite: Controller rendering (Deployment vs StatefulSet)
+set:
+  wordpress:
+    url: "https://example.com"
+
+tests:
+  - it: renders a Deployment by default
+    template: deployment.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Deployment
+
+  - it: does not render a StatefulSet by default
+    template: statefulset.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders a StatefulSet when controllerType=statefulset
+    template: statefulset.yaml
+    set:
+      controllerType: statefulset
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: StatefulSet
+      - isNotEmpty:
+          path: spec.serviceName
+      - isNotEmpty:
+          path: spec.volumeClaimTemplates
+
+  - it: does not render a Deployment when controllerType=statefulset
+    template: deployment.yaml
+    set:
+      controllerType: statefulset
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: fails when controllerType=statefulset and storage.existingClaim is set
+    template: statefulset.yaml
+    set:
+      controllerType: statefulset
+      storage:
+        existingClaim: my-existing-pvc
+    asserts:
+      - failedTemplate:
+          errorMessage: "storage.existingClaim is not supported with controllerType=statefulset; each replica gets its own PVC via volumeClaimTemplates."

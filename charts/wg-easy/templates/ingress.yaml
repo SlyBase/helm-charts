@@ -6,7 +6,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "wg-easy.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- $ingAnnotations := merge (dict) (.Values.ingress.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+  {{- with $ingAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}

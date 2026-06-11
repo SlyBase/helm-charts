@@ -5,6 +5,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "wireguard.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -48,6 +52,8 @@ spec:
         runAsUser: {{ .Values.wireguard.PUID | default "1000" }}
         runAsGroup: {{ .Values.wireguard.PGID | default "1000" }}
         fsGroup: {{ .Values.wireguard.PGID | default "1000" }}
+        seccompProfile:
+          type: RuntimeDefault
       {{- end}}
       {{- if .Values.dnsPolicy }}
       dnsPolicy: {{ .Values.dnsPolicy }}
@@ -81,6 +87,8 @@ spec:
             readOnlyRootFilesystem: false
             runAsNonRoot: false
             runAsUser: 0
+            seccompProfile:
+              type: RuntimeDefault
           {{ else }}
             # Client mode - more secure with minimal capabilities
             capabilities:
@@ -91,8 +99,10 @@ spec:
             privileged: true
             allowPrivilegeEscalation: true
             readOnlyRootFilesystem: false
-            runAsNonRoot: false 
+            runAsNonRoot: false
             runAsUser: 0
+            seccompProfile:
+              type: RuntimeDefault
           {{ end }}
           image: {{ include "slycharts.image" (dict "image" .Values.image "defaultTag" .Chart.AppVersion) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -229,4 +239,11 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
       {{- end }}

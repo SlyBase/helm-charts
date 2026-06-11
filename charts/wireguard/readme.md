@@ -46,6 +46,24 @@ You have to set a namespace with privileged security (see sample namespace.yaml)
 kubectl create namespace wireguard && kubectl label namespace wireguard pod-security.kubernetes.io/enforce=privileged --overwrite
 ```
 
+## Security
+
+The container runs as `root` (`runAsUser: 0`) with `privileged: true` and the `NET_ADMIN` capability. This is required by the underlying [linuxserver/wireguard](https://github.com/linuxserver/docker-wireguard) image:
+
+- its s6-overlay init system needs root capabilities beyond `NET_ADMIN` (e.g. `CAP_SETUID`/`CAP_SETGID`) to start up — running with a restricted capability set (`drop: [ALL]`, `add: [NET_ADMIN]`) without `privileged: true` causes the container to crash with `s6-overlay-suexec: fatal: unable to setgid to root`
+- `wg-quick` (interface creation, and in server mode routing/NAT) needs `NET_ADMIN`, and on some host kernels `SYS_MODULE` to load the WireGuard kernel module
+
+As a result:
+- `pod-security.kubernetes.io/enforce: privileged` is required on the namespace (see Prerequisites)
+- the chart **cannot** meet the `restricted` or `baseline` Pod Security Standard
+
+What the chart hardens by default regardless:
+- `seccompProfile: RuntimeDefault` for the pod and the container
+- `capabilities: {drop: [ALL], add: [NET_ADMIN]}` (`SYS_MODULE` is commented out — only needed if the host kernel doesn't already have the WireGuard module loaded)
+- `serviceAccount.automount: false` — the chart never talks to the Kubernetes API
+
+`allowPrivilegeEscalation: false` is intentionally **not** set: Kubernetes rejects the combination `privileged: true` + `allowPrivilegeEscalation: false` (`cannot set allowPrivilegeEscalation to false and privileged to true`), and `privileged: true` is a hard functional requirement as described above.
+
 ## Server mode
 Sample see in TL;DR.
 
@@ -137,3 +155,27 @@ kubectl apply -f ./samples/namespace.yaml
 kubectl apply -f ./samples/clientFullConfig.secret.yaml
 helm install wireguard-client oci://ghcr.io/slybase/charts/wireguard --values ./samples/clientFullConfig.values.yaml -n wireguard
 ```
+
+## Advanced Configuration
+
+### Common Labels and Annotations
+
+`commonLabels` and `commonAnnotations` are applied to every resource created by this chart (Deployment, Service, PVC, ServiceAccount, NetworkPolicy, ...). Useful for GitOps (ArgoCD), cost allocation, and audit. See `samples/commonLabels.values.yaml` for an example.
+
+### NetworkPolicy
+
+The chart can create a `NetworkPolicy` to restrict traffic to/from the WireGuard pod (disabled by default via `networkPolicy.enabled: false`):
+
+- **Ingress** (server mode only): allows UDP traffic to the WireGuard port (`service.port`). By default, traffic is allowed from anywhere; restrict it with `networkPolicy.ingress.from`.
+- **Egress**: always allows DNS lookups to `kube-system`. `networkPolicy.allowExternalEgress` (default `true`) additionally allows UDP egress to `0.0.0.0/0`, required for the server to reach peers and for clients to reach their configured endpoint.
+- `networkPolicy.ingress.extraRules` / `networkPolicy.egress.extraRules` allow appending raw NetworkPolicy rule blocks.
+
+See `samples/networkpolicy.values.yaml` for an example.
+
+### Pod Disruption Budget
+
+Set `podDisruptionBudget.minAvailable` or `podDisruptionBudget.maxUnavailable` to create a `PodDisruptionBudget` for the deployment. Empty (default) disables it.
+
+### Topology Spread Constraints and Priority Class
+
+`topologySpreadConstraints` and `priorityClassName` are passed through to the pod spec for advanced scheduling control.

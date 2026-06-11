@@ -4,13 +4,15 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "wg-easy.fullname" . }}
   namespace: {{ .Release.Namespace }}
-{{ if .Values.serviceMonitor.labels }}
+  {{- $smLabels := merge (dict) (.Values.serviceMonitor.labels | default dict) (.Values.commonLabels | default dict) }}
+{{ if $smLabels }}
   labels:
-{{ toYaml .Values.serviceMonitor.labels | nindent 4 }}
+{{ toYaml $smLabels | nindent 4 }}
 {{ end }}
-{{ if .Values.serviceMonitor.annotations }}
+  {{- $smAnnotations := merge (dict) (.Values.serviceMonitor.annotations | default dict) (.Values.commonAnnotations | default dict) }}
+{{ if $smAnnotations }}
   annotations:
-{{ toYaml .Values.serviceMonitor.annotations | nindent 4 }}
+{{ toYaml $smAnnotations | nindent 4 }}
 {{ end }}
 spec:
   {{ if .Values.serviceMonitor.selector }}

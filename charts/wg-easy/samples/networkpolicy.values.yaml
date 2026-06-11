@@ -1,0 +1,14 @@
+## Snippet: NetworkPolicy — add these values to your existing values file.
+## Restricts ingress/egress traffic for the wg-easy pod.
+
+networkPolicy:
+  enabled: true
+  # Restrict who may reach the WireGuard UDP port and the Web UI/metrics port.
+  # Empty = allow from anywhere (typical for a VPN endpoint exposed via NodePort/LoadBalancer).
+  ingress:
+    from: []
+    extraRules: []
+  # Allow UDP egress to the public internet (required for peer connectivity)
+  allowExternalEgress: true
+  egress:
+    extraRules: []
