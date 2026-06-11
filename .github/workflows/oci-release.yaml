@@ -41,6 +41,8 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   HELM_VERSION: v3.18.3
   ORAS_VERSION: 1.2.0
+  SYFT_VERSION: 1.45.1
+  TRIVY_VERSION: 0.71.0
   # Tag-triggered releases publish live when this is "true".
   # Set to "false" to revert to dry-run mode (Phase 0 safety net).
   RELEASE_ENABLED: "true"
@@ -53,6 +55,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
+      attestations: write
     steps:
       - name: Resolve release context
         id: ctx
@@ -233,16 +236,84 @@ jobs:
           echo "package_file=./packages/${CHART_NAME}-${CHART_VERSION}.tgz" >> "$GITHUB_OUTPUT"
           ls -la ./packages
 
+      - name: Install Syft
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin "v${SYFT_VERSION}"
+          syft version
+
+      - name: Generate chart SBOM
+        id: sbom
+        shell: bash
+        env:
+          CHART_NAME: ${{ steps.chart.outputs.chart_name }}
+          CHART_VERSION: ${{ steps.chart.outputs.chart_version }}
+          PACKAGE_FILE: ${{ steps.package.outputs.package_file }}
+        run: |
+          set -euo pipefail
+
+          mkdir -p sbom
+          sbom_file="sbom/${CHART_NAME}-${CHART_VERSION}.spdx.json"
+          syft "$PACKAGE_FILE" -o "spdx-json=${sbom_file}"
+
+          echo "sbom_file=${sbom_file}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve referenced images
+        id: images
+        shell: bash
+        env:
+          CHART_DIR: ${{ steps.chart.outputs.chart_dir }}
+        run: |
+          set -euo pipefail
+
+          python3 - "$CHART_DIR/Chart.yaml" > images.txt <<'EOF'
+          import sys
+          import yaml
+
+          with open(sys.argv[1]) as f:
+              chart = yaml.safe_load(f)
+
+          images_yaml = (chart.get("annotations") or {}).get("artifacthub.io/images", "")
+          for image in yaml.safe_load(images_yaml) or []:
+              print(image["image"])
+          EOF
+
+          echo "Referenced images:"
+          cat images.txt
+
+      - name: Install Trivy
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin "v${TRIVY_VERSION}"
+          trivy version
+
+      - name: Trivy image scan (referenced images, blocking on CRITICAL)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          while IFS= read -r image; do
+            [ -z "$image" ] && continue
+            echo "::group::trivy image scan: ${image}"
+            trivy image --severity CRITICAL --exit-code 1 --ignore-unfixed --scanners vuln "$image"
+            echo "::endgroup::"
+          done < images.txt
+
       - name: Dry run summary
         if: steps.ctx.outputs.dry_run == 'true'
         shell: bash
         env:
           CHART_NAME: ${{ steps.chart.outputs.chart_name }}
           CHART_VERSION: ${{ steps.chart.outputs.chart_version }}
+          SBOM_FILE: ${{ steps.sbom.outputs.sbom_file }}
         run: |
           echo "🧪 DRY RUN — chart packaged but NOT published."
           echo "Would push: oci://ghcr.io/slybase/charts/${CHART_NAME}:${CHART_VERSION}"
-          echo "Would sign + upload ArtifactHub metadata."
+          echo "Would sign + attach SBOM (${SBOM_FILE}) + attest provenance + upload ArtifactHub metadata."
           echo "Set RELEASE_ENABLED=true (tag push) or dry_run=false (manual) to publish."
 
       - name: Push chart to OCI registry
@@ -295,6 +366,27 @@ jobs:
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
             --certificate-identity-regexp "^https://github.com/${{ github.repository }}/.github/workflows/oci-release.yaml@refs/(tags|heads)/.+$"
 
+      - name: Attach chart SBOM as OCI referrer
+        if: steps.ctx.outputs.dry_run != 'true' && steps.push.outputs.chart_ref != ''
+        shell: bash
+        env:
+          SBOM_FILE: ${{ steps.sbom.outputs.sbom_file }}
+        run: |
+          set -euo pipefail
+
+          chart_ref="${{ steps.push.outputs.chart_ref }}"
+          oras attach --artifact-type "application/spdx+json" \
+            "$chart_ref" \
+            "${SBOM_FILE}:application/spdx+json"
+
+      - name: Generate provenance attestation for chart artifact
+        if: steps.ctx.outputs.dry_run != 'true' && steps.push.outputs.chart_ref != ''
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
+        with:
+          subject-name: ghcr.io/slybase/charts/${{ steps.chart.outputs.chart_name }}
+          subject-digest: ${{ steps.push.outputs.chart_digest }}
+          push-to-registry: true
+
       - name: Output chart information
         if: steps.ctx.outputs.dry_run != 'true'
         run: |
@@ -306,6 +398,7 @@ jobs:
           echo "🏷️  Version: $chart_version"
           echo "📍 Reference: $chart_ref"
           echo "✅ Signed and verified with Cosign"
+          echo "✅ SBOM attached (application/spdx+json) and provenance attested"
           echo ""
           echo "To use this chart with Helm:"
           echo "helm install my-release oci://ghcr.io/slybase/charts/$chart_name --version $chart_version"
