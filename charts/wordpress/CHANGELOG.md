@@ -2,6 +2,14 @@
 
 All notable changes to this chart are documented here.
 
+## [4.6.6](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.6.5...wordpress-v4.6.6) (2026-06-12)
+
+
+### Bug Fixes
+
+* **deps:** update chart/wordpress/docker.io/memcached/digest- ([#408](https://github.com/SlyBase/helm-charts/issues/408)) ([c0d7058](https://github.com/SlyBase/helm-charts/commit/c0d7058b0e78aa26cee6a10de5572577a6961233))
+* **renovate:** auto-update wireguard appVersion with image changes ([#405](https://github.com/SlyBase/helm-charts/issues/405)) ([44c6eff](https://github.com/SlyBase/helm-charts/commit/44c6eff35a3e03a86639c95d063c2cd40b215e52))
+
 ## [4.6.5](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.6.4...wordpress-v4.6.5) (2026-06-11)
 
 

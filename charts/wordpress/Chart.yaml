@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 4.6.5
+version: 4.6.6
 appVersion: 7.0.0
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -30,10 +30,15 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update chart/wordpress/docker.io/wordpress/digest-"
+      description: "deps: update chart/wordpress/docker.io/memcached/digest-"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/ff5916a5816fbf6f7c71f020231443b23901e43a
+          url: https://github.com/SlyBase/helm-charts/commit/c0d7058b0e78aa26cee6a10de5572577a6961233
+    - kind: fixed
+      description: "renovate: auto-update wireguard appVersion with image changes"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/44c6eff35a3e03a86639c95d063c2cd40b215e52
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
