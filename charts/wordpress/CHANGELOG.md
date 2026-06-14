@@ -2,6 +2,14 @@
 
 All notable changes to this chart are documented here.
 
+## [4.6.7](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.6.6...wordpress-v4.6.7) (2026-06-14)
+
+
+### Bug Fixes
+
+* **deps:** update subchart/wordpress/redis/0.30.4 to v0.30.4 ([#411](https://github.com/SlyBase/helm-charts/issues/411)) ([9cb69bc](https://github.com/SlyBase/helm-charts/commit/9cb69bc579e933af11fb71d284ad7cfedd124cbb))
+* **deps:** update subchart/wordpress/valkey/0.22.0 to v0.22.0 ([#409](https://github.com/SlyBase/helm-charts/issues/409)) ([801cae7](https://github.com/SlyBase/helm-charts/commit/801cae7c0fd14ed7e89ee56b73dc736463bcbf5b))
+
 ## [4.6.6](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.6.5...wordpress-v4.6.6) (2026-06-12)
 
 
