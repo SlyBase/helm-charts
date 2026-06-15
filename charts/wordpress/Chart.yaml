@@ -29,16 +29,16 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: fixed
-      description: "deps: update subchart/wordpress/redis/0.30.4 to v0.30.4"
+    - kind: added
+      description: "deps: update chart/wordpress/docker.io/lusotycoon/apache-exporter/v1.1.0 to v1.1.0"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/9cb69bc579e933af11fb71d284ad7cfedd124cbb
+          url: https://github.com/SlyBase/helm-charts/commit/af4282ae8799a4ce1755b5f4f71bd22318612bbc
     - kind: fixed
-      description: "deps: update subchart/wordpress/valkey/0.22.0 to v0.22.0"
+      description: "deps: update chart/wordpress/docker.io/wordpress/digest-"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/801cae7c0fd14ed7e89ee56b73dc736463bcbf5b
+          url: https://github.com/SlyBase/helm-charts/commit/d141a2549a25079f12a07e53076f0d364d028039
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
