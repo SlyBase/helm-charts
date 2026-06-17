@@ -2,6 +2,14 @@
 
 All notable changes to this chart are documented here.
 
+## [1.0.2](https://github.com/SlyBase/helm-charts/compare/wireguard-v1.0.1...wireguard-v1.0.2) (2026-06-17)
+
+
+### Bug Fixes
+
+* **deps:** update chart/wireguard/wireguard/1.0.20250521-r1-ls114 to v1.0.20250521-r1-ls114 ([#403](https://github.com/SlyBase/helm-charts/issues/403)) ([583fee3](https://github.com/SlyBase/helm-charts/commit/583fee32ae0dedb530c411bb6ccfc03ce2df30ac))
+* **deps:** update chart/wireguard/wireguard/1.0.20250521-r1-ls114 to v1.0.20250521-r1-ls114 ([#407](https://github.com/SlyBase/helm-charts/issues/407)) ([c535c54](https://github.com/SlyBase/helm-charts/commit/c535c54dc9e5dc102d9bc530183155398d10304d))
+
 ## [1.0.1](https://github.com/SlyBase/helm-charts/compare/wireguard-v1.0.0...wireguard-v1.0.1) (2026-06-11)
 
 
