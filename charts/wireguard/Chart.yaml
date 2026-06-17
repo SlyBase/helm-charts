@@ -4,7 +4,7 @@ description: >-
   Using the offical linuxserver/wireguard image with almost any environment
   variables for K8S. Supporting server and client mode.
 type: application
-version: 1.0.1
+version: 1.0.2
 appVersion: 1.0.20250521-r1-ls114
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wireguard/app.png
@@ -26,10 +26,15 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "wireguard: make SERVERPORT default to service.port"
+      description: "deps: update chart/wireguard/wireguard/1.0.20250521-r1-ls114 to v1.0.20250521-r1-ls114"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/dff1bacf7fcb871ccfe8ea7b415b2981944ac162
+          url: https://github.com/SlyBase/helm-charts/commit/583fee32ae0dedb530c411bb6ccfc03ce2df30ac
+    - kind: fixed
+      description: "deps: update chart/wireguard/wireguard/1.0.20250521-r1-ls114 to v1.0.20250521-r1-ls114"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/c535c54dc9e5dc102d9bc530183155398d10304d
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wireguard
