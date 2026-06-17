@@ -2,6 +2,18 @@
 
 All notable changes to this chart are documented here.
 
+## [4.7.0](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.6.7...wordpress-v4.7.0) (2026-06-15)
+
+
+### Features
+
+* **deps:** update chart/wordpress/docker.io/lusotycoon/apache-exporter/v1.1.0 to v1.1.0 ([#414](https://github.com/SlyBase/helm-charts/issues/414)) ([af4282a](https://github.com/SlyBase/helm-charts/commit/af4282ae8799a4ce1755b5f4f71bd22318612bbc))
+
+
+### Bug Fixes
+
+* **deps:** update chart/wordpress/docker.io/wordpress/digest- ([#412](https://github.com/SlyBase/helm-charts/issues/412)) ([d141a25](https://github.com/SlyBase/helm-charts/commit/d141a2549a25079f12a07e53076f0d364d028039))
+
 ## [4.6.7](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.6.6...wordpress-v4.6.7) (2026-06-14)
 
 
