@@ -106,8 +106,8 @@
             "matchFileNames": [
                 "charts/**"
             ],
-            "groupName": "chart/{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}/{{{depName}}}/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
-            "branchTopic": "chart-{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
+            "groupName": "chart/{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}/{{{depName}}}/{{#if (equals updateType 'digest')}}digest{{else}}{{{newVersion}}}{{/if}}",
+            "branchTopic": "chart-{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest{{else}}{{{newVersion}}}{{/if}}",
             "labels": [
                 "dependencies",
                 "renovate"
@@ -128,8 +128,8 @@
             "matchPackageNames": [
                 "docker.io/linuxserver/wireguard"
             ],
-            "groupName": "chart/wireguard/wireguard/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
-            "branchTopic": "chart-wireguard-wireguard-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
+            "groupName": "chart/wireguard/wireguard/{{#if (equals updateType 'digest')}}digest{{else}}{{{newVersion}}}{{/if}}",
+            "branchTopic": "chart-wireguard-wireguard-{{#if (equals updateType 'digest')}}digest{{else}}{{{newVersion}}}{{/if}}"
         },
         {
             "description": "Group subchart updates per dependency with version-specific branch names",
@@ -139,8 +139,8 @@
             "matchFileNames": [
                 "charts/**"
             ],
-            "groupName": "subchart/{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}/{{{depName}}}/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
-            "branchTopic": "subchart-{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
+            "groupName": "subchart/{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}/{{{depName}}}/{{#if (equals updateType 'digest')}}digest{{else}}{{{newVersion}}}{{/if}}",
+            "branchTopic": "subchart-{{{ replace '/samples' '' (replace 'charts/' '' parentDir) }}}-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest{{else}}{{{newVersion}}}{{/if}}",
             "labels": [
                 "dependencies",
                 "renovate"
@@ -157,8 +157,8 @@
             "matchFileNames": [
                 "charts/wordpress/**"
             ],
-            "groupName": "subchart/wordpress/{{{depName}}}/{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
-            "branchTopic": "subchart-wordpress-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}"
+            "groupName": "subchart/wordpress/{{{depName}}}/{{#if (equals updateType 'digest')}}digest{{else}}{{{newVersion}}}{{/if}}",
+            "branchTopic": "subchart-wordpress-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest{{else}}{{{newVersion}}}{{/if}}"
         },
         {
             "description": "Per-package GitHub Actions workflow updates with version-specific branches",
@@ -168,7 +168,7 @@
             "matchFileNames": [
                 ".github/workflows/**"
             ],
-            "branchTopic": "github-actions-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest-{{{newDigestShort}}}{{else}}{{{newVersion}}}{{/if}}",
+            "branchTopic": "github-actions-{{{depNameSanitized}}}-{{#if (equals updateType 'digest')}}digest{{else}}{{{newVersion}}}{{/if}}",
             "labels": [
                 "dependencies",
                 "renovate"
