@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 4.7.1
+version: 4.7.2
 appVersion: 7.0.0
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -29,16 +29,11 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: added
-      description: "deps: update chart/wordpress/docker.io/lusotycoon/apache-exporter/v1.1.0 to v1.1.0"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/af4282ae8799a4ce1755b5f4f71bd22318612bbc
     - kind: fixed
       description: "deps: update chart/wordpress/docker.io/wordpress/digest-"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/d141a2549a25079f12a07e53076f0d364d028039
+          url: https://github.com/SlyBase/helm-charts/commit/f1243ad038775d7398ecb63a1e46abbeaaea3332
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
