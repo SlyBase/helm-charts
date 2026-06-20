@@ -171,7 +171,7 @@ wordpress:
       ## @param wordpress.init.image.repository string Container image repository for init container
       repository: wordpress
       ## @param wordpress.init.image.tag string Image tag for init container
-      tag: "cli-2.12.0-php8.3@sha256:582178fd54bda89dfc23adb25990beed2220b67f7ae102e78b1be2262ca8d997"
+      tag: "cli-2.12.0-php8.3@sha256:8c63570c29d2357eef1215547619b968284ef897953a109b0e00cdd21f417343"
       ## @param wordpress.init.image.pullPolicy string Image pull policy for init container
       pullPolicy: IfNotPresent
 
