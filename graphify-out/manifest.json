@@ -1,0 +1,102 @@
+{
+  ".claude/settings.local.json": {
+    "mtime": 1780445496.3902566,
+    "ast_hash": "5999fe16a4639f58faf53a6bdac8b7d0",
+    "semantic_hash": "5999fe16a4639f58faf53a6bdac8b7d0"
+  },
+  ".github/scripts/sync-artifacthub-changes.py": {
+    "mtime": 1780483798.951804,
+    "ast_hash": "86326a54a2b07551ceb26c0db010e6bb",
+    "semantic_hash": "86326a54a2b07551ceb26c0db010e6bb"
+  },
+  ".release-please-manifest.json": {
+    "mtime": 1781184949.505231,
+    "ast_hash": "21a755e2ee059b5201691b2f0af19232",
+    "semantic_hash": "21a755e2ee059b5201691b2f0af19232"
+  },
+  ".vscode/tasks.json": {
+    "mtime": 1773434862.322702,
+    "ast_hash": "6f70b620b730783b61472a49f09d3246",
+    "semantic_hash": "6f70b620b730783b61472a49f09d3246"
+  },
+  "charts/wg-easy/samples/verify/install.sh": {
+    "mtime": 1781183666.6213193,
+    "ast_hash": "5cca5c29ebc10738fd5d47e6bb4f24c3",
+    "semantic_hash": "5cca5c29ebc10738fd5d47e6bb4f24c3"
+  },
+  "charts/wg-easy/samples/verify/uninstall.sh": {
+    "mtime": 1781183666.6226301,
+    "ast_hash": "ed061b45688efdfc11c5e850a43c8c4f",
+    "semantic_hash": "ed061b45688efdfc11c5e850a43c8c4f"
+  },
+  "charts/wg-easy/samples/verify/verify.sh": {
+    "mtime": 1781183666.6236959,
+    "ast_hash": "94e05a458abbfe97171f9f0081057f79",
+    "semantic_hash": "94e05a458abbfe97171f9f0081057f79"
+  },
+  "charts/wg-easy/values.schema.json": {
+    "mtime": 1781173026.0747762,
+    "ast_hash": "ef3906de651631036325537c37871896",
+    "semantic_hash": "ef3906de651631036325537c37871896"
+  },
+  "charts/wireguard/samples/verify/install.sh": {
+    "mtime": 1781183666.6257472,
+    "ast_hash": "ed49b2648f14b52a69dfe10abc25cad3",
+    "semantic_hash": "ed49b2648f14b52a69dfe10abc25cad3"
+  },
+  "charts/wireguard/samples/verify/uninstall.sh": {
+    "mtime": 1781183666.6264036,
+    "ast_hash": "9857e9bd2ecc774b9f256e08dd9f4e0f",
+    "semantic_hash": "9857e9bd2ecc774b9f256e08dd9f4e0f"
+  },
+  "charts/wireguard/samples/verify/verify.sh": {
+    "mtime": 1781183666.6271164,
+    "ast_hash": "050a19c1ad8b9153b4ccefadac8ab8ea",
+    "semantic_hash": "050a19c1ad8b9153b4ccefadac8ab8ea"
+  },
+  "charts/wireguard/values.schema.json": {
+    "mtime": 1781184949.5080051,
+    "ast_hash": "1fff8e0f7c9263dd5a5833d68c09b70f",
+    "semantic_hash": "1fff8e0f7c9263dd5a5833d68c09b70f"
+  },
+  "charts/wordpress/samples/verify/install.sh": {
+    "mtime": 1779706937.2233138,
+    "ast_hash": "dd97d235c563fa4ac3f15fd48708d7a2",
+    "semantic_hash": "dd97d235c563fa4ac3f15fd48708d7a2"
+  },
+  "charts/wordpress/samples/verify/uninstall.sh": {
+    "mtime": 1780483798.9558637,
+    "ast_hash": "049b6f6c450cbb489505973760c30837",
+    "semantic_hash": "049b6f6c450cbb489505973760c30837"
+  },
+  "charts/wordpress/samples/verify/verify.sh": {
+    "mtime": 1780483798.9565647,
+    "ast_hash": "1da20c84abefd054b79aa07903947948",
+    "semantic_hash": "1da20c84abefd054b79aa07903947948"
+  },
+  "charts/wordpress/values.schema.json": {
+    "mtime": 1780483798.9594195,
+    "ast_hash": "2190a3148c8d3e06705417935f75c613",
+    "semantic_hash": "2190a3148c8d3e06705417935f75c613"
+  },
+  "release-please-config.json": {
+    "mtime": 1780483798.960231,
+    "ast_hash": "960bdc9894c1066bf13362229068929f",
+    "semantic_hash": "960bdc9894c1066bf13362229068929f"
+  },
+  "renovate.json": {
+    "mtime": 1781214979.9115264,
+    "ast_hash": "3e14fa7bcafeeacad7599bcd5fdb614c",
+    "semantic_hash": "3e14fa7bcafeeacad7599bcd5fdb614c"
+  },
+  "scripts/helmlint.sh": {
+    "mtime": 1779749336.2279923,
+    "ast_hash": "86656aeeda600b2d0cd56dd1d6776600",
+    "semantic_hash": "86656aeeda600b2d0cd56dd1d6776600"
+  },
+  "scripts/validate-artifacthub-annotations.py": {
+    "mtime": 1764867312.1171021,
+    "ast_hash": "d63c6a865586d99416cc4882bc88bbd8",
+    "semantic_hash": "d63c6a865586d99416cc4882bc88bbd8"
+  }
+}
