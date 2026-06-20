@@ -1,0 +1,1952 @@
+{
+  "communities": {
+    "0": [
+      "wg_easy_values_schema_config_additionalproperties",
+      "wg_easy_values_schema_config_properties",
+      "wg_easy_values_schema_config_required",
+      "wg_easy_values_schema_config_title",
+      "wg_easy_values_schema_config_type",
+      "wg_easy_values_schema_disable_ipv6_description",
+      "wg_easy_values_schema_disable_ipv6_title",
+      "wg_easy_values_schema_disable_ipv6_type",
+      "wg_easy_values_schema_dns_description",
+      "wg_easy_values_schema_dns_title",
+      "wg_easy_values_schema_dns_type",
+      "wg_easy_values_schema_existingsecret_description",
+      "wg_easy_values_schema_existingsecret_title",
+      "wg_easy_values_schema_existingsecret_type",
+      "wg_easy_values_schema_host_description",
+      "wg_easy_values_schema_host_title",
+      "wg_easy_values_schema_host_type",
+      "wg_easy_values_schema_init_additionalproperties",
+      "wg_easy_values_schema_init_properties",
+      "wg_easy_values_schema_init_required",
+      "wg_easy_values_schema_init_title",
+      "wg_easy_values_schema_init_type",
+      "wg_easy_values_schema_insecure_description",
+      "wg_easy_values_schema_insecure_title",
+      "wg_easy_values_schema_insecure_type",
+      "wg_easy_values_schema_ipv4_cidr_description",
+      "wg_easy_values_schema_ipv4_cidr_title",
+      "wg_easy_values_schema_ipv4_cidr_type",
+      "wg_easy_values_schema_ipv6_cidr_description",
+      "wg_easy_values_schema_ipv6_cidr_title",
+      "wg_easy_values_schema_ipv6_cidr_type",
+      "wg_easy_values_schema_password_description",
+      "wg_easy_values_schema_password_title",
+      "wg_easy_values_schema_password_type",
+      "wg_easy_values_schema_properties_config",
+      "wg_easy_values_schema_properties_disable_ipv6",
+      "wg_easy_values_schema_properties_dns",
+      "wg_easy_values_schema_properties_existingsecret",
+      "wg_easy_values_schema_properties_host",
+      "wg_easy_values_schema_properties_init",
+      "wg_easy_values_schema_properties_insecure",
+      "wg_easy_values_schema_properties_ipv4_cidr",
+      "wg_easy_values_schema_properties_ipv6_cidr",
+      "wg_easy_values_schema_properties_password",
+      "wg_easy_values_schema_properties_username",
+      "wg_easy_values_schema_username_description",
+      "wg_easy_values_schema_username_title",
+      "wg_easy_values_schema_username_type"
+    ],
+    "1": [
+      "wordpress_values_schema_accessmodes_default",
+      "wordpress_values_schema_accessmodes_description",
+      "wordpress_values_schema_accessmodes_type",
+      "wordpress_values_schema_annotations_description",
+      "wordpress_values_schema_annotations_type",
+      "wordpress_values_schema_automount_default",
+      "wordpress_values_schema_automount_description",
+      "wordpress_values_schema_automount_type",
+      "wordpress_values_schema_create_default",
+      "wordpress_values_schema_create_description",
+      "wordpress_values_schema_create_type",
+      "wordpress_values_schema_existingclaim_description",
+      "wordpress_values_schema_existingclaim_type",
+      "wordpress_values_schema_labels_description",
+      "wordpress_values_schema_labels_type",
+      "wordpress_values_schema_properties_accessmodes",
+      "wordpress_values_schema_properties_annotations",
+      "wordpress_values_schema_properties_automount",
+      "wordpress_values_schema_properties_create",
+      "wordpress_values_schema_properties_existingclaim",
+      "wordpress_values_schema_properties_labels",
+      "wordpress_values_schema_properties_resourcepolicy",
+      "wordpress_values_schema_properties_selector",
+      "wordpress_values_schema_properties_serviceaccount",
+      "wordpress_values_schema_properties_size",
+      "wordpress_values_schema_properties_storage",
+      "wordpress_values_schema_properties_storageclass",
+      "wordpress_values_schema_resourcepolicy_default",
+      "wordpress_values_schema_resourcepolicy_description",
+      "wordpress_values_schema_resourcepolicy_enum",
+      "wordpress_values_schema_resourcepolicy_type",
+      "wordpress_values_schema_selector_description",
+      "wordpress_values_schema_selector_type",
+      "wordpress_values_schema_serviceaccount_properties",
+      "wordpress_values_schema_serviceaccount_type",
+      "wordpress_values_schema_size_default",
+      "wordpress_values_schema_size_description",
+      "wordpress_values_schema_size_type",
+      "wordpress_values_schema_storage_properties",
+      "wordpress_values_schema_storage_type",
+      "wordpress_values_schema_storageclass_default",
+      "wordpress_values_schema_storageclass_description",
+      "wordpress_values_schema_storageclass_type"
+    ],
+    "2": [
+      "wireguard_values_schema_add_description",
+      "wireguard_values_schema_add_items",
+      "wireguard_values_schema_add_title",
+      "wireguard_values_schema_add_type",
+      "wireguard_values_schema_allowprivilegeescalation_description",
+      "wireguard_values_schema_allowprivilegeescalation_title",
+      "wireguard_values_schema_allowprivilegeescalation_type",
+      "wireguard_values_schema_capabilities_additionalproperties",
+      "wireguard_values_schema_capabilities_description",
+      "wireguard_values_schema_capabilities_properties",
+      "wireguard_values_schema_capabilities_title",
+      "wireguard_values_schema_capabilities_type",
+      "wireguard_values_schema_drop_description",
+      "wireguard_values_schema_drop_items",
+      "wireguard_values_schema_drop_title",
+      "wireguard_values_schema_drop_type",
+      "wireguard_values_schema_privileged_description",
+      "wireguard_values_schema_privileged_title",
+      "wireguard_values_schema_privileged_type",
+      "wireguard_values_schema_properties_add",
+      "wireguard_values_schema_properties_allowprivilegeescalation",
+      "wireguard_values_schema_properties_capabilities",
+      "wireguard_values_schema_properties_drop",
+      "wireguard_values_schema_properties_privileged",
+      "wireguard_values_schema_properties_readonlyrootfilesystem",
+      "wireguard_values_schema_properties_runasnonroot",
+      "wireguard_values_schema_properties_runasuser",
+      "wireguard_values_schema_properties_securitycontext",
+      "wireguard_values_schema_readonlyrootfilesystem_description",
+      "wireguard_values_schema_readonlyrootfilesystem_title",
+      "wireguard_values_schema_readonlyrootfilesystem_type",
+      "wireguard_values_schema_runasnonroot_description",
+      "wireguard_values_schema_runasnonroot_title",
+      "wireguard_values_schema_runasnonroot_type",
+      "wireguard_values_schema_runasuser_description",
+      "wireguard_values_schema_runasuser_title",
+      "wireguard_values_schema_runasuser_type",
+      "wireguard_values_schema_securitycontext_additionalproperties",
+      "wireguard_values_schema_securitycontext_description",
+      "wireguard_values_schema_securitycontext_properties",
+      "wireguard_values_schema_securitycontext_title",
+      "wireguard_values_schema_securitycontext_type"
+    ],
+    "3": [
+      "wg_easy_values_schema_add_description",
+      "wg_easy_values_schema_add_items",
+      "wg_easy_values_schema_add_title",
+      "wg_easy_values_schema_add_type",
+      "wg_easy_values_schema_allowprivilegeescalation_description",
+      "wg_easy_values_schema_allowprivilegeescalation_title",
+      "wg_easy_values_schema_allowprivilegeescalation_type",
+      "wg_easy_values_schema_capabilities_additionalproperties",
+      "wg_easy_values_schema_capabilities_properties",
+      "wg_easy_values_schema_capabilities_title",
+      "wg_easy_values_schema_capabilities_type",
+      "wg_easy_values_schema_drop_description",
+      "wg_easy_values_schema_drop_items",
+      "wg_easy_values_schema_drop_title",
+      "wg_easy_values_schema_drop_type",
+      "wg_easy_values_schema_privileged_description",
+      "wg_easy_values_schema_privileged_title",
+      "wg_easy_values_schema_privileged_type",
+      "wg_easy_values_schema_properties_add",
+      "wg_easy_values_schema_properties_allowprivilegeescalation",
+      "wg_easy_values_schema_properties_capabilities",
+      "wg_easy_values_schema_properties_drop",
+      "wg_easy_values_schema_properties_privileged",
+      "wg_easy_values_schema_properties_readonlyrootfilesystem",
+      "wg_easy_values_schema_properties_runasnonroot",
+      "wg_easy_values_schema_properties_runasuser",
+      "wg_easy_values_schema_properties_securitycontext",
+      "wg_easy_values_schema_readonlyrootfilesystem_description",
+      "wg_easy_values_schema_readonlyrootfilesystem_title",
+      "wg_easy_values_schema_readonlyrootfilesystem_type",
+      "wg_easy_values_schema_runasnonroot_description",
+      "wg_easy_values_schema_runasnonroot_title",
+      "wg_easy_values_schema_runasnonroot_type",
+      "wg_easy_values_schema_runasuser_description",
+      "wg_easy_values_schema_runasuser_title",
+      "wg_easy_values_schema_runasuser_type",
+      "wg_easy_values_schema_securitycontext_additionalproperties",
+      "wg_easy_values_schema_securitycontext_properties",
+      "wg_easy_values_schema_securitycontext_title",
+      "wg_easy_values_schema_securitycontext_type"
+    ],
+    "4": [
+      "wireguard_values_schema_enabled_default",
+      "wireguard_values_schema_enabled_description",
+      "wireguard_values_schema_enabled_title",
+      "wireguard_values_schema_enabled_type",
+      "wireguard_values_schema_failurethreshold_default",
+      "wireguard_values_schema_failurethreshold_title",
+      "wireguard_values_schema_failurethreshold_type",
+      "wireguard_values_schema_initialdelayseconds_default",
+      "wireguard_values_schema_initialdelayseconds_title",
+      "wireguard_values_schema_initialdelayseconds_type",
+      "wireguard_values_schema_livenessprobe_description",
+      "wireguard_values_schema_livenessprobe_properties",
+      "wireguard_values_schema_livenessprobe_title",
+      "wireguard_values_schema_livenessprobe_type",
+      "wireguard_values_schema_periodseconds_default",
+      "wireguard_values_schema_periodseconds_title",
+      "wireguard_values_schema_periodseconds_type",
+      "wireguard_values_schema_properties_enabled",
+      "wireguard_values_schema_properties_failurethreshold",
+      "wireguard_values_schema_properties_initialdelayseconds",
+      "wireguard_values_schema_properties_livenessprobe",
+      "wireguard_values_schema_properties_periodseconds",
+      "wireguard_values_schema_properties_readinessprobe",
+      "wireguard_values_schema_properties_startupprobe",
+      "wireguard_values_schema_properties_successthreshold",
+      "wireguard_values_schema_properties_timeoutseconds",
+      "wireguard_values_schema_readinessprobe_description",
+      "wireguard_values_schema_readinessprobe_properties",
+      "wireguard_values_schema_readinessprobe_title",
+      "wireguard_values_schema_readinessprobe_type",
+      "wireguard_values_schema_startupprobe_description",
+      "wireguard_values_schema_startupprobe_properties",
+      "wireguard_values_schema_startupprobe_title",
+      "wireguard_values_schema_startupprobe_type",
+      "wireguard_values_schema_successthreshold_default",
+      "wireguard_values_schema_successthreshold_title",
+      "wireguard_values_schema_successthreshold_type",
+      "wireguard_values_schema_timeoutseconds_default",
+      "wireguard_values_schema_timeoutseconds_title",
+      "wireguard_values_schema_timeoutseconds_type"
+    ],
+    "5": [
+      "wireguard_values_schema_externalips_default",
+      "wireguard_values_schema_externalips_description",
+      "wireguard_values_schema_externalips_items",
+      "wireguard_values_schema_externalips_title",
+      "wireguard_values_schema_externalips_type",
+      "wireguard_values_schema_localhostprofile_description",
+      "wireguard_values_schema_localhostprofile_type",
+      "wireguard_values_schema_nodeport_description",
+      "wireguard_values_schema_nodeport_title",
+      "wireguard_values_schema_nodeport_type",
+      "wireguard_values_schema_port_description",
+      "wireguard_values_schema_port_title",
+      "wireguard_values_schema_port_type",
+      "wireguard_values_schema_properties_externalips",
+      "wireguard_values_schema_properties_localhostprofile",
+      "wireguard_values_schema_properties_nodeport",
+      "wireguard_values_schema_properties_port",
+      "wireguard_values_schema_properties_seccompprofile",
+      "wireguard_values_schema_properties_service",
+      "wireguard_values_schema_properties_type",
+      "wireguard_values_schema_properties_updatestrategy",
+      "wireguard_values_schema_seccompprofile_additionalproperties",
+      "wireguard_values_schema_seccompprofile_description",
+      "wireguard_values_schema_seccompprofile_properties",
+      "wireguard_values_schema_seccompprofile_title",
+      "wireguard_values_schema_seccompprofile_type",
+      "wireguard_values_schema_service_description",
+      "wireguard_values_schema_service_properties",
+      "wireguard_values_schema_service_title",
+      "wireguard_values_schema_service_type",
+      "wireguard_values_schema_type_description",
+      "wireguard_values_schema_type_enum",
+      "wireguard_values_schema_type_title",
+      "wireguard_values_schema_type_type",
+      "wireguard_values_schema_updatestrategy_description",
+      "wireguard_values_schema_updatestrategy_properties",
+      "wireguard_values_schema_updatestrategy_title",
+      "wireguard_values_schema_updatestrategy_type"
+    ],
+    "6": [
+      "wordpress_values_schema_maxsurge_oneof",
+      "wordpress_values_schema_maxunavailable_oneof",
+      "wordpress_values_schema_persistentvolumeclaimretentionpolicy_description",
+      "wordpress_values_schema_persistentvolumeclaimretentionpolicy_properties",
+      "wordpress_values_schema_persistentvolumeclaimretentionpolicy_type",
+      "wordpress_values_schema_podmanagementpolicy_default",
+      "wordpress_values_schema_podmanagementpolicy_description",
+      "wordpress_values_schema_podmanagementpolicy_enum",
+      "wordpress_values_schema_podmanagementpolicy_type",
+      "wordpress_values_schema_properties_maxsurge",
+      "wordpress_values_schema_properties_maxunavailable",
+      "wordpress_values_schema_properties_persistentvolumeclaimretentionpolicy",
+      "wordpress_values_schema_properties_podmanagementpolicy",
+      "wordpress_values_schema_properties_rollingupdate",
+      "wordpress_values_schema_properties_statefulset",
+      "wordpress_values_schema_properties_type",
+      "wordpress_values_schema_properties_updatestrategy",
+      "wordpress_values_schema_properties_whendeleted",
+      "wordpress_values_schema_properties_whenscaled",
+      "wordpress_values_schema_rollingupdate_properties",
+      "wordpress_values_schema_rollingupdate_type",
+      "wordpress_values_schema_statefulset_description",
+      "wordpress_values_schema_statefulset_properties",
+      "wordpress_values_schema_statefulset_type",
+      "wordpress_values_schema_type_default",
+      "wordpress_values_schema_type_description",
+      "wordpress_values_schema_type_enum",
+      "wordpress_values_schema_type_type",
+      "wordpress_values_schema_updatestrategy_description",
+      "wordpress_values_schema_updatestrategy_properties",
+      "wordpress_values_schema_updatestrategy_type",
+      "wordpress_values_schema_whendeleted_default",
+      "wordpress_values_schema_whendeleted_enum",
+      "wordpress_values_schema_whendeleted_type",
+      "wordpress_values_schema_whenscaled_default",
+      "wordpress_values_schema_whenscaled_enum",
+      "wordpress_values_schema_whenscaled_type"
+    ],
+    "7": [
+      "wordpress_values_schema_apache_properties",
+      "wordpress_values_schema_apache_type",
+      "wordpress_values_schema_customdefaultsiteconfig_description",
+      "wordpress_values_schema_customdefaultsiteconfig_type",
+      "wordpress_values_schema_customdefaultsiteconfigmap_default",
+      "wordpress_values_schema_customdefaultsiteconfigmap_description",
+      "wordpress_values_schema_customdefaultsiteconfigmap_type",
+      "wordpress_values_schema_customphpconfig_description",
+      "wordpress_values_schema_customphpconfig_type",
+      "wordpress_values_schema_customphpconfigmap_default",
+      "wordpress_values_schema_customphpconfigmap_description",
+      "wordpress_values_schema_customphpconfigmap_type",
+      "wordpress_values_schema_customportsconfig_description",
+      "wordpress_values_schema_customportsconfig_type",
+      "wordpress_values_schema_customportsconfigmap_default",
+      "wordpress_values_schema_customportsconfigmap_description",
+      "wordpress_values_schema_customportsconfigmap_type",
+      "wordpress_values_schema_properties_apache",
+      "wordpress_values_schema_properties_customdefaultsiteconfig",
+      "wordpress_values_schema_properties_customdefaultsiteconfigmap",
+      "wordpress_values_schema_properties_customphpconfig",
+      "wordpress_values_schema_properties_customphpconfigmap",
+      "wordpress_values_schema_properties_customportsconfig",
+      "wordpress_values_schema_properties_customportsconfigmap",
+      "wordpress_values_schema_properties_servername",
+      "wordpress_values_schema_servername_default",
+      "wordpress_values_schema_servername_description",
+      "wordpress_values_schema_servername_type"
+    ],
+    "8": [
+      "wg_easy_values_schema_image_additionalproperties",
+      "wg_easy_values_schema_image_properties",
+      "wg_easy_values_schema_image_required",
+      "wg_easy_values_schema_image_title",
+      "wg_easy_values_schema_image_type",
+      "wg_easy_values_schema_properties_image",
+      "wg_easy_values_schema_properties_pullpolicy",
+      "wg_easy_values_schema_properties_registry",
+      "wg_easy_values_schema_properties_repository",
+      "wg_easy_values_schema_properties_tag",
+      "wg_easy_values_schema_pullpolicy_description",
+      "wg_easy_values_schema_pullpolicy_enum",
+      "wg_easy_values_schema_pullpolicy_title",
+      "wg_easy_values_schema_pullpolicy_type",
+      "wg_easy_values_schema_registry_default",
+      "wg_easy_values_schema_registry_description",
+      "wg_easy_values_schema_registry_title",
+      "wg_easy_values_schema_registry_type",
+      "wg_easy_values_schema_repository_description",
+      "wg_easy_values_schema_repository_title",
+      "wg_easy_values_schema_repository_type",
+      "wg_easy_values_schema_tag_description",
+      "wg_easy_values_schema_tag_title",
+      "wg_easy_values_schema_tag_type"
+    ],
+    "9": [
+      "wireguard_values_schema_image_description",
+      "wireguard_values_schema_image_properties",
+      "wireguard_values_schema_image_required",
+      "wireguard_values_schema_image_title",
+      "wireguard_values_schema_image_type",
+      "wireguard_values_schema_properties_image",
+      "wireguard_values_schema_properties_pullpolicy",
+      "wireguard_values_schema_properties_registry",
+      "wireguard_values_schema_properties_repository",
+      "wireguard_values_schema_properties_tag",
+      "wireguard_values_schema_pullpolicy_description",
+      "wireguard_values_schema_pullpolicy_enum",
+      "wireguard_values_schema_pullpolicy_title",
+      "wireguard_values_schema_pullpolicy_type",
+      "wireguard_values_schema_registry_default",
+      "wireguard_values_schema_registry_description",
+      "wireguard_values_schema_registry_title",
+      "wireguard_values_schema_registry_type",
+      "wireguard_values_schema_repository_description",
+      "wireguard_values_schema_repository_title",
+      "wireguard_values_schema_repository_type",
+      "wireguard_values_schema_tag_description",
+      "wireguard_values_schema_tag_title",
+      "wireguard_values_schema_tag_type"
+    ],
+    "10": [
+      "release_please_config",
+      "release_please_config_bootstrap_sha",
+      "release_please_config_changelog_sections",
+      "release_please_config_charts_wg_easy_changelog_path",
+      "release_please_config_charts_wg_easy_component",
+      "release_please_config_charts_wg_easy_extra_files",
+      "release_please_config_charts_wireguard_changelog_path",
+      "release_please_config_charts_wireguard_component",
+      "release_please_config_charts_wireguard_extra_files",
+      "release_please_config_charts_wordpress_changelog_path",
+      "release_please_config_charts_wordpress_component",
+      "release_please_config_charts_wordpress_extra_files",
+      "release_please_config_draft",
+      "release_please_config_include_component_in_tag",
+      "release_please_config_include_v_in_tag",
+      "release_please_config_packages",
+      "release_please_config_packages_charts_wg_easy",
+      "release_please_config_packages_charts_wireguard",
+      "release_please_config_packages_charts_wordpress",
+      "release_please_config_release_type",
+      "release_please_config_schema",
+      "release_please_config_separate_pull_requests"
+    ],
+    "11": [
+      "wireguard_values_schema_annotations_description",
+      "wireguard_values_schema_annotations_title",
+      "wireguard_values_schema_annotations_type",
+      "wireguard_values_schema_automount_description",
+      "wireguard_values_schema_automount_title",
+      "wireguard_values_schema_automount_type",
+      "wireguard_values_schema_create_description",
+      "wireguard_values_schema_create_title",
+      "wireguard_values_schema_create_type",
+      "wireguard_values_schema_name_description",
+      "wireguard_values_schema_name_title",
+      "wireguard_values_schema_name_type",
+      "wireguard_values_schema_properties_annotations",
+      "wireguard_values_schema_properties_automount",
+      "wireguard_values_schema_properties_create",
+      "wireguard_values_schema_properties_name",
+      "wireguard_values_schema_properties_serviceaccount",
+      "wireguard_values_schema_serviceaccount_description",
+      "wireguard_values_schema_serviceaccount_properties",
+      "wireguard_values_schema_serviceaccount_title",
+      "wireguard_values_schema_serviceaccount_type"
+    ],
+    "12": [
+      "wordpress_values_schema_image_properties",
+      "wordpress_values_schema_image_required",
+      "wordpress_values_schema_image_type",
+      "wordpress_values_schema_properties_image",
+      "wordpress_values_schema_properties_pullpolicy",
+      "wordpress_values_schema_properties_registry",
+      "wordpress_values_schema_properties_repository",
+      "wordpress_values_schema_properties_tag",
+      "wordpress_values_schema_pullpolicy_default",
+      "wordpress_values_schema_pullpolicy_description",
+      "wordpress_values_schema_pullpolicy_enum",
+      "wordpress_values_schema_pullpolicy_type",
+      "wordpress_values_schema_registry_default",
+      "wordpress_values_schema_registry_description",
+      "wordpress_values_schema_registry_type",
+      "wordpress_values_schema_repository_default",
+      "wordpress_values_schema_repository_description",
+      "wordpress_values_schema_repository_type",
+      "wordpress_values_schema_tag_default",
+      "wordpress_values_schema_tag_description",
+      "wordpress_values_schema_tag_type"
+    ],
+    "13": [
+      "namespace",
+      "path",
+      "scripts_sync_artifacthub_changes",
+      "scripts_sync_artifacthub_changes_build_artifacthub_changes_block",
+      "scripts_sync_artifacthub_changes_ensure_annotations_section",
+      "scripts_sync_artifacthub_changes_extract_version_block",
+      "scripts_sync_artifacthub_changes_find_annotation_entry",
+      "scripts_sync_artifacthub_changes_find_annotations_section",
+      "scripts_sync_artifacthub_changes_is_prerelease_version",
+      "scripts_sync_artifacthub_changes_main",
+      "scripts_sync_artifacthub_changes_parse_args",
+      "scripts_sync_artifacthub_changes_parse_top_changelog_entry",
+      "scripts_sync_artifacthub_changes_rationale_103",
+      "scripts_sync_artifacthub_changes_rationale_140",
+      "scripts_sync_artifacthub_changes_rationale_163",
+      "scripts_sync_artifacthub_changes_read_current_version",
+      "scripts_sync_artifacthub_changes_remove_annotation",
+      "scripts_sync_artifacthub_changes_replace_annotation_block",
+      "scripts_sync_artifacthub_changes_split_description_and_link",
+      "scripts_sync_artifacthub_changes_sync_prerelease_annotation"
+    ],
+    "14": [
+      "wordpress_values_schema_email_description",
+      "wordpress_values_schema_email_type",
+      "wordpress_values_schema_firstname_description",
+      "wordpress_values_schema_firstname_type",
+      "wordpress_values_schema_items_properties",
+      "wordpress_values_schema_properties_activate",
+      "wordpress_values_schema_properties_autoupdate",
+      "wordpress_values_schema_properties_displayname",
+      "wordpress_values_schema_properties_email",
+      "wordpress_values_schema_properties_firstname",
+      "wordpress_values_schema_properties_networkactivate",
+      "wordpress_values_schema_properties_networkenable",
+      "wordpress_values_schema_properties_role",
+      "wordpress_values_schema_properties_sendemail",
+      "wordpress_values_schema_properties_sites",
+      "wordpress_values_schema_properties_slug",
+      "wordpress_values_schema_properties_superadmin",
+      "wordpress_values_schema_properties_value",
+      "wordpress_values_schema_properties_version",
+      "wordpress_values_schema_value_type"
+    ],
+    "15": [
+      "wg_easy_values_schema_classname_description",
+      "wg_easy_values_schema_classname_title",
+      "wg_easy_values_schema_classname_type",
+      "wg_easy_values_schema_enabled_description",
+      "wg_easy_values_schema_enabled_title",
+      "wg_easy_values_schema_enabled_type",
+      "wg_easy_values_schema_ingress_additionalproperties",
+      "wg_easy_values_schema_ingress_properties",
+      "wg_easy_values_schema_ingress_required",
+      "wg_easy_values_schema_ingress_title",
+      "wg_easy_values_schema_ingress_type",
+      "wg_easy_values_schema_properties_classname",
+      "wg_easy_values_schema_properties_enabled",
+      "wg_easy_values_schema_properties_ingress",
+      "wg_easy_values_schema_properties_tls",
+      "wg_easy_values_schema_tls_description",
+      "wg_easy_values_schema_tls_items",
+      "wg_easy_values_schema_tls_title",
+      "wg_easy_values_schema_tls_type"
+    ],
+    "16": [
+      "wordpress_values_schema_auth_type",
+      "wordpress_values_schema_encryption_type",
+      "wordpress_values_schema_existingsecretfromemailkey_type",
+      "wordpress_values_schema_existingsecretpasswordkey_type",
+      "wordpress_values_schema_existingsecretusernamekey_type",
+      "wordpress_values_schema_fromemail_type",
+      "wordpress_values_schema_fromname_type",
+      "wordpress_values_schema_host_type",
+      "wordpress_values_schema_port_type",
+      "wordpress_values_schema_properties_auth",
+      "wordpress_values_schema_properties_encryption",
+      "wordpress_values_schema_properties_existingsecretfromemailkey",
+      "wordpress_values_schema_properties_existingsecretpasswordkey",
+      "wordpress_values_schema_properties_existingsecretusernamekey",
+      "wordpress_values_schema_properties_fromemail",
+      "wordpress_values_schema_properties_fromname",
+      "wordpress_values_schema_properties_host",
+      "wordpress_values_schema_properties_port",
+      "wordpress_values_schema_smtp_properties"
+    ],
+    "17": [
+      "wg_easy_values_schema_automount_description",
+      "wg_easy_values_schema_automount_title",
+      "wg_easy_values_schema_automount_type",
+      "wg_easy_values_schema_create_description",
+      "wg_easy_values_schema_create_title",
+      "wg_easy_values_schema_create_type",
+      "wg_easy_values_schema_name_description",
+      "wg_easy_values_schema_name_title",
+      "wg_easy_values_schema_name_type",
+      "wg_easy_values_schema_properties_automount",
+      "wg_easy_values_schema_properties_create",
+      "wg_easy_values_schema_properties_name",
+      "wg_easy_values_schema_properties_serviceaccount",
+      "wg_easy_values_schema_serviceaccount_additionalproperties",
+      "wg_easy_values_schema_serviceaccount_properties",
+      "wg_easy_values_schema_serviceaccount_required",
+      "wg_easy_values_schema_serviceaccount_title",
+      "wg_easy_values_schema_serviceaccount_type"
+    ],
+    "18": [
+      "wireguard_values_schema_autoscaling_description",
+      "wireguard_values_schema_autoscaling_properties",
+      "wireguard_values_schema_autoscaling_title",
+      "wireguard_values_schema_autoscaling_type",
+      "wireguard_values_schema_maxreplicas_title",
+      "wireguard_values_schema_maxreplicas_type",
+      "wireguard_values_schema_minreplicas_title",
+      "wireguard_values_schema_minreplicas_type",
+      "wireguard_values_schema_properties_autoscaling",
+      "wireguard_values_schema_properties_maxreplicas",
+      "wireguard_values_schema_properties_minreplicas",
+      "wireguard_values_schema_properties_targetcpuutilizationpercentage",
+      "wireguard_values_schema_properties_targetmemoryutilizationpercentage",
+      "wireguard_values_schema_targetcpuutilizationpercentage_title",
+      "wireguard_values_schema_targetcpuutilizationpercentage_type",
+      "wireguard_values_schema_targetmemoryutilizationpercentage_title",
+      "wireguard_values_schema_targetmemoryutilizationpercentage_type"
+    ],
+    "19": [
+      "scripts_validate_artifacthub_annotations",
+      "scripts_validate_artifacthub_annotations_check_special_chars_quoted",
+      "scripts_validate_artifacthub_annotations_main",
+      "scripts_validate_artifacthub_annotations_rationale_100",
+      "scripts_validate_artifacthub_annotations_rationale_128",
+      "scripts_validate_artifacthub_annotations_rationale_158",
+      "scripts_validate_artifacthub_annotations_rationale_188",
+      "scripts_validate_artifacthub_annotations_rationale_202",
+      "scripts_validate_artifacthub_annotations_rationale_30",
+      "scripts_validate_artifacthub_annotations_rationale_43",
+      "scripts_validate_artifacthub_annotations_validate_category",
+      "scripts_validate_artifacthub_annotations_validate_changes",
+      "scripts_validate_artifacthub_annotations_validate_chart_yaml",
+      "scripts_validate_artifacthub_annotations_validate_images",
+      "scripts_validate_artifacthub_annotations_validate_links",
+      "scripts_validate_artifacthub_annotations_validate_maintainers"
+    ],
+    "20": [
+      "renovate",
+      "renovate_assignees",
+      "renovate_custommanagers",
+      "renovate_enabledmanagers",
+      "renovate_extends",
+      "renovate_gitignoredauthors",
+      "renovate_packagerules",
+      "renovate_pindigests",
+      "renovate_platformautomerge",
+      "renovate_prconcurrentlimit",
+      "renovate_prhourlylimit",
+      "renovate_rebasewhen",
+      "renovate_semanticcommits",
+      "renovate_semanticcommitscope",
+      "renovate_timezone"
+    ],
+    "21": [
+      "wireguard_values_schema_extraenvvars_items",
+      "wireguard_values_schema_extravolumemounts_items",
+      "wireguard_values_schema_extravolumes_items",
+      "wireguard_values_schema_imagepullsecrets_items",
+      "wireguard_values_schema_initcontainers_items",
+      "wireguard_values_schema_items_additionalproperties",
+      "wireguard_values_schema_items_properties",
+      "wireguard_values_schema_items_required",
+      "wireguard_values_schema_items_type",
+      "wireguard_values_schema_mountpath_title",
+      "wireguard_values_schema_mountpath_type",
+      "wireguard_values_schema_options_items",
+      "wireguard_values_schema_properties_mountpath",
+      "wireguard_values_schema_properties_value",
+      "wireguard_values_schema_sidecars_items"
+    ],
+    "22": [
+      "wg_easy_values_schema_accessmodes_items",
+      "wg_easy_values_schema_extraenvvars_items",
+      "wg_easy_values_schema_hosts_items",
+      "wg_easy_values_schema_hosts_title",
+      "wg_easy_values_schema_hosts_type",
+      "wg_easy_values_schema_imagepullsecrets_items",
+      "wg_easy_values_schema_items_additionalproperties",
+      "wg_easy_values_schema_items_enum",
+      "wg_easy_values_schema_items_properties",
+      "wg_easy_values_schema_items_required",
+      "wg_easy_values_schema_items_type",
+      "wg_easy_values_schema_options_items",
+      "wg_easy_values_schema_properties_hosts",
+      "wg_easy_values_schema_properties_paths"
+    ],
+    "23": [
+      "wordpress_values_schema_custominitscript_description",
+      "wordpress_values_schema_custominitscript_type",
+      "wordpress_values_schema_init_properties",
+      "wordpress_values_schema_jwt_description",
+      "wordpress_values_schema_jwt_properties",
+      "wordpress_values_schema_jwt_type",
+      "wordpress_values_schema_password_description",
+      "wordpress_values_schema_password_type",
+      "wordpress_values_schema_properties_custominitscript",
+      "wordpress_values_schema_properties_jwt",
+      "wordpress_values_schema_properties_password",
+      "wordpress_values_schema_properties_title",
+      "wordpress_values_schema_title_description",
+      "wordpress_values_schema_title_type"
+    ],
+    "24": [
+      "wg_easy_values_schema_additionalproperties_type",
+      "wg_easy_values_schema_annotations_additionalproperties",
+      "wg_easy_values_schema_labels_additionalproperties",
+      "wg_easy_values_schema_podannotations_additionalproperties",
+      "wg_easy_values_schema_podannotations_title",
+      "wg_easy_values_schema_podannotations_type",
+      "wg_easy_values_schema_podlabels_additionalproperties",
+      "wg_easy_values_schema_podlabels_title",
+      "wg_easy_values_schema_podlabels_type",
+      "wg_easy_values_schema_properties_podannotations",
+      "wg_easy_values_schema_properties_podlabels"
+    ],
+    "25": [
+      "wordpress_values_schema_customstructure_description",
+      "wordpress_values_schema_customstructure_type",
+      "wordpress_values_schema_permalinks_properties",
+      "wordpress_values_schema_permalinks_type",
+      "wordpress_values_schema_properties_customstructure",
+      "wordpress_values_schema_properties_permalinks",
+      "wordpress_values_schema_properties_structure",
+      "wordpress_values_schema_structure_default",
+      "wordpress_values_schema_structure_description",
+      "wordpress_values_schema_structure_enum",
+      "wordpress_values_schema_structure_type"
+    ],
+    "26": [
+      "wg_easy_values_schema_dnsconfig_additionalproperties",
+      "wg_easy_values_schema_dnsconfig_description",
+      "wg_easy_values_schema_dnsconfig_properties",
+      "wg_easy_values_schema_dnsconfig_title",
+      "wg_easy_values_schema_dnsconfig_type",
+      "wg_easy_values_schema_options_description",
+      "wg_easy_values_schema_options_title",
+      "wg_easy_values_schema_options_type",
+      "wg_easy_values_schema_properties_dnsconfig",
+      "wg_easy_values_schema_properties_options"
+    ],
+    "27": [
+      "wg_easy_values_schema_properties_type",
+      "wg_easy_values_schema_properties_updatestrategy",
+      "wg_easy_values_schema_type_description",
+      "wg_easy_values_schema_type_enum",
+      "wg_easy_values_schema_type_title",
+      "wg_easy_values_schema_type_type",
+      "wg_easy_values_schema_updatestrategy_description",
+      "wg_easy_values_schema_updatestrategy_properties",
+      "wg_easy_values_schema_updatestrategy_title",
+      "wg_easy_values_schema_updatestrategy_type"
+    ],
+    "28": [
+      "wireguard_values_schema_client_description",
+      "wireguard_values_schema_client_properties",
+      "wireguard_values_schema_client_title",
+      "wireguard_values_schema_client_type",
+      "wireguard_values_schema_config_description",
+      "wireguard_values_schema_config_properties",
+      "wireguard_values_schema_config_title",
+      "wireguard_values_schema_config_type",
+      "wireguard_values_schema_properties_client",
+      "wireguard_values_schema_properties_config"
+    ],
+    "29": [
+      "wireguard_values_schema_dnsconfig_additionalproperties",
+      "wireguard_values_schema_dnsconfig_description",
+      "wireguard_values_schema_dnsconfig_properties",
+      "wireguard_values_schema_dnsconfig_title",
+      "wireguard_values_schema_dnsconfig_type",
+      "wireguard_values_schema_options_description",
+      "wireguard_values_schema_options_title",
+      "wireguard_values_schema_options_type",
+      "wireguard_values_schema_properties_dnsconfig",
+      "wireguard_values_schema_properties_options"
+    ],
+    "30": [
+      "wireguard_values_schema_properties_server",
+      "wireguard_values_schema_properties_storage",
+      "wireguard_values_schema_server_description",
+      "wireguard_values_schema_server_properties",
+      "wireguard_values_schema_server_title",
+      "wireguard_values_schema_server_type",
+      "wireguard_values_schema_storage_description",
+      "wireguard_values_schema_storage_properties",
+      "wireguard_values_schema_storage_title",
+      "wireguard_values_schema_storage_type"
+    ],
+    "31": [
+      "wordpress_values_schema_composer_default",
+      "wordpress_values_schema_composer_properties",
+      "wordpress_values_schema_composer_type",
+      "wordpress_values_schema_default_repositories",
+      "wordpress_values_schema_properties_composer",
+      "wordpress_values_schema_properties_repositories",
+      "wordpress_values_schema_repositories_default",
+      "wordpress_values_schema_repositories_description",
+      "wordpress_values_schema_repositories_items",
+      "wordpress_values_schema_repositories_type"
+    ],
+    "32": [
+      "wordpress_values_schema_htaccess_description",
+      "wordpress_values_schema_htaccess_type",
+      "wordpress_values_schema_init_type",
+      "wordpress_values_schema_properties_htaccess",
+      "wordpress_values_schema_properties_init",
+      "wordpress_values_schema_properties_url",
+      "wordpress_values_schema_url_description",
+      "wordpress_values_schema_url_minlength",
+      "wordpress_values_schema_url_type",
+      "wordpress_values_schema_wordpress_properties"
+    ],
+    "33": [
+      "wg_easy_values_schema_annotations_title",
+      "wg_easy_values_schema_annotations_type",
+      "wg_easy_values_schema_properties_annotations",
+      "wg_easy_values_schema_properties_ui",
+      "wg_easy_values_schema_ui_additionalproperties",
+      "wg_easy_values_schema_ui_properties",
+      "wg_easy_values_schema_ui_required",
+      "wg_easy_values_schema_ui_title",
+      "wg_easy_values_schema_ui_type"
+    ],
+    "34": [
+      "wg_easy_values_schema_existingclaim_description",
+      "wg_easy_values_schema_existingclaim_title",
+      "wg_easy_values_schema_existingclaim_type",
+      "wg_easy_values_schema_properties_existingclaim",
+      "wg_easy_values_schema_properties_storageclass",
+      "wg_easy_values_schema_storage_properties",
+      "wg_easy_values_schema_storageclass_description",
+      "wg_easy_values_schema_storageclass_title",
+      "wg_easy_values_schema_storageclass_type"
+    ],
+    "35": [
+      "wg_easy_values_schema_existingsecretkey_description",
+      "wg_easy_values_schema_existingsecretkey_title",
+      "wg_easy_values_schema_existingsecretkey_type",
+      "wg_easy_values_schema_interval_description",
+      "wg_easy_values_schema_interval_title",
+      "wg_easy_values_schema_interval_type",
+      "wg_easy_values_schema_properties_existingsecretkey",
+      "wg_easy_values_schema_properties_interval",
+      "wg_easy_values_schema_servicemonitor_properties"
+    ],
+    "36": [
+      "wg_easy_values_schema_localhostprofile_description",
+      "wg_easy_values_schema_localhostprofile_type",
+      "wg_easy_values_schema_properties_localhostprofile",
+      "wg_easy_values_schema_properties_seccompprofile",
+      "wg_easy_values_schema_seccompprofile_additionalproperties",
+      "wg_easy_values_schema_seccompprofile_description",
+      "wg_easy_values_schema_seccompprofile_properties",
+      "wg_easy_values_schema_seccompprofile_title",
+      "wg_easy_values_schema_seccompprofile_type"
+    ],
+    "37": [
+      "wordpress_values_schema",
+      "wordpress_values_schema_dnspolicy_description",
+      "wordpress_values_schema_dnspolicy_type",
+      "wordpress_values_schema_podsecuritycontext_type",
+      "wordpress_values_schema_properties",
+      "wordpress_values_schema_properties_dnspolicy",
+      "wordpress_values_schema_properties_podsecuritycontext",
+      "wordpress_values_schema_schema",
+      "wordpress_values_schema_type"
+    ],
+    "38": [
+      "wordpress_values_schema_additionalproperties_type",
+      "wordpress_values_schema_commonannotations_additionalproperties",
+      "wordpress_values_schema_commonannotations_description",
+      "wordpress_values_schema_commonannotations_type",
+      "wordpress_values_schema_commonlabels_additionalproperties",
+      "wordpress_values_schema_commonlabels_description",
+      "wordpress_values_schema_commonlabels_type",
+      "wordpress_values_schema_properties_commonannotations",
+      "wordpress_values_schema_properties_commonlabels"
+    ],
+    "39": [
+      "wordpress_values_schema_configextraconfigmap_description",
+      "wordpress_values_schema_configextraconfigmap_properties",
+      "wordpress_values_schema_configextraconfigmap_type",
+      "wordpress_values_schema_name_default",
+      "wordpress_values_schema_name_description",
+      "wordpress_values_schema_name_title",
+      "wordpress_values_schema_name_type",
+      "wordpress_values_schema_properties_configextraconfigmap",
+      "wordpress_values_schema_properties_name"
+    ],
+    "40": [
+      "wordpress_values_schema_configextrasecret_description",
+      "wordpress_values_schema_configextrasecret_properties",
+      "wordpress_values_schema_configextrasecret_type",
+      "wordpress_values_schema_key_default",
+      "wordpress_values_schema_key_description",
+      "wordpress_values_schema_key_type",
+      "wordpress_values_schema_properties_configextrasecret",
+      "wordpress_values_schema_properties_key"
+    ],
+    "41": [
+      "charts_wg_easy_samples_verify_verify_sh_verify_verify",
+      "charts_wg_easy_samples_verify_verify_sh_verify_verify_bold",
+      "charts_wg_easy_samples_verify_verify_sh_verify_verify_check_logs",
+      "charts_wg_easy_samples_verify_verify_sh_verify_verify_green",
+      "charts_wg_easy_samples_verify_verify_sh_verify_verify_red",
+      "charts_wg_easy_samples_verify_verify_sh_verify_verify_yellow",
+      "users_timon_homelab_helm_charts_charts_wg_easy_samples_verify_verify_sh__entry"
+    ],
+    "42": [
+      "charts_wireguard_samples_verify_verify_sh_verify_verify",
+      "charts_wireguard_samples_verify_verify_sh_verify_verify_bold",
+      "charts_wireguard_samples_verify_verify_sh_verify_verify_check_logs",
+      "charts_wireguard_samples_verify_verify_sh_verify_verify_green",
+      "charts_wireguard_samples_verify_verify_sh_verify_verify_red",
+      "charts_wireguard_samples_verify_verify_sh_verify_verify_yellow",
+      "users_timon_homelab_helm_charts_charts_wireguard_samples_verify_verify_sh__entry"
+    ],
+    "43": [
+      "charts_wordpress_samples_verify_verify_sh_verify_verify",
+      "charts_wordpress_samples_verify_verify_sh_verify_verify_bold",
+      "charts_wordpress_samples_verify_verify_sh_verify_verify_check_logs",
+      "charts_wordpress_samples_verify_verify_sh_verify_verify_green",
+      "charts_wordpress_samples_verify_verify_sh_verify_verify_red",
+      "charts_wordpress_samples_verify_verify_sh_verify_verify_yellow",
+      "users_timon_homelab_helm_charts_charts_wordpress_samples_verify_verify_sh__entry"
+    ],
+    "44": [
+      "wg_easy_values_schema",
+      "wg_easy_values_schema_additionalproperties",
+      "wg_easy_values_schema_description",
+      "wg_easy_values_schema_id",
+      "wg_easy_values_schema_schema",
+      "wg_easy_values_schema_title",
+      "wg_easy_values_schema_type"
+    ],
+    "45": [
+      "wireguard_values_schema_nodeselector_description",
+      "wireguard_values_schema_nodeselector_title",
+      "wireguard_values_schema_nodeselector_type",
+      "wireguard_values_schema_priorityclassname_type",
+      "wireguard_values_schema_properties",
+      "wireguard_values_schema_properties_nodeselector",
+      "wireguard_values_schema_properties_priorityclassname"
+    ],
+    "46": [
+      "wordpress_values_schema_imagepullsecrets_default",
+      "wordpress_values_schema_imagepullsecrets_description",
+      "wordpress_values_schema_imagepullsecrets_items",
+      "wordpress_values_schema_imagepullsecrets_title",
+      "wordpress_values_schema_imagepullsecrets_type",
+      "wordpress_values_schema_items_additionalproperties",
+      "wordpress_values_schema_properties_imagepullsecrets"
+    ],
+    "47": [
+      "scripts_helmlint",
+      "scripts_helmlint_chart_path",
+      "scripts_helmlint_contains_element",
+      "scripts_helmlint_cwd_abspath",
+      "scripts_helmlint_path",
+      "users_timon_homelab_helm_charts_scripts_helmlint_sh__entry"
+    ],
+    "48": [
+      "wg_easy_values_schema_externalips_description",
+      "wg_easy_values_schema_externalips_items",
+      "wg_easy_values_schema_externalips_title",
+      "wg_easy_values_schema_externalips_type",
+      "wg_easy_values_schema_properties_externalips",
+      "wg_easy_values_schema_wireguard_properties"
+    ],
+    "49": [
+      "wg_easy_values_schema_nodeport_description",
+      "wg_easy_values_schema_nodeport_maximum",
+      "wg_easy_values_schema_nodeport_minimum",
+      "wg_easy_values_schema_nodeport_title",
+      "wg_easy_values_schema_nodeport_type",
+      "wg_easy_values_schema_properties_nodeport"
+    ],
+    "50": [
+      "wg_easy_values_schema_port_description",
+      "wg_easy_values_schema_port_maximum",
+      "wg_easy_values_schema_port_minimum",
+      "wg_easy_values_schema_port_title",
+      "wg_easy_values_schema_port_type",
+      "wg_easy_values_schema_properties_port"
+    ],
+    "51": [
+      "wg_easy_values_schema_properties_replicacount",
+      "wg_easy_values_schema_replicacount_default",
+      "wg_easy_values_schema_replicacount_description",
+      "wg_easy_values_schema_replicacount_minimum",
+      "wg_easy_values_schema_replicacount_title",
+      "wg_easy_values_schema_replicacount_type"
+    ],
+    "52": [
+      "wg_easy_values_schema_properties_resourcepolicy",
+      "wg_easy_values_schema_resourcepolicy_default",
+      "wg_easy_values_schema_resourcepolicy_description",
+      "wg_easy_values_schema_resourcepolicy_enum",
+      "wg_easy_values_schema_resourcepolicy_title",
+      "wg_easy_values_schema_resourcepolicy_type"
+    ],
+    "53": [
+      "wg_easy_values_schema_properties_service",
+      "wg_easy_values_schema_service_additionalproperties",
+      "wg_easy_values_schema_service_properties",
+      "wg_easy_values_schema_service_required",
+      "wg_easy_values_schema_service_title",
+      "wg_easy_values_schema_service_type"
+    ],
+    "54": [
+      "wireguard_values_schema",
+      "wireguard_values_schema_additionalproperties",
+      "wireguard_values_schema_description",
+      "wireguard_values_schema_schema",
+      "wireguard_values_schema_title",
+      "wireguard_values_schema_type"
+    ],
+    "55": [
+      "wordpress_values_schema_items_required",
+      "wordpress_values_schema_plugins_default",
+      "wordpress_values_schema_plugins_description",
+      "wordpress_values_schema_plugins_items",
+      "wordpress_values_schema_plugins_type",
+      "wordpress_values_schema_properties_plugins"
+    ],
+    "56": [
+      "wg_easy_values_schema_dnspolicy_description",
+      "wg_easy_values_schema_dnspolicy_enum",
+      "wg_easy_values_schema_dnspolicy_title",
+      "wg_easy_values_schema_dnspolicy_type",
+      "wg_easy_values_schema_properties_dnspolicy"
+    ],
+    "57": [
+      "wg_easy_values_schema_extraenvvars_default",
+      "wg_easy_values_schema_extraenvvars_description",
+      "wg_easy_values_schema_extraenvvars_title",
+      "wg_easy_values_schema_extraenvvars_type",
+      "wg_easy_values_schema_properties_extraenvvars"
+    ],
+    "58": [
+      "wg_easy_values_schema_global_additionalproperties",
+      "wg_easy_values_schema_global_description",
+      "wg_easy_values_schema_global_title",
+      "wg_easy_values_schema_global_type",
+      "wg_easy_values_schema_properties_global"
+    ],
+    "59": [
+      "wg_easy_values_schema_imagepullsecrets_default",
+      "wg_easy_values_schema_imagepullsecrets_description",
+      "wg_easy_values_schema_imagepullsecrets_title",
+      "wg_easy_values_schema_imagepullsecrets_type",
+      "wg_easy_values_schema_properties_imagepullsecrets"
+    ],
+    "60": [
+      "wg_easy_values_schema_initcontainers_description",
+      "wg_easy_values_schema_initcontainers_items",
+      "wg_easy_values_schema_initcontainers_title",
+      "wg_easy_values_schema_initcontainers_type",
+      "wg_easy_values_schema_properties_initcontainers"
+    ],
+    "61": [
+      "wg_easy_values_schema_nameservers_description",
+      "wg_easy_values_schema_nameservers_items",
+      "wg_easy_values_schema_nameservers_title",
+      "wg_easy_values_schema_nameservers_type",
+      "wg_easy_values_schema_properties_nameservers"
+    ],
+    "62": [
+      "wg_easy_values_schema_properties_searches",
+      "wg_easy_values_schema_searches_description",
+      "wg_easy_values_schema_searches_items",
+      "wg_easy_values_schema_searches_title",
+      "wg_easy_values_schema_searches_type"
+    ],
+    "63": [
+      "wg_easy_values_schema_properties_servicemonitor",
+      "wg_easy_values_schema_servicemonitor_additionalproperties",
+      "wg_easy_values_schema_servicemonitor_required",
+      "wg_easy_values_schema_servicemonitor_title",
+      "wg_easy_values_schema_servicemonitor_type"
+    ],
+    "64": [
+      "wg_easy_values_schema_properties_sidecars",
+      "wg_easy_values_schema_sidecars_description",
+      "wg_easy_values_schema_sidecars_items",
+      "wg_easy_values_schema_sidecars_title",
+      "wg_easy_values_schema_sidecars_type"
+    ],
+    "65": [
+      "wg_easy_values_schema_properties_storage",
+      "wg_easy_values_schema_storage_additionalproperties",
+      "wg_easy_values_schema_storage_required",
+      "wg_easy_values_schema_storage_title",
+      "wg_easy_values_schema_storage_type"
+    ],
+    "66": [
+      "wg_easy_values_schema_properties_wireguard",
+      "wg_easy_values_schema_wireguard_additionalproperties",
+      "wg_easy_values_schema_wireguard_required",
+      "wg_easy_values_schema_wireguard_title",
+      "wg_easy_values_schema_wireguard_type"
+    ],
+    "67": [
+      "wireguard_values_schema_dnspolicy_description",
+      "wireguard_values_schema_dnspolicy_enum",
+      "wireguard_values_schema_dnspolicy_title",
+      "wireguard_values_schema_dnspolicy_type",
+      "wireguard_values_schema_properties_dnspolicy"
+    ],
+    "68": [
+      "wireguard_values_schema_existingsecret_description",
+      "wireguard_values_schema_existingsecret_title",
+      "wireguard_values_schema_existingsecret_type",
+      "wireguard_values_schema_properties_existingsecret",
+      "wireguard_values_schema_wireguard_properties"
+    ],
+    "69": [
+      "wireguard_values_schema_imagepullsecrets_default",
+      "wireguard_values_schema_imagepullsecrets_description",
+      "wireguard_values_schema_imagepullsecrets_title",
+      "wireguard_values_schema_imagepullsecrets_type",
+      "wireguard_values_schema_properties_imagepullsecrets"
+    ],
+    "70": [
+      "wireguard_values_schema_nameservers_description",
+      "wireguard_values_schema_nameservers_items",
+      "wireguard_values_schema_nameservers_title",
+      "wireguard_values_schema_nameservers_type",
+      "wireguard_values_schema_properties_nameservers"
+    ],
+    "71": [
+      "wireguard_values_schema_podsecuritycontext_additionalproperties",
+      "wireguard_values_schema_podsecuritycontext_description",
+      "wireguard_values_schema_podsecuritycontext_title",
+      "wireguard_values_schema_podsecuritycontext_type",
+      "wireguard_values_schema_properties_podsecuritycontext"
+    ],
+    "72": [
+      "wireguard_values_schema_properties_searches",
+      "wireguard_values_schema_searches_description",
+      "wireguard_values_schema_searches_items",
+      "wireguard_values_schema_searches_title",
+      "wireguard_values_schema_searches_type"
+    ],
+    "73": [
+      "wireguard_values_schema_properties_tolerations",
+      "wireguard_values_schema_tolerations_description",
+      "wireguard_values_schema_tolerations_items",
+      "wireguard_values_schema_tolerations_title",
+      "wireguard_values_schema_tolerations_type"
+    ],
+    "74": [
+      "wireguard_values_schema_properties_topologyspreadconstraints",
+      "wireguard_values_schema_topologyspreadconstraints_description",
+      "wireguard_values_schema_topologyspreadconstraints_items",
+      "wireguard_values_schema_topologyspreadconstraints_title",
+      "wireguard_values_schema_topologyspreadconstraints_type"
+    ],
+    "75": [
+      "wordpress_values_schema_args_default",
+      "wordpress_values_schema_args_description",
+      "wordpress_values_schema_args_items",
+      "wordpress_values_schema_args_type",
+      "wordpress_values_schema_properties_args"
+    ],
+    "76": [
+      "wordpress_values_schema_command_default",
+      "wordpress_values_schema_command_description",
+      "wordpress_values_schema_command_items",
+      "wordpress_values_schema_command_type",
+      "wordpress_values_schema_properties_command"
+    ],
+    "77": [
+      "wordpress_values_schema_controllertype_default",
+      "wordpress_values_schema_controllertype_description",
+      "wordpress_values_schema_controllertype_enum",
+      "wordpress_values_schema_controllertype_type",
+      "wordpress_values_schema_properties_controllertype"
+    ],
+    "78": [
+      "wordpress_values_schema_extraenvvars_default",
+      "wordpress_values_schema_extraenvvars_description",
+      "wordpress_values_schema_extraenvvars_items",
+      "wordpress_values_schema_extraenvvars_type",
+      "wordpress_values_schema_properties_extraenvvars"
+    ],
+    "79": [
+      "wordpress_values_schema_initcontainers_default",
+      "wordpress_values_schema_initcontainers_description",
+      "wordpress_values_schema_initcontainers_items",
+      "wordpress_values_schema_initcontainers_type",
+      "wordpress_values_schema_properties_initcontainers"
+    ],
+    "80": [
+      "wordpress_values_schema_multisites_default",
+      "wordpress_values_schema_multisites_description",
+      "wordpress_values_schema_multisites_properties",
+      "wordpress_values_schema_multisites_type",
+      "wordpress_values_schema_properties_multisites"
+    ],
+    "81": [
+      "wordpress_values_schema_mupluginsconfigmaps_default",
+      "wordpress_values_schema_mupluginsconfigmaps_description",
+      "wordpress_values_schema_mupluginsconfigmaps_items",
+      "wordpress_values_schema_mupluginsconfigmaps_type",
+      "wordpress_values_schema_properties_mupluginsconfigmaps"
+    ],
+    "82": [
+      "wordpress_values_schema_properties_sidecars",
+      "wordpress_values_schema_sidecars_default",
+      "wordpress_values_schema_sidecars_description",
+      "wordpress_values_schema_sidecars_items",
+      "wordpress_values_schema_sidecars_type"
+    ],
+    "83": [
+      "wordpress_values_schema_properties_themes",
+      "wordpress_values_schema_themes_default",
+      "wordpress_values_schema_themes_description",
+      "wordpress_values_schema_themes_items",
+      "wordpress_values_schema_themes_type"
+    ],
+    "84": [
+      "wordpress_values_schema_properties_users",
+      "wordpress_values_schema_users_default",
+      "wordpress_values_schema_users_description",
+      "wordpress_values_schema_users_items",
+      "wordpress_values_schema_users_type"
+    ],
+    "85": [
+      "wg_easy_values_schema_accessmodes_description",
+      "wg_easy_values_schema_accessmodes_title",
+      "wg_easy_values_schema_accessmodes_type",
+      "wg_easy_values_schema_properties_accessmodes"
+    ],
+    "86": [
+      "wg_easy_values_schema_commonannotations_description",
+      "wg_easy_values_schema_commonannotations_title",
+      "wg_easy_values_schema_commonannotations_type",
+      "wg_easy_values_schema_properties_commonannotations"
+    ],
+    "87": [
+      "wg_easy_values_schema_commonlabels_description",
+      "wg_easy_values_schema_commonlabels_title",
+      "wg_easy_values_schema_commonlabels_type",
+      "wg_easy_values_schema_properties_commonlabels"
+    ],
+    "88": [
+      "wg_easy_values_schema_extraenvvarscm_description",
+      "wg_easy_values_schema_extraenvvarscm_title",
+      "wg_easy_values_schema_extraenvvarscm_type",
+      "wg_easy_values_schema_properties_extraenvvarscm"
+    ],
+    "89": [
+      "wg_easy_values_schema_extraenvvarssecret_description",
+      "wg_easy_values_schema_extraenvvarssecret_title",
+      "wg_easy_values_schema_extraenvvarssecret_type",
+      "wg_easy_values_schema_properties_extraenvvarssecret"
+    ],
+    "90": [
+      "wg_easy_values_schema_fullnameoverride_description",
+      "wg_easy_values_schema_fullnameoverride_title",
+      "wg_easy_values_schema_fullnameoverride_type",
+      "wg_easy_values_schema_properties_fullnameoverride"
+    ],
+    "91": [
+      "wg_easy_values_schema_hostnetwork_description",
+      "wg_easy_values_schema_hostnetwork_title",
+      "wg_easy_values_schema_hostnetwork_type",
+      "wg_easy_values_schema_properties_hostnetwork"
+    ],
+    "92": [
+      "wg_easy_values_schema_metricspath_description",
+      "wg_easy_values_schema_metricspath_title",
+      "wg_easy_values_schema_metricspath_type",
+      "wg_easy_values_schema_properties_metricspath"
+    ],
+    "93": [
+      "wg_easy_values_schema_nameoverride_description",
+      "wg_easy_values_schema_nameoverride_title",
+      "wg_easy_values_schema_nameoverride_type",
+      "wg_easy_values_schema_properties_nameoverride"
+    ],
+    "94": [
+      "wg_easy_values_schema_namespace_description",
+      "wg_easy_values_schema_namespace_title",
+      "wg_easy_values_schema_namespace_type",
+      "wg_easy_values_schema_properties_namespace"
+    ],
+    "95": [
+      "wg_easy_values_schema_podsecuritycontext_description",
+      "wg_easy_values_schema_podsecuritycontext_title",
+      "wg_easy_values_schema_podsecuritycontext_type",
+      "wg_easy_values_schema_properties_podsecuritycontext"
+    ],
+    "96": [
+      "wg_easy_values_schema_properties",
+      "wg_easy_values_schema_properties_resources",
+      "wg_easy_values_schema_resources_title",
+      "wg_easy_values_schema_resources_type"
+    ],
+    "97": [
+      "wg_easy_values_schema_properties_runtimeclassname",
+      "wg_easy_values_schema_runtimeclassname_description",
+      "wg_easy_values_schema_runtimeclassname_title",
+      "wg_easy_values_schema_runtimeclassname_type"
+    ],
+    "98": [
+      "wg_easy_values_schema_properties_selector",
+      "wg_easy_values_schema_selector_description",
+      "wg_easy_values_schema_selector_title",
+      "wg_easy_values_schema_selector_type"
+    ],
+    "99": [
+      "wg_easy_values_schema_properties_size",
+      "wg_easy_values_schema_size_description",
+      "wg_easy_values_schema_size_title",
+      "wg_easy_values_schema_size_type"
+    ],
+    "100": [
+      "wireguard_values_schema_affinity_description",
+      "wireguard_values_schema_affinity_title",
+      "wireguard_values_schema_affinity_type",
+      "wireguard_values_schema_properties_affinity"
+    ],
+    "101": [
+      "wireguard_values_schema_allowedips_description",
+      "wireguard_values_schema_allowedips_title",
+      "wireguard_values_schema_allowedips_type",
+      "wireguard_values_schema_properties_allowedips"
+    ],
+    "102": [
+      "wireguard_values_schema_commonannotations_description",
+      "wireguard_values_schema_commonannotations_title",
+      "wireguard_values_schema_commonannotations_type",
+      "wireguard_values_schema_properties_commonannotations"
+    ],
+    "103": [
+      "wireguard_values_schema_commonlabels_description",
+      "wireguard_values_schema_commonlabels_title",
+      "wireguard_values_schema_commonlabels_type",
+      "wireguard_values_schema_properties_commonlabels"
+    ],
+    "104": [
+      "wireguard_values_schema_customlivenessprobe_description",
+      "wireguard_values_schema_customlivenessprobe_title",
+      "wireguard_values_schema_customlivenessprobe_type",
+      "wireguard_values_schema_properties_customlivenessprobe"
+    ],
+    "105": [
+      "wireguard_values_schema_customreadinessprobe_description",
+      "wireguard_values_schema_customreadinessprobe_title",
+      "wireguard_values_schema_customreadinessprobe_type",
+      "wireguard_values_schema_properties_customreadinessprobe"
+    ],
+    "106": [
+      "wireguard_values_schema_customstartupprobe_description",
+      "wireguard_values_schema_customstartupprobe_title",
+      "wireguard_values_schema_customstartupprobe_type",
+      "wireguard_values_schema_properties_customstartupprobe"
+    ],
+    "107": [
+      "wireguard_values_schema_dns_description",
+      "wireguard_values_schema_dns_title",
+      "wireguard_values_schema_dns_type",
+      "wireguard_values_schema_properties_dns"
+    ],
+    "108": [
+      "wireguard_values_schema_extraenvvars_description",
+      "wireguard_values_schema_extraenvvars_title",
+      "wireguard_values_schema_extraenvvars_type",
+      "wireguard_values_schema_properties_extraenvvars"
+    ],
+    "109": [
+      "wireguard_values_schema_extraenvvarscm_description",
+      "wireguard_values_schema_extraenvvarscm_title",
+      "wireguard_values_schema_extraenvvarscm_type",
+      "wireguard_values_schema_properties_extraenvvarscm"
+    ],
+    "110": [
+      "wireguard_values_schema_extraenvvarssecret_description",
+      "wireguard_values_schema_extraenvvarssecret_title",
+      "wireguard_values_schema_extraenvvarssecret_type",
+      "wireguard_values_schema_properties_extraenvvarssecret"
+    ],
+    "111": [
+      "wireguard_values_schema_extravolumemounts_description",
+      "wireguard_values_schema_extravolumemounts_title",
+      "wireguard_values_schema_extravolumemounts_type",
+      "wireguard_values_schema_properties_extravolumemounts"
+    ],
+    "112": [
+      "wireguard_values_schema_extravolumes_description",
+      "wireguard_values_schema_extravolumes_title",
+      "wireguard_values_schema_extravolumes_type",
+      "wireguard_values_schema_properties_extravolumes"
+    ],
+    "113": [
+      "wireguard_values_schema_fullnameoverride_description",
+      "wireguard_values_schema_fullnameoverride_title",
+      "wireguard_values_schema_fullnameoverride_type",
+      "wireguard_values_schema_properties_fullnameoverride"
+    ],
+    "114": [
+      "wireguard_values_schema_hostnetwork_description",
+      "wireguard_values_schema_hostnetwork_title",
+      "wireguard_values_schema_hostnetwork_type",
+      "wireguard_values_schema_properties_hostnetwork"
+    ],
+    "115": [
+      "wireguard_values_schema_initcontainers_description",
+      "wireguard_values_schema_initcontainers_title",
+      "wireguard_values_schema_initcontainers_type",
+      "wireguard_values_schema_properties_initcontainers"
+    ],
+    "116": [
+      "wireguard_values_schema_listenport_description",
+      "wireguard_values_schema_listenport_title",
+      "wireguard_values_schema_listenport_type",
+      "wireguard_values_schema_properties_listenport"
+    ],
+    "117": [
+      "wireguard_values_schema_nameoverride_description",
+      "wireguard_values_schema_nameoverride_title",
+      "wireguard_values_schema_nameoverride_type",
+      "wireguard_values_schema_properties_nameoverride"
+    ],
+    "118": [
+      "wireguard_values_schema_pgid_description",
+      "wireguard_values_schema_pgid_title",
+      "wireguard_values_schema_pgid_type",
+      "wireguard_values_schema_properties_pgid"
+    ],
+    "119": [
+      "wireguard_values_schema_podannotations_description",
+      "wireguard_values_schema_podannotations_title",
+      "wireguard_values_schema_podannotations_type",
+      "wireguard_values_schema_properties_podannotations"
+    ],
+    "120": [
+      "wireguard_values_schema_podlabels_description",
+      "wireguard_values_schema_podlabels_title",
+      "wireguard_values_schema_podlabels_type",
+      "wireguard_values_schema_properties_podlabels"
+    ],
+    "121": [
+      "wireguard_values_schema_properties_puid",
+      "wireguard_values_schema_puid_description",
+      "wireguard_values_schema_puid_title",
+      "wireguard_values_schema_puid_type"
+    ],
+    "122": [
+      "wireguard_values_schema_properties_replicacount",
+      "wireguard_values_schema_replicacount_description",
+      "wireguard_values_schema_replicacount_title",
+      "wireguard_values_schema_replicacount_type"
+    ],
+    "123": [
+      "wireguard_values_schema_properties_resources",
+      "wireguard_values_schema_resources_description",
+      "wireguard_values_schema_resources_title",
+      "wireguard_values_schema_resources_type"
+    ],
+    "124": [
+      "wireguard_values_schema_properties_secret",
+      "wireguard_values_schema_secret_description",
+      "wireguard_values_schema_secret_title",
+      "wireguard_values_schema_secret_type"
+    ],
+    "125": [
+      "wireguard_values_schema_properties_sidecars",
+      "wireguard_values_schema_sidecars_description",
+      "wireguard_values_schema_sidecars_title",
+      "wireguard_values_schema_sidecars_type"
+    ],
+    "126": [
+      "wireguard_values_schema_properties_timezone",
+      "wireguard_values_schema_timezone_description",
+      "wireguard_values_schema_timezone_title",
+      "wireguard_values_schema_timezone_type"
+    ],
+    "127": [
+      "wireguard_values_schema_properties_wireguard",
+      "wireguard_values_schema_wireguard_description",
+      "wireguard_values_schema_wireguard_title",
+      "wireguard_values_schema_wireguard_type"
+    ],
+    "128": [
+      "wordpress_values_schema_applicationpassword_description",
+      "wordpress_values_schema_applicationpassword_properties",
+      "wordpress_values_schema_applicationpassword_type",
+      "wordpress_values_schema_properties_applicationpassword"
+    ],
+    "129": [
+      "wordpress_values_schema_clusterdomain_default",
+      "wordpress_values_schema_clusterdomain_description",
+      "wordpress_values_schema_clusterdomain_type",
+      "wordpress_values_schema_properties_clusterdomain"
+    ],
+    "130": [
+      "wordpress_values_schema_configextrainject_default",
+      "wordpress_values_schema_configextrainject_description",
+      "wordpress_values_schema_configextrainject_type",
+      "wordpress_values_schema_properties_configextrainject"
+    ],
+    "131": [
+      "wordpress_values_schema_customannotations_default",
+      "wordpress_values_schema_customannotations_description",
+      "wordpress_values_schema_customannotations_type",
+      "wordpress_values_schema_properties_customannotations"
+    ],
+    "132": [
+      "wordpress_values_schema_custominitconfigmap_description",
+      "wordpress_values_schema_custominitconfigmap_properties",
+      "wordpress_values_schema_custominitconfigmap_type",
+      "wordpress_values_schema_properties_custominitconfigmap"
+    ],
+    "133": [
+      "wordpress_values_schema_customlabels_default",
+      "wordpress_values_schema_customlabels_description",
+      "wordpress_values_schema_customlabels_type",
+      "wordpress_values_schema_properties_customlabels"
+    ],
+    "134": [
+      "wordpress_values_schema_debug_default",
+      "wordpress_values_schema_debug_description",
+      "wordpress_values_schema_debug_type",
+      "wordpress_values_schema_properties_debug"
+    ],
+    "135": [
+      "wordpress_values_schema_enabled_default",
+      "wordpress_values_schema_enabled_description",
+      "wordpress_values_schema_enabled_type",
+      "wordpress_values_schema_properties_enabled"
+    ],
+    "136": [
+      "wordpress_values_schema_existingsecret_default",
+      "wordpress_values_schema_existingsecret_description",
+      "wordpress_values_schema_existingsecret_type",
+      "wordpress_values_schema_properties_existingsecret"
+    ],
+    "137": [
+      "wordpress_values_schema_extraenvvarscm_default",
+      "wordpress_values_schema_extraenvvarscm_description",
+      "wordpress_values_schema_extraenvvarscm_type",
+      "wordpress_values_schema_properties_extraenvvarscm"
+    ],
+    "138": [
+      "wordpress_values_schema_extraenvvarssecret_default",
+      "wordpress_values_schema_extraenvvarssecret_description",
+      "wordpress_values_schema_extraenvvarssecret_type",
+      "wordpress_values_schema_properties_extraenvvarssecret"
+    ],
+    "139": [
+      "wordpress_values_schema_fullnameoverride_default",
+      "wordpress_values_schema_fullnameoverride_description",
+      "wordpress_values_schema_fullnameoverride_type",
+      "wordpress_values_schema_properties_fullnameoverride"
+    ],
+    "140": [
+      "wordpress_values_schema_htaccessconfigmap_default",
+      "wordpress_values_schema_htaccessconfigmap_description",
+      "wordpress_values_schema_htaccessconfigmap_type",
+      "wordpress_values_schema_properties_htaccessconfigmap"
+    ],
+    "141": [
+      "wordpress_values_schema_nameoverride_default",
+      "wordpress_values_schema_nameoverride_description",
+      "wordpress_values_schema_nameoverride_type",
+      "wordpress_values_schema_properties_nameoverride"
+    ],
+    "142": [
+      "wordpress_values_schema_pluginsprune_default",
+      "wordpress_values_schema_pluginsprune_description",
+      "wordpress_values_schema_pluginsprune_type",
+      "wordpress_values_schema_properties_pluginsprune"
+    ],
+    "143": [
+      "wordpress_values_schema_podannotations_default",
+      "wordpress_values_schema_podannotations_description",
+      "wordpress_values_schema_podannotations_type",
+      "wordpress_values_schema_properties_podannotations"
+    ],
+    "144": [
+      "wordpress_values_schema_podlabels_default",
+      "wordpress_values_schema_podlabels_description",
+      "wordpress_values_schema_podlabels_type",
+      "wordpress_values_schema_properties_podlabels"
+    ],
+    "145": [
+      "wordpress_values_schema_properties_replicacount",
+      "wordpress_values_schema_replicacount_default",
+      "wordpress_values_schema_replicacount_description",
+      "wordpress_values_schema_replicacount_type"
+    ],
+    "146": [
+      "wordpress_values_schema_properties_secretkeys",
+      "wordpress_values_schema_secretkeys_description",
+      "wordpress_values_schema_secretkeys_properties",
+      "wordpress_values_schema_secretkeys_type"
+    ],
+    "147": [
+      "wordpress_values_schema_properties_smtp",
+      "wordpress_values_schema_smtp_additionalproperties",
+      "wordpress_values_schema_smtp_description",
+      "wordpress_values_schema_smtp_type"
+    ],
+    "148": [
+      "wordpress_values_schema_properties_tableprefix",
+      "wordpress_values_schema_tableprefix_default",
+      "wordpress_values_schema_tableprefix_description",
+      "wordpress_values_schema_tableprefix_type"
+    ],
+    "149": [
+      "wordpress_values_schema_properties_themesprune",
+      "wordpress_values_schema_themesprune_default",
+      "wordpress_values_schema_themesprune_description",
+      "wordpress_values_schema_themesprune_type"
+    ],
+    "150": [
+      "wg_easy_values_schema_labels_title",
+      "wg_easy_values_schema_labels_type",
+      "wg_easy_values_schema_properties_labels"
+    ],
+    "151": [
+      "wg_easy_values_schema_properties_value",
+      "wg_easy_values_schema_value_title",
+      "wg_easy_values_schema_value_type"
+    ],
+    "152": [
+      "wireguard_values_schema_properties_readonly",
+      "wireguard_values_schema_readonly_title",
+      "wireguard_values_schema_readonly_type"
+    ],
+    "153": [
+      "wordpress_values_schema_accessmodes_items",
+      "wordpress_values_schema_items_enum",
+      "wordpress_values_schema_items_type"
+    ],
+    "154": [
+      "wordpress_values_schema_configextra_description",
+      "wordpress_values_schema_configextra_type",
+      "wordpress_values_schema_properties_configextra"
+    ],
+    "155": [
+      "wordpress_values_schema_dnsconfig_description",
+      "wordpress_values_schema_dnsconfig_type",
+      "wordpress_values_schema_properties_dnsconfig"
+    ],
+    "156": [
+      "wordpress_values_schema_hostnetwork_description",
+      "wordpress_values_schema_hostnetwork_type",
+      "wordpress_values_schema_properties_hostnetwork"
+    ],
+    "157": [
+      "wordpress_values_schema_language_description",
+      "wordpress_values_schema_language_type",
+      "wordpress_values_schema_properties_language"
+    ],
+    "158": [
+      "wordpress_values_schema_lastname_description",
+      "wordpress_values_schema_lastname_type",
+      "wordpress_values_schema_properties_lastname"
+    ],
+    "159": [
+      "wordpress_values_schema_properties_username",
+      "wordpress_values_schema_username_description",
+      "wordpress_values_schema_username_type"
+    ],
+    "160": [
+      "wordpress_values_schema_properties_wordpress",
+      "wordpress_values_schema_wordpress_required",
+      "wordpress_values_schema_wordpress_type"
+    ],
+    "161": [
+      "charts_wg_easy_samples_verify_install_sh_verify_install",
+      "users_timon_homelab_helm_charts_charts_wg_easy_samples_verify_install_sh__entry"
+    ],
+    "162": [
+      "charts_wg_easy_samples_verify_uninstall_sh_verify_uninstall",
+      "users_timon_homelab_helm_charts_charts_wg_easy_samples_verify_uninstall_sh__entry"
+    ],
+    "163": [
+      "charts_wireguard_samples_verify_install_sh_verify_install",
+      "users_timon_homelab_helm_charts_charts_wireguard_samples_verify_install_sh__entry"
+    ],
+    "164": [
+      "charts_wireguard_samples_verify_uninstall_sh_verify_uninstall",
+      "users_timon_homelab_helm_charts_charts_wireguard_samples_verify_uninstall_sh__entry"
+    ],
+    "165": [
+      "charts_wordpress_samples_verify_install_sh_verify_install",
+      "users_timon_homelab_helm_charts_charts_wordpress_samples_verify_install_sh__entry"
+    ],
+    "166": [
+      "charts_wordpress_samples_verify_uninstall_sh_verify_uninstall",
+      "users_timon_homelab_helm_charts_charts_wordpress_samples_verify_uninstall_sh__entry"
+    ],
+    "167": [
+      "advanced-values.yaml"
+    ],
+    "168": [
+      "advanced.configmap.yaml"
+    ],
+    "169": [
+      "advanced2.values.yaml"
+    ],
+    "170": [
+      "commonAnnotations.values.yaml"
+    ],
+    "171": [
+      "commonLabels.values.yaml"
+    ],
+    "172": [
+      "mariaDB.secrets.yaml"
+    ],
+    "173": [
+      "memcached.secrets.yaml"
+    ],
+    "174": [
+      "metrics.apache.rules"
+    ],
+    "175": [
+      "networkpolicy.yaml"
+    ],
+    "176": [
+      "prometheusrule.yaml"
+    ],
+    "177": [
+      "pvc.yaml"
+    ],
+    "178": [
+      "service.yaml"
+    ],
+    "179": [
+      "smtp.secrets.yaml"
+    ],
+    "180": [
+      "statefulset.yaml"
+    ],
+    "181": [
+      "tests/**/*.yaml"
+    ],
+    "182": [
+      "valkey.secrets.yaml"
+    ]
+  },
+  "cohesion": {
+    "0": 0.0425531914893617,
+    "1": 0.046511627906976744,
+    "2": 0.047619047619047616,
+    "3": 0.05,
+    "4": 0.06282051282051282,
+    "5": 0.05263157894736842,
+    "6": 0.05405405405405406,
+    "7": 0.07142857142857142,
+    "8": 0.08333333333333333,
+    "9": 0.08333333333333333,
+    "10": 0.09090909090909091,
+    "11": 0.09523809523809523,
+    "12": 0.09523809523809523,
+    "13": 0.18947368421052632,
+    "14": 0.1,
+    "15": 0.10526315789473684,
+    "16": 0.10526315789473684,
+    "17": 0.1111111111111111,
+    "18": 0.11764705882352941,
+    "19": 0.14166666666666666,
+    "20": 0.13333333333333333,
+    "21": 0.22857142857142856,
+    "22": 0.24175824175824176,
+    "23": 0.14285714285714285,
+    "24": 0.18181818181818182,
+    "25": 0.18181818181818182,
+    "26": 0.2,
+    "27": 0.2,
+    "28": 0.2,
+    "29": 0.2,
+    "30": 0.2,
+    "31": 0.2,
+    "32": 0.2,
+    "33": 0.2222222222222222,
+    "34": 0.2222222222222222,
+    "35": 0.2222222222222222,
+    "36": 0.2222222222222222,
+    "37": 0.2222222222222222,
+    "38": 0.2222222222222222,
+    "39": 0.2222222222222222,
+    "40": 0.25,
+    "41": 0.6666666666666666,
+    "42": 0.6666666666666666,
+    "43": 0.6666666666666666,
+    "44": 0.2857142857142857,
+    "45": 0.2857142857142857,
+    "46": 0.2857142857142857,
+    "47": 0.4,
+    "48": 0.3333333333333333,
+    "49": 0.3333333333333333,
+    "50": 0.3333333333333333,
+    "51": 0.3333333333333333,
+    "52": 0.3333333333333333,
+    "53": 0.3333333333333333,
+    "54": 0.3333333333333333,
+    "55": 0.3333333333333333,
+    "56": 0.4,
+    "57": 0.4,
+    "58": 0.4,
+    "59": 0.4,
+    "60": 0.4,
+    "61": 0.4,
+    "62": 0.4,
+    "63": 0.4,
+    "64": 0.4,
+    "65": 0.4,
+    "66": 0.4,
+    "67": 0.4,
+    "68": 0.4,
+    "69": 0.4,
+    "70": 0.4,
+    "71": 0.4,
+    "72": 0.4,
+    "73": 0.4,
+    "74": 0.4,
+    "75": 0.4,
+    "76": 0.4,
+    "77": 0.4,
+    "78": 0.4,
+    "79": 0.4,
+    "80": 0.4,
+    "81": 0.4,
+    "82": 0.4,
+    "83": 0.4,
+    "84": 0.4,
+    "85": 0.5,
+    "86": 0.5,
+    "87": 0.5,
+    "88": 0.5,
+    "89": 0.5,
+    "90": 0.5,
+    "91": 0.5,
+    "92": 0.5,
+    "93": 0.5,
+    "94": 0.5,
+    "95": 0.5,
+    "96": 0.5,
+    "97": 0.5,
+    "98": 0.5,
+    "99": 0.5,
+    "100": 0.5,
+    "101": 0.5,
+    "102": 0.5,
+    "103": 0.5,
+    "104": 0.5,
+    "105": 0.5,
+    "106": 0.5,
+    "107": 0.5,
+    "108": 0.5,
+    "109": 0.5,
+    "110": 0.5,
+    "111": 0.5,
+    "112": 0.5,
+    "113": 0.5,
+    "114": 0.5,
+    "115": 0.5,
+    "116": 0.5,
+    "117": 0.5,
+    "118": 0.5,
+    "119": 0.5,
+    "120": 0.5,
+    "121": 0.5,
+    "122": 0.5,
+    "123": 0.5,
+    "124": 0.5,
+    "125": 0.5,
+    "126": 0.5,
+    "127": 0.5,
+    "128": 0.5,
+    "129": 0.5,
+    "130": 0.5,
+    "131": 0.5,
+    "132": 0.5,
+    "133": 0.5,
+    "134": 0.5,
+    "135": 0.5,
+    "136": 0.5,
+    "137": 0.5,
+    "138": 0.5,
+    "139": 0.5,
+    "140": 0.5,
+    "141": 0.5,
+    "142": 0.5,
+    "143": 0.5,
+    "144": 0.5,
+    "145": 0.5,
+    "146": 0.5,
+    "147": 0.5,
+    "148": 0.5,
+    "149": 0.5,
+    "150": 0.6666666666666666,
+    "151": 0.6666666666666666,
+    "152": 0.6666666666666666,
+    "153": 0.6666666666666666,
+    "154": 0.6666666666666666,
+    "155": 0.6666666666666666,
+    "156": 0.6666666666666666,
+    "157": 0.6666666666666666,
+    "158": 0.6666666666666666,
+    "159": 0.6666666666666666,
+    "160": 0.6666666666666666,
+    "161": 1.0,
+    "162": 1.0,
+    "163": 1.0,
+    "164": 1.0,
+    "165": 1.0,
+    "166": 1.0,
+    "167": 1.0,
+    "168": 1.0,
+    "169": 1.0,
+    "170": 1.0,
+    "171": 1.0,
+    "172": 1.0,
+    "173": 1.0,
+    "174": 1.0,
+    "175": 1.0,
+    "176": 1.0,
+    "177": 1.0,
+    "178": 1.0,
+    "179": 1.0,
+    "180": 1.0,
+    "181": 1.0,
+    "182": 1.0
+  },
+  "gods": [
+    {
+      "id": "wireguard_values_schema_properties_enabled",
+      "label": "enabled",
+      "degree": 10
+    },
+    {
+      "id": "scripts_sync_artifacthub_changes_main",
+      "label": "main()",
+      "degree": 9
+    },
+    {
+      "id": "wg_easy_values_schema_properties_annotations",
+      "label": "annotations",
+      "degree": 9
+    },
+    {
+      "id": "wg_easy_values_schema_properties_port",
+      "label": "port",
+      "degree": 7
+    },
+    {
+      "id": "wg_easy_values_schema_properties_nodeport",
+      "label": "nodePort",
+      "degree": 7
+    },
+    {
+      "id": "users_timon_homelab_helm_charts_charts_wg_easy_samples_verify_verify_sh__entry",
+      "label": "verify.sh script",
+      "degree": 6
+    },
+    {
+      "id": "wg_easy_values_schema_properties_replicacount",
+      "label": "replicaCount",
+      "degree": 6
+    },
+    {
+      "id": "wg_easy_values_schema_properties_image",
+      "label": "image",
+      "degree": 6
+    },
+    {
+      "id": "wg_easy_values_schema_properties_imagepullsecrets",
+      "label": "imagePullSecrets",
+      "degree": 6
+    },
+    {
+      "id": "wg_easy_values_schema_items_additionalproperties",
+      "label": "additionalProperties",
+      "degree": 6
+    }
+  ],
+  "surprises": [],
+  "tokens": {
+    "input": 44258,
+    "output": 2538
+  }
+}
