@@ -30,10 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update chart/wordpress/docker.io/wordpress/digest-"
+      description: "deps: update chart/wordpress/docker.io/lusotycoon/apache-exporter/v1.1.1"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/f1243ad038775d7398ecb63a1e46abbeaaea3332
+          url: https://github.com/SlyBase/helm-charts/commit/263fb287ee473ac8d6f0033facc123daf85057c3
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
