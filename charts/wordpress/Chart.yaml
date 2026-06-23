@@ -57,7 +57,7 @@ dependencies:
   - condition: redis.enabled
     name: redis
     repository: oci://registry-1.docker.io/cloudpirates
-    version: 0.30.4
+    version: 0.30.5
   - condition: valkey.enabled
     name: valkey
     repository: oci://registry-1.docker.io/cloudpirates
