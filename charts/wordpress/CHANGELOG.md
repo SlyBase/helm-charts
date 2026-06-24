@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [4.7.5](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.7.4...wordpress-v4.7.5) (2026-06-24)
+
+
+### Bug Fixes
+
+* **deps:** update docker.io/memcached:1.6.42 docker digest to e0394d6 ([#428](https://github.com/SlyBase/helm-charts/issues/428)) ([3aadf62](https://github.com/SlyBase/helm-charts/commit/3aadf626240a728b65cb4c150f1157fcb66c35bd))
+
 ## [4.7.4](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.7.3...wordpress-v4.7.4) (2026-06-23)
 
 
