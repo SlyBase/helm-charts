@@ -1,0 +1,168 @@
+name: Release Please Auto-merge
+
+# Auto-merges release-please "release PRs" so dependency-driven releases ship
+# without a manual click. release-please opens one PR per chart (e.g.
+# "chore(main): release wordpress 4.7.8"); this workflow merges it once ALL of
+# the following hold:
+#   * the bump is PATCH or MINOR — a MAJOR (breaking, feat!) release stays manual,
+#   * the release version is final (no -alpha/-beta/-rc prerelease),
+#   * the artifacthub.io/changes annotation has already been synced onto the PR
+#     (release-please.yml does that right after opening the PR), and
+#   * every other PR check (PR Chart Validate, Chart Install Test) is green.
+#
+# IMPORTANT: the merge uses the PAT (SLYBASE_GHCR_TOKEN), NOT GITHUB_TOKEN.
+# A merge pushed by GITHUB_TOKEN would NOT re-trigger release-please.yml, so the
+# git tag + GitHub Release (and therefore oci-release.yaml) would never fire.
+# Merging with the PAT mirrors a maintainer merging the PR by hand.
+#
+# Note on "approval": main has no branch protection requiring reviews, so an
+# explicit approve is not needed to merge (and Actions is not permitted to
+# approve PRs anyway). Merging is the release.
+#
+# Security: pull_request_target runs with repo secrets in the base-repo context.
+# It therefore only ever acts on same-repo release-please branches (never forks)
+# and only runs repo-owned scripts against the PR's data files — it never
+# executes code checked out from the PR head.
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "Release PR number to evaluate and merge"
+        required: true
+        type: string
+
+# One run per PR; a newer head supersedes an in-flight check wait.
+concurrency:
+  group: release-please-automerge-${{ github.event.pull_request.number || inputs.pr }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  automerge:
+    name: automerge
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    # Cheap guard for the PR event (no forks, release-please branches only); the
+    # full validation happens in the "Decide whether to merge" step below.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       startsWith(github.event.pull_request.head.ref, 'release-please--branches--main--components--'))
+    steps:
+      - name: Resolve PR number
+        id: pr
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            num="${{ inputs.pr }}"
+          else
+            num="${{ github.event.pull_request.number }}"
+          fi
+          echo "number=$num" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout base (trusted scripts + manifest)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+
+      - name: Decide whether to merge
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          set -euo pipefail
+          skip() { echo "decision: SKIP — $1"; echo "merge=false" >> "$GITHUB_OUTPUT"; exit 0; }
+
+          meta=$(gh pr view "$PR" --json state,headRefName,isCrossRepository,title)
+          state=$(jq -r .state <<<"$meta")
+          head_ref=$(jq -r .headRefName <<<"$meta")
+          cross=$(jq -r .isCrossRepository <<<"$meta")
+          title=$(jq -r .title <<<"$meta")
+
+          [ "$state" = "OPEN" ] || skip "PR is $state"
+          [ "$cross" != "true" ] || skip "cross-repository PR"
+          case "$head_ref" in
+            release-please--branches--main--components--*) ;;
+            *) skip "not a release-please branch ($head_ref)" ;;
+          esac
+
+          chart="${head_ref##*--components--}"
+          [ -f "charts/$chart/Chart.yaml" ] || skip "no chart at charts/$chart"
+
+          old=$(jq -r --arg c "charts/$chart" '.[$c] // empty' .release-please-manifest.json)
+          git fetch --quiet origin "$head_ref"
+          new=$(git show "FETCH_HEAD:.release-please-manifest.json" \
+                | jq -r --arg c "charts/$chart" '.[$c] // empty')
+          echo "chart=$chart  old=$old  new=$new  title=$title"
+
+          { [ -n "$old" ] && [ -n "$new" ]; } || skip "could not read versions"
+          [ "$old" != "$new" ] || skip "no version change"
+          case "$new" in *-*) skip "prerelease $new" ;; esac
+
+          # Patch + Minor auto-merge; a MAJOR bump stays manual.
+          if [ "${new%%.*}" != "${old%%.*}" ]; then
+            skip "major bump $old -> $new (manual review)"
+          fi
+
+          # The artifacthub.io/changes annotation is derived from CHANGELOG.md by
+          # release-please.yml right after the PR is opened. Re-run that (idempotent)
+          # script against the PR's files: no diff => already synced => safe to merge.
+          # A diff means the sync push hasn't landed yet; bail and let the resulting
+          # 'synchronize' event re-run this workflow.
+          git checkout --quiet FETCH_HEAD -- "charts/$chart/Chart.yaml" "charts/$chart/CHANGELOG.md"
+          python3 .github/scripts/sync-artifacthub-changes.py --chart-dir "charts/$chart"
+          git diff --quiet -- "charts/$chart/Chart.yaml" \
+            || skip "artifacthub.io/changes not synced yet"
+
+          echo "decision: MERGE — $chart $old -> $new"
+          {
+            echo "merge=true"
+            echo "chart=$chart"
+            echo "version=$new"
+            echo "head_sha=$(git rev-parse FETCH_HEAD)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Wait for PR checks
+        if: steps.gate.outputs.merge == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          set -euo pipefail
+          self="Release Please Auto-merge"   # never wait on ourselves
+          deadline=$(( $(date +%s) + 1500 )) # 25 min budget for CI
+          while :; do
+            raw=$(gh pr checks "$PR" --json name,workflow,bucket 2>/dev/null) || true
+            [ -n "$raw" ] || raw='[]'
+            relevant=$(jq -c --arg s "$self" '[.[] | select(.workflow != $s)]' <<<"$raw")
+            total=$(jq 'length' <<<"$relevant")
+            pending=$(jq '[.[] | select(.bucket == "pending")] | length' <<<"$relevant")
+            failed=$(jq '[.[] | select(.bucket == "fail" or .bucket == "cancel")] | length' <<<"$relevant")
+            echo "checks: total=$total pending=$pending failed=$failed"
+            [ "$failed" -eq 0 ] || { echo "::error::PR checks failed; not merging"; exit 1; }
+            if [ "$total" -gt 0 ] && [ "$pending" -eq 0 ]; then
+              echo "all checks green"; break
+            fi
+            [ "$(date +%s)" -lt "$deadline" ] || { echo "::error::timed out waiting for checks"; exit 1; }
+            sleep 20
+          done
+
+      - name: Merge release PR (PAT so the release tag fires)
+        if: steps.gate.outputs.merge == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.SLYBASE_GHCR_TOKEN }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          set -euo pipefail
+          echo "Merging release PR #$PR: ${{ steps.gate.outputs.chart }} ${{ steps.gate.outputs.version }}"
+          # --match-head-commit pins the merge to the exact commit the gate validated;
+          # if the PR head advanced meanwhile (e.g. another dep landed), the merge is
+          # refused and the resulting 'synchronize' event re-runs this workflow.
+          gh pr merge "$PR" --squash --match-head-commit "${{ steps.gate.outputs.head_sha }}"
