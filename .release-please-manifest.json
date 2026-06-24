@@ -1,5 +1,5 @@
 {
-  "charts/wordpress": "4.7.7",
+  "charts/wordpress": "4.7.8",
   "charts/wireguard": "1.0.2",
   "charts/wg-easy": "1.0.0"
 }
