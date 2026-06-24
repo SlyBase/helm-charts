@@ -30,15 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update redis docker tag to v0.30.5"
+      description: "deps: update docker.io/memcached:1.6.42 docker digest to e0394d6"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/4c8768955a36d4ff3e913dca797d5aab8d9993de
-    - kind: fixed
-      description: "deps: update valkey docker tag to v0.22.1"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/cb43695aa82a150540437975724e16eb68f5e7c8
+          url: https://github.com/SlyBase/helm-charts/commit/3aadf626240a728b65cb4c150f1157fcb66c35bd
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
