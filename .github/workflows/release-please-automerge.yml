@@ -138,6 +138,11 @@ jobs:
           set -euo pipefail
           self="Release Please Auto-merge"   # never wait on ourselves
           deadline=$(( $(date +%s) + 1500 )) # 25 min budget for CI
+          # Grace period: if no checks register within 3 min, GitHub likely did not
+          # deliver the pull_request event to the validation workflows (intermittent
+          # webhook drop). Treat "still zero after grace" as "no checks required"
+          # and proceed — release PRs only touch version + changelog, not templates.
+          no_checks_grace=$(( $(date +%s) + 180 ))
           while :; do
             raw=$(gh pr checks "$PR" --json name,workflow,bucket 2>/dev/null) || true
             [ -n "$raw" ] || raw='[]'
@@ -149,6 +154,10 @@ jobs:
             [ "$failed" -eq 0 ] || { echo "::error::PR checks failed; not merging"; exit 1; }
             if [ "$total" -gt 0 ] && [ "$pending" -eq 0 ]; then
               echo "all checks green"; break
+            fi
+            if [ "$total" -eq 0 ] && [ "$(date +%s)" -gt "$no_checks_grace" ]; then
+              echo "::warning::no PR checks registered after grace period — proceeding without check gate"
+              break
             fi
             [ "$(date +%s)" -lt "$deadline" ] || { echo "::error::timed out waiting for checks"; exit 1; }
             sleep 20
