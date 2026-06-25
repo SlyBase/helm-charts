@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [1.1.0](https://github.com/SlyBase/helm-charts/compare/wg-easy-v1.0.0...wg-easy-v1.1.0) (2026-06-25)
+
+
+### Features
+
+* add wg-easy native Prometheus metrics toggle and Grafana dashboard ([7796e28](https://github.com/SlyBase/helm-charts/commit/7796e28e659d5384806cb43d72586103c2819839))
+
 ## [1.0.0](https://github.com/SlyBase/helm-charts/compare/wg-easy-v0.9.1...wg-easy-v1.0.0) (2026-06-11)
 
 
