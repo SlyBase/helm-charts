@@ -156,6 +156,28 @@ config:
     ## @param config.init.ipv6_cidr string IPv6 CIDR for WireGuard network
     ipv6_cidr: "2001:0DB8::/32"
 
+## @section Metrics
+## @descriptionStart
+## wg-easy ships a native Prometheus endpoint at /metrics/prometheus. Setting metrics.enabled wires
+## ENABLE_PROMETHEUS_METRICS=true so it is turned on automatically instead of via the Admin Panel.
+## Pair with serviceMonitor.create=true to scrape it, and metrics.grafanaDashboard.enabled=true for
+## the official dashboard (Grafana.com ID 21733).
+## NOTE: on some wg-easy image versions the env var is ignored and the toggle must still be set once
+## in Admin Panel > General — see https://github.com/wg-easy/wg-easy/issues/1373.
+## The endpoint is unauthenticated unless you set a Bearer password in the wg-easy UI; restrict it
+## with networkPolicy in the meantime.
+## @descriptionEnd
+metrics:
+  ## @param metrics.enabled bool Enable wg-easy's native Prometheus metrics endpoint (sets ENABLE_PROMETHEUS_METRICS=true)
+  enabled: false
+  grafanaDashboard:
+    ## @param metrics.grafanaDashboard.enabled bool Deploy a ConfigMap with the official wg-easy Grafana dashboard (Grafana.com ID 21733)
+    enabled: false
+    ## @param metrics.grafanaDashboard.namespace string Namespace for the dashboard ConfigMap (defaults to the release namespace)
+    namespace: ""
+    ## @param metrics.grafanaDashboard.labels object Extra labels for the dashboard ConfigMap (grafana_dashboard: "1" is always added so the Grafana sidecar imports it)
+    labels: {}
+
 ## @section Extra Environment Variables
 ## @descriptionStart
 ## Additional environment variables for the WG-Easy container.
@@ -222,46 +244,45 @@ podLabels: {}
 ## @section Security Context
 ## @descriptionStart
 ## Security context configuration for pod and container.
-## Note: WG-Easy typically requires privileged mode for WireGuard kernel module.
-## E.g.
-## ```yaml
-## podSecurityContext:
-##   fsGroup: 1000
+## Leaving `securityContext` empty uses the chart default: NET_ADMIN + `privileged: true`. The
+## privileged flag is the default because wg-easy must set net.ipv4.* sysctls itself, and those
+## "unsafe" sysctls are not allow-listed by Kubernetes by default.
 ##
-## securityContext:
-##   privileged: true
-##   capabilities:
-##     add:
-##       - NET_ADMIN
-##       - SYS_MODULE
-## ```
-##
-## Alternative without `privileged: true` (only works if the WireGuard kernel
-## module is already loaded on the host node - untested, see readme.md "Security"):
-## ```yaml
-## securityContext:
-##   privileged: false
-##   capabilities:
-##     add:
-##       - NET_ADMIN
-##       - SYS_MODULE
-##     drop:
-##       - ALL
-##   seccompProfile:
-##     type: RuntimeDefault
-## ```
+## To HARDEN (drop privileged) on clusters where you control the nodes:
+##   1. Allow-list the sysctls on every node that can run the pod, e.g. on Talos:
+##      ```yaml
+##      machine:
+##        sysctls:
+##          net.ipv4.ip_forward: "1"
+##          net.ipv4.conf.all.src_valid_mark: "1"
+##      ```
+##      (or kubelet `--allowed-unsafe-sysctls=net.ipv4.ip_forward,net.ipv4.conf.all.src_valid_mark`)
+##   2. Set them on the pod and drop privileged:
+##      ```yaml
+##      podSecurityContext:
+##        sysctls:
+##          - { name: net.ipv4.ip_forward, value: "1" }
+##          - { name: net.ipv4.conf.all.src_valid_mark, value: "1" }
+##      securityContext:
+##        capabilities:
+##          add: [NET_ADMIN]
+##        privileged: false
+##        allowPrivilegeEscalation: false
+##        seccompProfile:
+##          type: RuntimeDefault
+##      ```
 ## @descriptionEnd
+
+## @param loadKernelModule bool Add the SYS_MODULE capability so the container can load the wireguard kernel module. Leave false where the module is already built in/loaded (modern kernels, Talos); set true only if wg0 fails to come up because the module is missing.
+loadKernelModule: false
 
 ## @param podSecurityContext object Security context for the pod
 podSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
-## @param securityContext object Security context for the container
-securityContext:
-  privileged: true
-  seccompProfile:
-    type: RuntimeDefault
+## @param securityContext object Security context for the container. Empty = chart default (NET_ADMIN + privileged). Set to override completely (see the Security Context section for a hardened, non-privileged example).
+securityContext: {}
 
 ## @section Service configuration
 service:
