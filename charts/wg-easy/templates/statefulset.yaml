@@ -63,10 +63,20 @@ spec:
           {{- if .Values.securityContext }}
             {{- toYaml .Values.securityContext | nindent 12 }}
           {{- else }}
+            # wg-easy needs NET_ADMIN to manage the wg0 interface and routing. On a stock cluster
+            # it also needs the broad privileged flag so it can set the required net.ipv4.* sysctls
+            # (ip_forward, conf.all.src_valid_mark) itself, because those "unsafe" sysctls are not
+            # allow-listed by Kubernetes by default. To HARDEN (drop privileged): allow-list those
+            # sysctls on your nodes (e.g. Talos machine.sysctls / kubelet --allowed-unsafe-sysctls)
+            # and override `securityContext` with `capabilities.add: [NET_ADMIN]` + `privileged: false`.
+            # SYS_MODULE is added only when the host has not pre-loaded the wireguard module
+            # (set loadKernelModule=true).
             capabilities:
               add:
                 - NET_ADMIN
+                {{- if .Values.loadKernelModule }}
                 - SYS_MODULE
+                {{- end }}
             privileged: true
             seccompProfile:
               type: RuntimeDefault
@@ -82,6 +92,13 @@ spec:
               value: {{ .Values.config.insecure | quote }}
             - name: DISABLE_IPV6
               value: {{ .Values.config.disable_ipv6 | quote }}
+            {{- if .Values.metrics.enabled }}
+            # Enable wg-easy's native Prometheus endpoint at /metrics/prometheus.
+            # NOTE: depending on the image version this toggle may also need to be set once in
+            # Admin Panel > General (https://github.com/wg-easy/wg-easy/issues/1373).
+            - name: ENABLE_PROMETHEUS_METRICS
+              value: "true"
+            {{- end }}
             {{- if .Values.config.init.enabled }}
             - name: INIT_ENABLED
               value: "true"

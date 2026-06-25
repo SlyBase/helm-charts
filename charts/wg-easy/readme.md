@@ -50,7 +50,7 @@ kubectl create namespace wg-easy && kubectl label namespace wg-easy pod-security
 
 ## Security
 
-By default the container runs `privileged: true` with the `NET_ADMIN` and `SYS_MODULE` capabilities. This is required by the [wg-easy](https://github.com/wg-easy/wg-easy) image to create the `wg0` interface and, if not already present on the host, to load the WireGuard kernel module.
+By default the container runs `privileged: true` with the `NET_ADMIN` capability. The privileged flag is the default because wg-easy must set `net.ipv4.*` sysctls itself (`ip_forward`, `conf.all.src_valid_mark`), and those "unsafe" sysctls are not allow-listed by Kubernetes by default.
 
 As a result:
 - `pod-security.kubernetes.io/enforce: privileged` is required on the namespace (see Prerequisites)
@@ -59,8 +59,11 @@ As a result:
 What the chart hardens by default regardless:
 - `seccompProfile: RuntimeDefault` for the pod and the container
 - `serviceAccount.automount: false` — the chart never talks to the Kubernetes API
+- `SYS_MODULE` is **not** added by default (most modern kernels and Talos already provide the WireGuard module). Set `loadKernelModule: true` only if `wg0` fails because the module is missing.
 
-If the WireGuard kernel module is already loaded on every host node, you can try running without `privileged: true` using `capabilities: {add: [NET_ADMIN, SYS_MODULE], drop: [ALL]}` instead - see the commented example in `values.yaml`. This is untested and not the default.
+`securityContext` defaults to `{}`, which renders the chart default shown above (`NET_ADMIN` + `privileged: true`). Setting `securityContext` overrides it completely.
+
+**To harden (drop `privileged`)** on clusters where you control the nodes, allow-list the sysctls on every node that can run the pod — e.g. Talos `machine.sysctls` (`net.ipv4.ip_forward`, `net.ipv4.conf.all.src_valid_mark`) or kubelet `--allowed-unsafe-sysctls` — set them on the pod via `podSecurityContext.sysctls`, and override `securityContext` with `capabilities.add: [NET_ADMIN]` + `privileged: false`. See the worked example in `values.yaml`.
 
 ## Initialization Mode and Metrics
 
@@ -88,7 +91,9 @@ type: Opaque
 ```
 > **Note:** The initial username and password is not checked for complexity. Make sure to set a long enough username and password. Otherwise, the user won't be able to log in.
 
-> **Note:** You have to enable the Prometheus metrics in the Web UI manually and copy this token as plain text (not Base64) in the UI. This can't be done automatically. The secret here is used for the serviceMonitor, for Prometheus autodetection.
+> **Note:** Set `metrics.enabled: true` to have the chart export `ENABLE_PROMETHEUS_METRICS=true` so wg-easy serves `/metrics/prometheus` automatically. On some image versions the env var is ignored and the toggle must still be set once in **Admin Panel > General** (see [wg-easy#1373](https://github.com/wg-easy/wg-easy/issues/1373)). The metrics token is copied as plain text (not Base64) in the UI; the secret here is used by the ServiceMonitor for Prometheus autodetection.
+
+> **Grafana dashboard:** set `metrics.grafanaDashboard.enabled: true` to deploy a ConfigMap with the official wg-easy dashboard (Grafana.com ID 21733), labelled `grafana_dashboard: "1"` so the Grafana sidecar imports it automatically.
 
 ```yaml
 # ./samples/advanced.values.yaml

@@ -342,6 +342,41 @@
       },
       "required": []
     },
+    "metrics": {
+      "title": "Metrics",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "wg-easy native Prometheus metrics endpoint and Grafana dashboard.",
+      "properties": {
+        "enabled": {
+          "title": "Enable metrics endpoint",
+          "type": "boolean",
+          "description": "Sets ENABLE_PROMETHEUS_METRICS=true so wg-easy exposes /metrics/prometheus. On some image versions this must also be toggled once in Admin Panel > General (see wg-easy issue #1373)."
+        },
+        "grafanaDashboard": {
+          "title": "Grafana dashboard",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "title": "Deploy dashboard ConfigMap",
+              "type": "boolean",
+              "description": "Deploy a ConfigMap with the official wg-easy Grafana dashboard (Grafana.com ID 21733)."
+            },
+            "namespace": {
+              "title": "Dashboard namespace",
+              "type": "string",
+              "description": "Namespace for the dashboard ConfigMap (defaults to the release namespace)."
+            },
+            "labels": {
+              "title": "Dashboard labels",
+              "type": "object",
+              "description": "Extra labels for the dashboard ConfigMap (grafana_dashboard: \"1\" is always added)."
+            }
+          }
+        }
+      }
+    },
     "extraEnvVars": {
       "title": "Extra environment variables",
       "type": "array",
@@ -493,6 +528,11 @@
           "boolean"
         ]
       }
+    },
+    "loadKernelModule": {
+      "title": "Load Kernel Module",
+      "type": "boolean",
+      "description": "Add the SYS_MODULE capability so the container can load the wireguard kernel module. Leave false where the module is already built in/loaded (modern kernels, Talos); set true only if wg0 fails to come up because the module is missing."
     },
     "podSecurityContext": {
       "title": "Pod security context",

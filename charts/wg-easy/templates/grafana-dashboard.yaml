@@ -1,0 +1,21 @@
+{{- if .Values.metrics.grafanaDashboard.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "wg-easy.fullname" . }}-grafana-dashboard
+  namespace: {{ default .Release.Namespace .Values.metrics.grafanaDashboard.namespace }}
+  labels:
+    {{- include "wg-easy.labels" . | nindent 4 }}
+    grafana_dashboard: "1"
+    {{- with .Values.metrics.grafanaDashboard.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  ## Official wg-easy WireGuard dashboard (Grafana.com ID 21733), adapted for sidecar auto-import.
+  wg-easy.json: |-
+    {{- .Files.Get "dashboards/wg-easy.json" | nindent 4 }}
+{{- end -}}
