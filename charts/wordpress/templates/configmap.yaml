@@ -42,6 +42,19 @@ data:
     {{ .Values.apache.customPhpConfig | nindent 4 }}
     {{- end }}
   {{- end }}
+  {{- if .Values.apache.opcache.enabled }}
+  ## Tuned OPcache drop-in. The "zz-" prefix makes it load LAST in conf.d (after the
+  ## official image's opcache-recommended.ini), so these values are authoritative.
+  ## Tune via apache.opcache.* values rather than apache.customPhpConfig.
+  zz-opcache.ini: |
+    opcache.enable=1
+    opcache.enable_cli=0
+    opcache.memory_consumption={{ .Values.apache.opcache.memoryConsumption }}
+    opcache.interned_strings_buffer={{ .Values.apache.opcache.internedStringsBuffer }}
+    opcache.max_accelerated_files={{ .Values.apache.opcache.maxAcceleratedFiles }}
+    opcache.revalidate_freq={{ .Values.apache.opcache.revalidateFreq }}
+    opcache.validate_timestamps={{ ternary 1 0 .Values.apache.opcache.validateTimestamps }}
+  {{- end }}
   {{- if (not .Values.wordpress.htaccessConfigMap) }}
   htaccess: |
     {{- if and .Values.wordpress.htaccess  (not .Values.wordpress.htaccessConfigMap) }}

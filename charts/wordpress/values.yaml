@@ -439,8 +439,14 @@ wordpress:
   ## @param wordpress.htaccessConfigMap string Name of ConfigMap containing .htaccess (key: htaccess, overrides wordpress.htaccess)
   htaccessConfigMap: ""
 
-  ## @param wordpress.debug bool Enable WordPress debugging
+  ## @param wordpress.debug bool Enable WordPress debugging (WP_DEBUG)
   debug: false
+
+  ## @param wordpress.debugDisplay bool Render PHP warnings/notices into the page (WP_DEBUG_DISPLAY). Keep false in production so errors never leak into the response body. Only applies when debug=true.
+  debugDisplay: false
+
+  ## @param wordpress.debugLog bool Write debug output to wp-content/debug.log (WP_DEBUG_LOG). Only applies when debug=true.
+  debugLog: false
 
   ## @param wordpress.muPluginsConfigMaps list ConfigMaps containing MU-Plugin files (name, optional key)
   ## E.g.
@@ -545,8 +551,28 @@ apache:
   ## @param apache.customPhpConfigMap string Name of ConfigMap containing PHP config (key: custom.ini)
   customPhpConfigMap: ""
 
+  ## PHP OPcache tuning. Rendered as a dedicated conf.d drop-in (zz-opcache.ini) that loads
+  ## LAST — after the official image's opcache-recommended.ini — so these values win.
+  ## Tune via apache.opcache.* (not apache.customPhpConfig). Tuned defaults benefit every
+  ## install (PHP/image defaults of 128 MB / 4000 files are too small for WordPress + plugins).
+  opcache:
+    ## @param apache.opcache.enabled bool Render tuned PHP OPcache settings
+    enabled: true
+    ## @param apache.opcache.memoryConsumption int Shared opcode cache size in MB (opcache.memory_consumption)
+    memoryConsumption: 192
+    ## @param apache.opcache.internedStringsBuffer int Interned strings buffer in MB (opcache.interned_strings_buffer)
+    internedStringsBuffer: 16
+    ## @param apache.opcache.maxAcceleratedFiles int Max cached files (opcache.max_accelerated_files); WordPress + many plugins = lots of PHP files
+    maxAcceleratedFiles: 20000
+    ## @param apache.opcache.revalidateFreq int Seconds between timestamp checks (opcache.revalidate_freq); raise on shared/network FS to reduce stat load
+    revalidateFreq: 2
+    ## @param apache.opcache.validateTimestamps bool Re-check file mtimes (opcache.validate_timestamps); false = max performance but requires a restart to pick up code changes
+    validateTimestamps: true
+
 ## @section Storage parameters
 storage:
+  ## @param storage.mode string Volume layout. "full" (default) mounts the PVC / per-Pod volume at all of /var/www/html. "wp-content" keeps the WordPress core on an ephemeral emptyDir (re-copied from the image each start, ~seconds) and persists only wp-content on the PVC / per-Pod volume — makes pods stateless and fast to reschedule. Pair with an object cache and offloaded uploads (e.g. S3) for true HA. Requires consistent auth keys (auto-pinned by the chart for this mode).
+  mode: full
   ## @param storage.existingClaim string Name of an existing PVC to use
   existingClaim: ""
   ## @param storage.storageClass string Storage class for PVC (required when not using existingClaim)

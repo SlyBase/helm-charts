@@ -180,8 +180,7 @@
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["sh", "-c", "chown -R {{ .Values.podSecurityContext.runAsUser | default 33 }}:{{ .Values.podSecurityContext.fsGroup | default 33 }} /tmp/wordpress && echo 'PVC ownership fixed!'"]
           volumeMounts:
-            - name: {{ include "wordpress.fullname" . }}
-              mountPath: /tmp/wordpress
+            {{- include "wordpress.dataVolumeMounts" (dict "ctx" . "path" "/tmp/wordpress") | nindent 12 }}
         {{- end }}
         - name: {{ .Chart.Name }}-base
           image: {{ include "slycharts.image" (dict "image" .Values.image "defaultTag" .Chart.AppVersion) }}
@@ -216,8 +215,7 @@
           volumeMounts:
             - name: tmp
               mountPath: /tmp
-            - name: {{ include "wordpress.fullname" . }}
-              mountPath: /tmp/wordpress
+            {{- include "wordpress.dataVolumeMounts" (dict "ctx" . "path" "/tmp/wordpress") | nindent 12 }}
             # Mount ConfigMap outside of /tmp to avoid being hidden by emptyDir
             - name: {{ include "wordpress.fullname" . }}-init
               mountPath: /scripts
@@ -436,8 +434,7 @@
           {{- end }}
           {{- end }}
           volumeMounts:
-            - name: {{ include "wordpress.fullname" . }}
-              mountPath: /var/www/html
+            {{- include "wordpress.dataVolumeMounts" (dict "ctx" . "path" "/var/www/html") | nindent 12 }}
             - name: tmp
               mountPath: /tmp
             # Mount ConfigMap outside of /tmp
@@ -510,8 +507,7 @@
           volumeMounts:
             - name: wordpress-memcached-ext
               mountPath: /opt/php-ext
-            - name: {{ include "wordpress.fullname" . }}
-              mountPath: /var/www/html
+            {{- include "wordpress.dataVolumeMounts" (dict "ctx" . "path" "/var/www/html") | nindent 12 }}
         {{- end }}
       {{- if .Values.initContainers }}
         {{- toYaml .Values.initContainers | nindent 8 }}
@@ -784,8 +780,7 @@
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: {{ include "wordpress.fullname" . }}
-              mountPath: /var/www/html
+            {{- include "wordpress.dataVolumeMounts" (dict "ctx" . "path" "/var/www/html") | nindent 12 }}
             - name: tmp
               mountPath: /tmp
             - name: run
@@ -815,6 +810,11 @@
             - name: {{ include "wordpress.fullname" . }}-configfiles
               mountPath: /usr/local/etc/php/conf.d/custom.ini
               subPath: custom.ini
+            {{- if .Values.apache.opcache.enabled }}
+            - name: {{ include "wordpress.fullname" . }}-configfiles
+              mountPath: /usr/local/etc/php/conf.d/zz-opcache.ini
+              subPath: zz-opcache.ini
+            {{- end }}
         {{- if .Values.metrics.apache.enabled}}
         - name: metrics-apache
           image: {{ include "slycharts.image" (dict "image" .Values.metrics.apache.image) }}
@@ -910,6 +910,10 @@
                 - key: custom.ini
                   path: custom.ini
                 {{- end }}
+                {{- if .Values.apache.opcache.enabled }}
+                - key: zz-opcache.ini
+                  path: zz-opcache.ini
+                {{- end }}
                 {{- if (not .Values.wordpress.htaccessConfigMap) }}
                 - key: htaccess
                   path: .htaccess
@@ -966,6 +970,12 @@
       - name: {{ .Values.externalDatabase.existingSecret }}
         secret:
           secretName: {{ .Values.externalDatabase.existingSecret }}
+      {{- end }}
+      {{- if eq .Values.storage.mode "wp-content" }}
+      # storage.mode=wp-content: the WordPress core lives on this ephemeral emptyDir
+      # (re-copied from the image each start); only wp-content is persisted on the volume below.
+      - name: wordpress-html
+        emptyDir: {}
       {{- end }}
       {{- if ne .Values.controllerType "statefulset" }}
       - name: {{ include "wordpress.fullname" . }}

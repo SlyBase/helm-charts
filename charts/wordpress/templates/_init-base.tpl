@@ -82,10 +82,28 @@ if [ -z "$PVC_VERSION" ]; then
       ' /usr/src/wordpress/wp-config-docker.php > /tmp/wordpress/wp-config.php
     fi
 
+    {{- if eq .Values.storage.mode "wp-content" }}
+    # storage.mode=wp-content: wp-content is its own volume (always a mountpoint), so populate
+    # the image skeleton only when the directory is empty — covers a fresh per-Pod RWO volume
+    # or a fresh shared RWX volume. A lock file serializes the copy when replicas start together.
+    if [ -z "$(ls -A /tmp/wordpress/wp-content 2>/dev/null)" ]; then
+        SKEL_LOCK="/tmp/wordpress/wp-content/.wp-content-copy-lock"
+        if (set -o noclobber; echo "$$" > "$SKEL_LOCK") 2>/dev/null; then
+            trap 'rm -f "$SKEL_LOCK"' EXIT
+            echo "Populating empty wp-content from image skeleton..."
+            cp -r /usr/src/wordpress/wp-content/. /tmp/wordpress/wp-content/ 2>/dev/null || true
+            rm -f "$SKEL_LOCK"
+            trap - EXIT
+        else
+            echo "Another pod is populating wp-content, continuing..."
+        fi
+    fi
+    {{- else }}
     # Copy wp-content skeleton if not present
     if [ ! -d /tmp/wordpress/wp-content ]; then
         cp -r /usr/src/wordpress/wp-content /tmp/wordpress/wp-content 2>/dev/null || true
     fi
+    {{- end }}
     echo "Complete! WordPress has been successfully installed to /tmp/wordpress"
 
 elif [ "$IMAGE_VERSION" != "$PVC_VERSION" ]; then

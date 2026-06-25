@@ -93,9 +93,17 @@ helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples
 - **Valkey**: Enable Valkey (Redis fork) as alternative caching.
 
 ### High Availability / Workload Controller
-- **`controllerType`**: Run WordPress as a `deployment` (default, single shared PVC) or a `statefulset`.
-- **Per-Pod ReadWriteOnce storage**: With `controllerType: statefulset`, each replica gets its own RWO volume via `volumeClaimTemplates` — true HA without depending on a single RWX share-manager (no shared single point of failure).
-- **Headless Service** for stable Pod DNS, plus `statefulset.*` tunables: `podManagementPolicy`, `updateStrategy`, and `persistentVolumeClaimRetentionPolicy`.
+
+Two first-class HA models — pick based on whether you have RWX storage:
+
+| Model | How | When |
+|---|---|---|
+| **StatefulSet + per-Pod RWO** | `controllerType: statefulset` — each replica gets its own ReadWriteOnce volume via `volumeClaimTemplates`. A storage outage affects at most one replica (no shared RWX share-manager SPOF). Adds a headless Service and `statefulset.*` tunables (`podManagementPolicy`, `updateStrategy`, `persistentVolumeClaimRetentionPolicy`). | No RWX available, or you want to avoid a shared-storage single point of failure. See `samples/ha-statefulset.values.yaml`. |
+| **Deployment + RWX + ephemeral core** | `controllerType: deployment` + `storage.mode: wp-content` — the WordPress core is re-copied from the image onto an `emptyDir` each start (pods become stateless and freely reschedulable), and only `wp-content` is persisted on one ReadWriteMany volume shared by all replicas. | You have an RWX storage class (NFS, CephFS, Longhorn RWX, JuiceFS, …) and want shared `wp-content`. See `samples/ha-deployment-rwx.values.yaml`. |
+
+- **`storage.mode`**: `full` (default — one volume for all of `/var/www/html`) or `wp-content` (ephemeral `emptyDir` core + persistent `wp-content`). `wp-content` mode pairs well with an object cache and offloaded uploads for truly stateless pods.
+- **Consistent auth keys/salts**: for per-Pod (`statefulset`) and ephemeral-core (`storage.mode: wp-content`) layouts the chart auto-generates and persists the eight WordPress `AUTH_KEY`/`SALT` values in its Secret and injects them into every Pod, so login cookies remain valid across replicas and restarts. Default `full`-mode Deployments are unchanged (their single shared `wp-config.php` already has consistent salts).
+- **Multi-replica checklist** (see the HA samples): enable an **object cache** (memcached/redis/valkey) so sessions/transients are shared; set **`resources.requests`** (required for the HPA); add a **`podDisruptionBudget`**, **`podAntiAffinity`** and **`topologySpreadConstraints`** to spread replicas; and for Deployments set **`updateStrategy.type: RollingUpdate`** (the default is `Recreate`, which causes downtime on upgrades).
 
 ### Metrics and Monitoring
 - **WordPress Metrics**: Automatically install a WordPress Plugin for Prometheus metrics.
@@ -113,6 +121,8 @@ helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples
 - **Apache Default Site Config**: Modify `/etc/apache2/sites-available/000-default.conf` using `apache.customDefaultSiteConfig`.
 - **Apache Ports Config**: Adjust `/etc/apache2/ports.conf` with `apache.customPortsConfig`.
 - **Apache PHP Config**: Set PHP settings like upload limits via `apache.customPhpConfig`.
+- **PHP OPcache**: tuned OPcache defaults ship enabled (`apache.opcache.*`, rendered as the `zz-opcache.ini` conf.d drop-in) — bigger opcode cache and file table than the image's `opcache-recommended.ini` (128 MB / 4000 files), which matters once WordPress runs many plugins. The `zz-` prefix makes it load **last**, so its values are authoritative — tune via `apache.opcache.*` (set `apache.opcache.enabled: false` to fall back to the image defaults). On shared/network filesystems, raise `apache.opcache.revalidateFreq` to reduce `stat()` load.
+- **Debug logging**: `wordpress.debug` enables `WP_DEBUG`; `wordpress.debugDisplay` (default `false`) keeps PHP warnings out of the response body in production, and `wordpress.debugLog` (default `false`) writes them to `wp-content/debug.log` instead.
 
 ### Custom commands in init container
 - **Execute custom shell commands** after init.sh via ConfigMap (`wordpress.init.customInitConfigMap.name`)
@@ -340,6 +350,16 @@ This setup includes everything from the advanced installation plus:
 kubectl apply -f ./samples/advanced.secrets.yaml
 kubectl apply -f ./samples/advanced.configmap.yaml
 helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples/advanced2.values.yaml
+```
+
+Two ready-made HA recipes (object cache + PDB + anti-affinity + topology spread + resources, with auto-pinned auth salts) are provided:
+
+```bash
+# Path 1 — StatefulSet, per-Pod ReadWriteOnce (no shared RWX required)
+helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples/ha-statefulset.values.yaml
+
+# Path 2 — Deployment + shared RWX with an ephemeral core (storage.mode=wp-content)
+helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples/ha-deployment-rwx.values.yaml
 ```
 
 ### Memcached cache setup

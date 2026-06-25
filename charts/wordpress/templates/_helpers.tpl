@@ -418,3 +418,24 @@ Usage: {{ include "wordpress.urlHost" . }}
 
 {{- toYaml (dict "password" $password) -}}
 {{- end -}}
+
+{{/* ============================================================================ */}}
+{{/* Data volume mounts for the WordPress filesystem.                            */}}
+{{/* storage.mode=full       → the PVC / per-Pod volume is mounted at <path>.    */}}
+{{/* storage.mode=wp-content → an ephemeral emptyDir holds the core at <path>,   */}}
+{{/*                           the PVC / per-Pod volume is mounted at <path>/wp-content. */}}
+{{/* Usage: {{- include "wordpress.dataVolumeMounts" (dict "ctx" . "path" "/var/www/html") | nindent 12 }} */}}
+{{/* ============================================================================ */}}
+{{- define "wordpress.dataVolumeMounts" -}}
+{{- $ctx := .ctx -}}
+{{- $path := .path -}}
+{{- if eq $ctx.Values.storage.mode "wp-content" -}}
+- name: wordpress-html
+  mountPath: {{ $path }}
+- name: {{ include "wordpress.fullname" $ctx }}
+  mountPath: {{ printf "%s/wp-content" $path }}
+{{- else -}}
+- name: {{ include "wordpress.fullname" $ctx }}
+  mountPath: {{ $path }}
+{{- end -}}
+{{- end -}}

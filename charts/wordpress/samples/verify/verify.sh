@@ -187,6 +187,38 @@ else
   yellow "  [SKIP] Backup not enabled in this values set — nothing to verify"
 fi
 
+# ── 14. OPcache tuning active ─────────────────────────────────────────────────
+bold ""
+bold "==> Step 14: OPcache tuning active (chart default memory_consumption=192)"
+if [[ -n "${WP_POD}" ]]; then
+  # pipe-free read (avoids SIGPIPE aborting the script under set -o pipefail)
+  OPCACHE_MEM=$(kubectl exec "${WP_POD}" -c wordpress -- \
+    php -r 'echo (int) ini_get("opcache.memory_consumption");' 2>/dev/null || true)
+  if [[ "${OPCACHE_MEM}" == "192" ]]; then
+    green "  [OK] OPcache active with chart defaults (memory_consumption=${OPCACHE_MEM})"
+  else
+    red "  [FAIL] OPcache memory_consumption='${OPCACHE_MEM}' (expected 192 — check zz-opcache.ini conf.d load order)"
+    ERRORS=$((ERRORS + 1))
+  fi
+else
+  yellow "  [SKIP] No wordpress pod — cannot check OPcache"
+fi
+
+# ── 15. WordPress auth keys/salts pinned ──────────────────────────────────────
+bold ""
+bold "==> Step 15: WordPress auth keys/salts pinned (statefulset / wp-content layouts)"
+SALT_COUNT=$(kubectl get secret "${RELEASE}" \
+  -o go-template='{{range $k,$v := .data}}{{$k}}{{"\n"}}{{end}}' 2>/dev/null \
+  | grep -cE '^WORDPRESS_(AUTH|SECURE_AUTH|LOGGED_IN|NONCE)_(KEY|SALT)$' || true)
+if [[ "${SALT_COUNT}" == "8" ]]; then
+  green "  [OK] All 8 auth keys/salts pinned in Secret ${RELEASE} (consistent across replicas)"
+elif [[ "${SALT_COUNT}" == "0" ]]; then
+  yellow "  [SKIP] No pinned salts (expected only for controllerType=statefulset or storage.mode=wp-content)"
+else
+  red "  [FAIL] Found ${SALT_COUNT}/8 auth keys/salts in Secret ${RELEASE} (should be 0 or 8)"
+  ERRORS=$((ERRORS + 1))
+fi
+
 # ── Result ────────────────────────────────────────────────────────────────────
 echo ""
 bold "============================================"

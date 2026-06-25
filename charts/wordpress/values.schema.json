@@ -857,7 +857,17 @@
         },
         "debug": {
           "type": "boolean",
-          "description": "Enable WordPress debug mode",
+          "description": "Enable WordPress debug mode (WP_DEBUG)",
+          "default": false
+        },
+        "debugDisplay": {
+          "type": "boolean",
+          "description": "Render PHP warnings/notices into the page (WP_DEBUG_DISPLAY); only applies when debug=true",
+          "default": false
+        },
+        "debugLog": {
+          "type": "boolean",
+          "description": "Write debug output to wp-content/debug.log (WP_DEBUG_LOG); only applies when debug=true",
           "default": false
         },
         "muPluginsConfigMaps": {
@@ -963,12 +973,57 @@
           "type": "string",
           "description": "Name of existing ConfigMap containing PHP config",
           "default": ""
+        },
+        "opcache": {
+          "type": "object",
+          "description": "PHP OPcache tuning rendered as a conf.d drop-in (00-opcache.ini)",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Render tuned PHP OPcache settings",
+              "default": true
+            },
+            "memoryConsumption": {
+              "type": "integer",
+              "description": "opcache.memory_consumption in MB",
+              "default": 192
+            },
+            "internedStringsBuffer": {
+              "type": "integer",
+              "description": "opcache.interned_strings_buffer in MB",
+              "default": 16
+            },
+            "maxAcceleratedFiles": {
+              "type": "integer",
+              "description": "opcache.max_accelerated_files",
+              "default": 20000
+            },
+            "revalidateFreq": {
+              "type": "integer",
+              "description": "opcache.revalidate_freq in seconds",
+              "default": 2
+            },
+            "validateTimestamps": {
+              "type": "boolean",
+              "description": "opcache.validate_timestamps",
+              "default": true
+            }
+          }
         }
       }
     },
     "storage": {
       "type": "object",
       "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "wp-content"
+          ],
+          "description": "Volume layout: 'full' mounts the volume at all of /var/www/html; 'wp-content' uses an ephemeral emptyDir core and persists only wp-content",
+          "default": "full"
+        },
         "existingClaim": {
           "type": "string",
           "description": "Name of an existing PVC to use"
