@@ -1,0 +1,41 @@
+name: Release Please Auto-merge Retrigger
+
+# After any push to main, re-evaluate all open release-please PRs so that the
+# automerge picks up version-bump changes that main introduced without a new
+# commit landing on the release PR branch (which would otherwise leave the PR
+# unmergeable or stale with no retrigger event).
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  actions: write  # gh workflow run
+  pull-requests: read
+
+jobs:
+  retrigger:
+    name: retrigger automerge for open release PRs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch automerge for each open release-please PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          prs=$(gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --json number,headRefName \
+            --jq '[.[] | select(.headRefName | startswith("release-please--branches--main--components--")) | .number]')
+
+          count=$(echo "$prs" | jq 'length')
+          echo "open release PRs: $count"
+          [ "$count" -gt 0 ] || exit 0
+
+          echo "$prs" | jq -r '.[]' | while read -r num; do
+            echo "dispatching automerge for PR #$num"
+            gh workflow run release-please-automerge.yml \
+              --repo "$GITHUB_REPOSITORY" \
+              --field pr="$num"
+          done
