@@ -249,6 +249,11 @@
           "title": "Process Group ID",
           "description": "Group ID for the main process (linuxserver default: 1000). Optional."
         },
+        "loadKernelModule": {
+          "type": "boolean",
+          "title": "Load Kernel Module",
+          "description": "Add the SYS_MODULE capability so the container can load the wireguard kernel module. Leave false where the module is already built in/loaded (modern kernels, Talos); set true only if wg0 fails to come up because the module is missing."
+        },
         "server": {
           "type": "object",
           "title": "Wireguard Server Settings",

@@ -72,38 +72,29 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-          {{ if not (empty .Values.securityContext) }}
-            {{ toYaml .Values.securityContext | nindent 12 }}
-          {{ else if .Values.wireguard.server.enabled }}
-            # Server mode needs more privileges for interface creation and routing
+          {{- if not (empty .Values.securityContext) }}
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- else }}
+            # privileged:true is intentionally NOT used: it grants ALL capabilities plus device
+            # access and SYS_ADMIN. The linuxserver/wireguard image runs s6-overlay, which needs
+            # the container's *default* capability set (SETUID/SETGID/CHOWN/...) to initialise, so
+            # we keep those defaults and only ADD what WireGuard needs. This drops the broad
+            # privileged flag while remaining functional. SYS_MODULE is added only when the host
+            # has not pre-loaded the wireguard kernel module (set wireguard.loadKernelModule=true).
             capabilities:
               add:
                 - NET_ADMIN
-                # - SYS_MODULE
-              drop:
-                - ALL
-            privileged: true
-            allowPrivilegeEscalation: true
+                {{- if .Values.wireguard.loadKernelModule }}
+                - SYS_MODULE
+                {{- end }}
+            privileged: false
+            allowPrivilegeEscalation: true   # required by the s6-overlay suexec init
             readOnlyRootFilesystem: false
             runAsNonRoot: false
             runAsUser: 0
             seccompProfile:
               type: RuntimeDefault
-          {{ else }}
-            # Client mode - more secure with minimal capabilities
-            capabilities:
-              add:
-                - NET_ADMIN
-              drop:
-                - ALL
-            privileged: true
-            allowPrivilegeEscalation: true
-            readOnlyRootFilesystem: false
-            runAsNonRoot: false
-            runAsUser: 0
-            seccompProfile:
-              type: RuntimeDefault
-          {{ end }}
+          {{- end }}
           image: {{ include "slycharts.image" (dict "image" .Values.image "defaultTag" .Chart.AppVersion) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:

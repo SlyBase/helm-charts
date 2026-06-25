@@ -80,8 +80,8 @@ replicaCount: 1
 ## ```
 ## @descriptionEnd
 updateStrategy:
-  ## @param updateStrategy.type string Deployment strategy type (RollingUpdate or Recreate)
-  type: RollingUpdate
+  ## @param updateStrategy.type string Deployment strategy type (RollingUpdate or Recreate). Defaults to Recreate: server mode uses a single ReadWriteOnce PVC, and RollingUpdate would deadlock the new pod waiting for the old one to release the volume.
+  type: Recreate
 
 ## @section Init and Sidecar Containers
 ## @descriptionStart
@@ -125,6 +125,9 @@ wireguard:
   PUID: "1000"
   ## @param wireguard.PGID string Group ID for the container process (default: 1000)
   PGID: "1000"
+
+  ## @param wireguard.loadKernelModule bool Add the SYS_MODULE capability so the container can load the wireguard kernel module. Leave false on hosts where the module is already built in/loaded (e.g. modern kernels, Talos); set true only if wg0 fails to come up because the module is missing.
+  loadKernelModule: false
 
   ## @param wireguard.extraEnvVars list Extra environment variables for the wireguard container
   ## E.g.
@@ -239,9 +242,16 @@ podLabels: {}
 ##   capabilities:
 ##     add:
 ##       - NET_ADMIN
-##       - SYS_MODULE
-##   privileged: true # required by the linuxserver/wireguard s6-overlay init, see readme.md "Security"
+##       # - SYS_MODULE   # only if the host hasn't pre-loaded the wireguard module
+##   privileged: false
+##   allowPrivilegeEscalation: true   # the linuxserver s6-overlay suexec init needs this
 ## ```
+## By default the chart drops the broad `privileged: true` and runs with the container's default
+## capability set plus NET_ADMIN (verified working for server mode). The s6-overlay init needs the
+## default caps, so we do not `drop: ALL`. Setting `securityContext` here fully overrides the
+## default. Note: a full-tunnel CLIENT (AllowedIPs 0.0.0.0/0) uses fwmark policy routing which may
+## require allow-listing the `net.ipv4.conf.all.src_valid_mark` sysctl on your nodes (or privileged).
+## See readme.md "Security".
 ## @descriptionEnd
 
 ## @param podSecurityContext object Security context for the pod

@@ -48,21 +48,22 @@ kubectl create namespace wireguard && kubectl label namespace wireguard pod-secu
 
 ## Security
 
-The container runs as `root` (`runAsUser: 0`) with `privileged: true` and the `NET_ADMIN` capability. This is required by the underlying [linuxserver/wireguard](https://github.com/linuxserver/docker-wireguard) image:
+By default the container runs as `root` (`runAsUser: 0`) with the `NET_ADMIN` capability but **without** `privileged: true`. The broad privileged flag (which grants *all* capabilities plus device access and `SYS_ADMIN`) is intentionally dropped: the underlying [linuxserver/wireguard](https://github.com/linuxserver/docker-wireguard) image runs an s6-overlay init that only needs the container's **default** capability set (`SETUID`/`SETGID`/`CHOWN`/…) to start, plus `NET_ADMIN` for `wg-quick` (interface creation and, in server mode, routing/NAT). The chart keeps those defaults and adds only `NET_ADMIN` — verified working for server mode.
 
-- its s6-overlay init system needs root capabilities beyond `NET_ADMIN` (e.g. `CAP_SETUID`/`CAP_SETGID`) to start up — running with a restricted capability set (`drop: [ALL]`, `add: [NET_ADMIN]`) without `privileged: true` causes the container to crash with `s6-overlay-suexec: fatal: unable to setgid to root`
-- `wg-quick` (interface creation, and in server mode routing/NAT) needs `NET_ADMIN`, and on some host kernels `SYS_MODULE` to load the WireGuard kernel module
+Because of the s6-overlay init:
+- `allowPrivilegeEscalation: true` **is** required (the s6 `suexec` step needs it); without it the container crashes with `s6-overlay-suexec: fatal: unable to setgid to root`
+- the container's default capability set is kept (the chart does **not** `drop: [ALL]`), so `pod-security.kubernetes.io/enforce: privileged` is still required on the namespace (see Prerequisites) and the chart cannot meet the `restricted`/`baseline` Pod Security Standard
 
-As a result:
-- `pod-security.kubernetes.io/enforce: privileged` is required on the namespace (see Prerequisites)
-- the chart **cannot** meet the `restricted` or `baseline` Pod Security Standard
-
-What the chart hardens by default regardless:
+What the chart hardens by default:
+- **`privileged: false`** — the broad privileged flag is no longer set (this is the v2.0.0 default; see [Notable changes](#notable-changes))
 - `seccompProfile: RuntimeDefault` for the pod and the container
-- `capabilities: {drop: [ALL], add: [NET_ADMIN]}` (`SYS_MODULE` is commented out — only needed if the host kernel doesn't already have the WireGuard module loaded)
 - `serviceAccount.automount: false` — the chart never talks to the Kubernetes API
 
-`allowPrivilegeEscalation: false` is intentionally **not** set: Kubernetes rejects the combination `privileged: true` + `allowPrivilegeEscalation: false` (`cannot set allowPrivilegeEscalation to false and privileged to true`), and `privileged: true` is a hard functional requirement as described above.
+**Kernel module:** most modern kernels (and Talos) already provide the WireGuard module, so the chart does **not** add `SYS_MODULE` by default. If `wg0` fails to come up because the module is missing, set `wireguard.loadKernelModule: true` to add the `SYS_MODULE` capability.
+
+> **Full-tunnel client note:** a CLIENT with `AllowedIPs: 0.0.0.0/0` uses fwmark policy routing, which may require allow-listing the `net.ipv4.conf.all.src_valid_mark` sysctl on your nodes (or running `privileged`). Override `securityContext` if your setup needs it.
+
+To override these defaults completely, set `securityContext` in your values (see the commented example in `values.yaml`).
 
 ## Server mode
 Sample see in TL;DR.
@@ -179,3 +180,10 @@ Set `podDisruptionBudget.minAvailable` or `podDisruptionBudget.maxUnavailable` t
 ### Topology Spread Constraints and Priority Class
 
 `topologySpreadConstraints` and `priorityClassName` are passed through to the pod spec for advanced scheduling control.
+
+## Notable changes
+
+### To 2.0.0
+- ⚠️ **`privileged: true` is no longer the default.** The container now runs with the s6-overlay default capability set plus `NET_ADMIN` and `privileged: false` (verified for server mode). The namespace still needs `pod-security.kubernetes.io/enforce: privileged` because the default capabilities are kept (no `drop: [ALL]`). To restore the old behaviour, set `securityContext` explicitly. See [Security](#security).
+- ⚠️ **`updateStrategy.type` now defaults to `Recreate`** (was `RollingUpdate`). Server mode uses a single ReadWriteOnce PVC; `RollingUpdate` would deadlock the new pod waiting for the old one to release the volume.
+- Added **`wireguard.loadKernelModule`** (default `false`): adds the `SYS_MODULE` capability so the container can load the WireGuard kernel module on hosts where it is not already present.
