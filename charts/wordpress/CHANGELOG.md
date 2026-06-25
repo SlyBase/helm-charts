@@ -2,6 +2,17 @@
 
 All notable changes to this chart are documented here.
 
+## [5.0.0](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.7.8...wordpress-v5.0.0) (2026-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* `serviceAccount.automount` now defaults to false and `podSecurityContext.runAsGroup` is 33. Set them explicitly if you relied on the mounted API token or on different group ownership.
+
+### Features
+
+* add wordpress backup restore Job and VolumeSnapshot, harden SA token ([27e8edb](https://github.com/SlyBase/helm-charts/commit/27e8edb2988bf4e31a3dfe58c84bf681e736a5f3))
+
 ## [4.7.8](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.7.7...wordpress-v4.7.8) (2026-06-24)
 
 
