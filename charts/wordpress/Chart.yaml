@@ -29,11 +29,13 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: fixed
-      description: "deps: update docker.io/wordpress:7.0.0-php8.3-apache docker digest to 6d37018"
+    - kind: changed
+      description: "`serviceAccount.automount` now defaults to false and `podSecurityContext.runAsGroup` is 33. Set them explicitly if you relied on the mounted API token or on different group ownership."
+    - kind: added
+      description: "add wordpress backup restore Job and VolumeSnapshot, harden SA token"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/14178172298c6747fc6921dcac788fa0d8989984
+          url: https://github.com/SlyBase/helm-charts/commit/27e8edb2988bf4e31a3dfe58c84bf681e736a5f3
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
