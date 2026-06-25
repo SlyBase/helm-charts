@@ -1,0 +1,70 @@
+## Sample: High Availability via StatefulSet (per-Pod ReadWriteOnce storage, no shared RWX)
+##
+## Each replica gets its own RWO volume via volumeClaimTemplates, so a storage outage affects
+## at most one replica (no shared RWX share-manager as a single point of failure). Shared state
+## lives in the object cache + the database; uploads should be offloaded (e.g. S3) so replicas
+## do not need a shared filesystem. The chart auto-pins WordPress auth keys/salts in statefulset
+## mode, so login cookies stay valid across all replicas.
+
+controllerType: statefulset
+replicaCount: 3
+
+wordpress:
+  url: "https://example.com"
+  init:
+    enabled: true
+
+storage:
+  storageClass: ""        # any ReadWriteOnce storage class
+  size: 5Gi
+  accessModes:
+    - ReadWriteOnce
+
+statefulset:
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+
+## Object cache shares sessions/transients/object cache across replicas.
+## Enable exactly one backend (memcached | redis | valkey).
+valkey:
+  enabled: true
+  createConfig: true
+
+## Keep at least 2 replicas available during voluntary disruptions (node drains, upgrades).
+podDisruptionBudget:
+  minAvailable: 2
+
+## Spread replicas across nodes.
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: wordpress
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: wordpress
+
+## Resource requests are required for the HorizontalPodAutoscaler to scale on CPU/memory.
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
+
+## Offload uploads so replicas don't need shared storage. Install via composer/plugins, e.g.:
+## wordpress:
+##   plugins:
+##     - name: "https://github.com/humanmade/S3-Uploads/releases/download/3.0.0/s3-uploads.zip"
+##       slug: s3-uploads
+##       activate: true

@@ -1,0 +1,58 @@
+## Sample: High Availability via Deployment + shared RWX, with an ephemeral core (storage.mode=wp-content)
+##
+## The WordPress core is re-copied from the image onto an emptyDir on every start (fast, makes pods
+## stateless and freely reschedulable), while wp-content (plugins/themes/uploads) is shared across
+## all replicas on one ReadWriteMany volume. The chart auto-pins WordPress auth keys/salts in
+## storage.mode=wp-content, so login cookies stay valid across all replicas and restarts.
+##
+## Prefer ha-statefulset.values.yaml if you do NOT have (or do not want to depend on) an RWX
+## storage class — the shared RWX volume's share-manager is a single point of failure for all replicas.
+
+controllerType: deployment
+replicaCount: 3
+
+wordpress:
+  url: "https://example.com"
+  init:
+    enabled: true
+
+storage:
+  mode: wp-content        # ephemeral core (emptyDir) + persistent wp-content only
+  storageClass: ""        # an RWX storage class: NFS, CephFS, Longhorn RWX, JuiceFS, ...
+  size: 10Gi
+  accessModes:
+    - ReadWriteMany
+
+## Deployment default is Recreate (brief downtime on upgrade). For multi-replica, opt into RollingUpdate:
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+## Object cache shares sessions/transients/object cache across replicas.
+## Enable exactly one backend (memcached | redis | valkey).
+valkey:
+  enabled: true
+  createConfig: true
+
+podDisruptionBudget:
+  minAvailable: 2
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: wordpress
+
+## Resource requests are required for the HorizontalPodAutoscaler to scale on CPU/memory.
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
