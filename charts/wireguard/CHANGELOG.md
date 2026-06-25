@@ -2,6 +2,22 @@
 
 All notable changes to this chart are documented here.
 
+## [2.0.0](https://github.com/SlyBase/helm-charts/compare/wireguard-v1.0.3...wireguard-v2.0.0) (2026-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* the container no longer runs `privileged: true` by default and `updateStrategy.type` defaults to Recreate. Set `securityContext` explicitly to restore the previous behaviour.
+
+### Features
+
+* run wireguard without privileged by default, add loadKernelModule ([56bf472](https://github.com/SlyBase/helm-charts/commit/56bf4721a45094628c9ebbac384ad32135c23d68))
+
+
+### Bug Fixes
+
+* **wireguard:** update unit tests for non-privileged default ([52f67a6](https://github.com/SlyBase/helm-charts/commit/52f67a604947bcdb87cb479076ffdfaee9f62e3b))
+
 ## [1.0.3](https://github.com/SlyBase/helm-charts/compare/wireguard-v1.0.2...wireguard-v1.0.3) (2026-06-25)
 
 
