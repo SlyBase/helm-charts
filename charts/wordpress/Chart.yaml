@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 5.0.0
+version: 5.1.0
 appVersion: 7.0.0
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -29,13 +29,16 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: changed
-      description: "`serviceAccount.automount` now defaults to false and `podSecurityContext.runAsGroup` is 33. Set them explicitly if you relied on the mounted API token or on different group ownership."
     - kind: added
-      description: "add wordpress backup restore Job and VolumeSnapshot, harden SA token"
+      description: "wordpress: tune OPcache, add wp-content storage mode, pin auth salts for HA"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/27e8edb2988bf4e31a3dfe58c84bf681e736a5f3
+          url: https://github.com/SlyBase/helm-charts/commit/711e6c71661eba169692a91a6a9ab12ca076e580
+    - kind: fixed
+      description: "deps: update docker.io/memcached:1.6.42 docker digest to e2a8683"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/5a3bb3fd5a7abe159ee969ffa7e6b61cf7215e4f
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache

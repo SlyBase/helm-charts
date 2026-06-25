@@ -2,6 +2,18 @@
 
 All notable changes to this chart are documented here.
 
+## [5.1.0](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.0.0...wordpress-v5.1.0) (2026-06-25)
+
+
+### Features
+
+* **wordpress:** tune OPcache, add wp-content storage mode, pin auth salts for HA ([711e6c7](https://github.com/SlyBase/helm-charts/commit/711e6c71661eba169692a91a6a9ab12ca076e580))
+
+
+### Bug Fixes
+
+* **deps:** update docker.io/memcached:1.6.42 docker digest to e2a8683 ([#446](https://github.com/SlyBase/helm-charts/issues/446)) ([5a3bb3f](https://github.com/SlyBase/helm-charts/commit/5a3bb3fd5a7abe159ee969ffa7e6b61cf7215e4f))
+
 ## [5.0.0](https://github.com/SlyBase/helm-charts/compare/wordpress-v4.7.8...wordpress-v5.0.0) (2026-06-25)
 
 
