@@ -1,0 +1,188 @@
+{{- if .Values.backup.restore.enabled }}
+{{- $fullName := include "wordpress.fullname" . -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $fullName }}-restore
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wordpress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: restore
+  annotations:
+    # Run before the upgrade rolls the WordPress pods, against the already-running database.
+    helm.sh/hook: pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  backoffLimit: {{ .Values.backup.restore.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        {{- include "wordpress.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: restore
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "wordpress.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backup.restore.fromS3 }}
+      initContainers:
+        - name: s3-pull
+          image: {{ .Values.backup.s3.image.repository }}:{{ .Values.backup.s3.image.tag }}
+          imagePullPolicy: {{ .Values.backup.s3.image.pullPolicy | default "IfNotPresent" }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: RCLONE_CONFIG
+              value: /config/rclone.conf
+            - name: S3_REMOTE
+              value: {{ .Values.backup.s3.remote | quote }}
+            - name: S3_BUCKET
+              value: {{ .Values.backup.s3.bucket | quote }}
+            - name: S3_PATH
+              value: {{ .Values.backup.s3.path | quote }}
+            - name: TS
+              value: {{ .Values.backup.restore.timestamp | quote }}
+            {{- if and .Values.backup.s3.ca.existingSecret .Values.backup.s3.ca.existingSecretKey }}
+            - name: RCLONE_CA_CERT
+              value: /etc/rclone/custom-ca/ca.crt
+            {{- end }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              if [ -z "${TS}" ]; then
+                echo "==> resolving newest backup in s3"
+                TS=$(rclone lsf "${S3_REMOTE}:${S3_BUCKET}/${S3_PATH}/" --dirs-only | sed 's#/##' | grep -E '^[0-9]{8}-[0-9]{6}$' | sort | tail -1)
+              fi
+              [ -n "${TS}" ] || { echo "no backup found in s3" >&2; exit 1; }
+              echo "==> pulling ${TS} from s3"
+              mkdir -p "/staging/${TS}"
+              rclone copy "${S3_REMOTE}:${S3_BUCKET}/${S3_PATH}/${TS}/" "/staging/${TS}" --transfers=2
+              echo "${TS}" > /staging/.restore_ts
+          volumeMounts:
+            - name: staging
+              mountPath: /staging
+            - name: rclone-config
+              mountPath: /config
+              readOnly: true
+            {{- if and .Values.backup.s3.ca.existingSecret .Values.backup.s3.ca.existingSecretKey }}
+            - name: rclone-custom-ca
+              mountPath: /etc/rclone/custom-ca
+              readOnly: true
+            {{- end }}
+      {{- end }}
+      containers:
+        - name: restore
+          image: {{ include "slycharts.image" (dict "image" .Values.backup.image) }}
+          imagePullPolicy: {{ .Values.backup.image.pullPolicy }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: DB_HOST
+              value: {{ ternary (include "wordpress.mariadb.fullname" .) .Values.externalDatabase.host .Values.mariadb.enabled | quote }}
+            - name: DB_PORT
+              value: {{ ternary (.Values.mariadb.service.port | toString) (.Values.externalDatabase.port | toString) .Values.mariadb.enabled | quote }}
+            - name: DB_NAME
+              value: {{ ternary .Values.mariadb.auth.database .Values.externalDatabase.database .Values.mariadb.enabled | quote }}
+            - name: DB_USER
+              value: {{ ternary .Values.mariadb.auth.username .Values.externalDatabase.username .Values.mariadb.enabled | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mariadb.enabled }}
+                  name: {{ .Values.mariadb.auth.existingSecret | default (printf "%s-mariadb" .Release.Name) }}
+                  key: {{ .Values.mariadb.auth.secretKeys.userPasswordKey | default "mariadb-password" }}
+                  {{- else if .Values.externalDatabase.existingSecret }}
+                  name: {{ .Values.externalDatabase.existingSecret }}
+                  key: {{ .Values.externalDatabase.secretKeys.userPasswordKey | default "db.password" }}
+                  {{- else }}
+                  name: {{ $fullName }}
+                  key: WORDPRESS_DB_PASSWORD
+                  {{- end }}
+            - name: TS
+              value: {{ .Values.backup.restore.timestamp | quote }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              {{- if .Values.backup.restore.fromS3 }}
+              BACKUP_ROOT=/staging
+              TS=$(cat /staging/.restore_ts)
+              {{- else }}
+              BACKUP_ROOT=/backup
+              if [ -z "${TS}" ]; then
+                TS=$(ls -1 "$BACKUP_ROOT" 2>/dev/null | grep -E '^[0-9]{8}-[0-9]{6}$' | sort | tail -1 || true)
+              fi
+              {{- end }}
+              [ -n "${TS}" ] || { echo "no backup folder to restore (set backup.restore.timestamp)" >&2; exit 1; }
+              SRC="${BACKUP_ROOT}/${TS}"
+              echo "==> restoring database from ${SRC}/${DB_NAME}.sql.gz"
+              test -f "${SRC}/${DB_NAME}.sql.gz" || { echo "dump not found: ${SRC}/${DB_NAME}.sql.gz" >&2; exit 1; }
+              gunzip -c "${SRC}/${DB_NAME}.sql.gz" \
+                | mariadb -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME"
+              {{- if .Values.backup.includeFiles }}
+              if [ -f "${SRC}/wp-content.tar.gz" ]; then
+                echo "==> restoring wp-content"
+                tar -xzf "${SRC}/wp-content.tar.gz" -C /var/www/html/wp-content
+              fi
+              {{- end }}
+              echo "==> restore complete (${TS})"
+          volumeMounts:
+            {{- if .Values.backup.restore.fromS3 }}
+            - name: staging
+              mountPath: /staging
+            {{- else }}
+            - name: backup
+              mountPath: /backup
+              readOnly: true
+            {{- end }}
+            {{- if .Values.backup.includeFiles }}
+            - name: wordpress
+              mountPath: /var/www/html
+            {{- end }}
+            - name: tmp
+              mountPath: /tmp
+          {{- with .Values.backup.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        {{- if .Values.backup.restore.fromS3 }}
+        - name: staging
+          emptyDir: {}
+        - name: rclone-config
+          secret:
+            secretName: {{ required "backup.s3.existingSecret is required when backup.restore.fromS3=true" .Values.backup.s3.existingSecret }}
+        {{- if and .Values.backup.s3.ca.existingSecret .Values.backup.s3.ca.existingSecretKey }}
+        - name: rclone-custom-ca
+          secret:
+            secretName: {{ .Values.backup.s3.ca.existingSecret | quote }}
+            items:
+              - key: {{ .Values.backup.s3.ca.existingSecretKey | quote }}
+                path: ca.crt
+        {{- end }}
+        {{- else }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.backup.persistence.existingClaim | default (printf "%s-backup" $fullName) }}
+        {{- end }}
+        {{- if .Values.backup.includeFiles }}
+        - name: wordpress
+          persistentVolumeClaim:
+            claimName: {{ .Values.storage.existingClaim | default $fullName }}
+        {{- end }}
+        - name: tmp
+          emptyDir: {}
+{{- end }}

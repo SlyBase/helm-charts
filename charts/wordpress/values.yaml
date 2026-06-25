@@ -569,8 +569,8 @@ storage:
 serviceAccount:
   ## @param serviceAccount.create bool Specifies whether a service account should be created
   create: true
-  ## @param serviceAccount.automount bool Automatically mount ServiceAccount API credentials
-  automount: true
+  ## @param serviceAccount.automount bool Automatically mount ServiceAccount API credentials. Default false (the WordPress pod needs no Kubernetes API access); the chart forces it on automatically when the Application Password feature must write a Secret via the SA.
+  automount: false
   ## @param serviceAccount.annotations object Annotations to add to the service account
   annotations: {}
   ## @param serviceAccount.name string Name of the service account (generated if not set and create is true)
@@ -610,6 +610,7 @@ podSecurityContext:
   fsGroup: 33
   fsGroupChangePolicy: "Always"
   runAsUser: 33
+  runAsGroup: 33
   runAsNonRoot: true
   seccompProfile:
     type: RuntimeDefault
@@ -1198,7 +1199,7 @@ backup:
       ## @param backup.s3.image.repository string rclone image repository
       repository: rclone/rclone
       ## @param backup.s3.image.tag string rclone image tag
-      tag: "1.74"
+      tag: "1.74@sha256:623378ad0ff3ebd5cebf77720843c0e02edfe46e2d5b5ac6bed54c6371780dfb"
       ## @param backup.s3.image.pullPolicy string Pull policy for rclone image
       pullPolicy: IfNotPresent
     ## @param backup.s3.existingSecret string Secret containing key rclone.conf with the configured remote
@@ -1215,6 +1216,37 @@ backup:
       existingSecret: ""
       ## @param backup.s3.ca.existingSecretKey string Key in the secret that holds the CA certificate (PEM)
       existingSecretKey: ""
+  ## @section Backup restore
+  ## @descriptionStart
+  ## One-shot restore of a previous backup created by the backup CronJob. Workflow:
+  ##   1. set `backup.restore.enabled=true` and `backup.restore.timestamp=<dir>` (the YYYYMMDD-HHMMSS
+  ##      folder name under the backup PVC, or in S3 when `fromS3=true`),
+  ##   2. `helm upgrade` — a Job restores the DB (and wp-content if the backup included files),
+  ##   3. set `backup.restore.enabled=false` again so it does not re-run on the next upgrade.
+  ## The Job runs as a pre-upgrade/pre-install hook so it completes before the WordPress pods roll.
+  ## @descriptionEnd
+  restore:
+    ## @param backup.restore.enabled bool Run a one-shot restore Job (remember to disable again afterwards)
+    enabled: false
+    ## @param backup.restore.timestamp string Backup folder to restore (YYYYMMDD-HHMMSS). Empty = newest available
+    timestamp: ""
+    ## @param backup.restore.fromS3 bool Pull the backup from S3 (rclone) before restoring instead of reading the backup PVC
+    fromS3: false
+    ## @param backup.restore.backoffLimit int Number of retries before marking the restore Job failed
+    backoffLimit: 1
+  ## @section Backup VolumeSnapshot
+  ## @descriptionStart
+  ## Declarative CSI VolumeSnapshot of the WordPress data PVC (needs the external-snapshotter CRDs and
+  ## a VolumeSnapshotClass). Renders a new VolumeSnapshot on each `helm upgrade`; combine with your
+  ## storage backend's retention policy to prune old snapshots.
+  ## @descriptionEnd
+  volumeSnapshot:
+    ## @param backup.volumeSnapshot.enabled bool Create a VolumeSnapshot of the WordPress data PVC
+    enabled: false
+    ## @param backup.volumeSnapshot.className string VolumeSnapshotClass to use (empty = cluster default)
+    className: ""
+    ## @param backup.volumeSnapshot.labels object Extra labels for the VolumeSnapshot
+    labels: {}
 
 ## @section External Database configuration
 ## @descriptionStart
@@ -1501,7 +1533,7 @@ redis:
     ## @param redis.image.repository string Redis image repository
     repository: docker.io/redis
     ## @param redis.image.tag string Redis image tag
-    tag: "8.8.0-trixie"
+    tag: "8.8.0-trixie@sha256:027002f3d4161eb427643e0cc71023b582fb461c6199e699f46db843f0b39fb1"
     ## @param redis.image.pullPolicy string Redis image pull policy
     pullPolicy: IfNotPresent
 
@@ -1611,7 +1643,7 @@ valkey:
     ## @param valkey.image.repository string Valkey image repository
     repository: docker.io/valkey/valkey
     ## @param valkey.image.tag string Valkey image tag
-    tag: "9.1.0-trixie"
+    tag: "9.1.0-trixie@sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9"
     ## @param valkey.image.pullPolicy string Valkey image pull policy
     pullPolicy: IfNotPresent
 
