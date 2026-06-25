@@ -162,6 +162,17 @@ helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples
 - Backup PVC is annotated `helm.sh/resource-policy: keep` — it survives `helm uninstall`.
 - See `samples/backup.values.yaml` and `samples/backup-s3.secrets.yaml`
 
+### Backup restore
+- **One-shot restore Job** (`backup.restore.enabled`) replays a backup created by the CronJob: it restores the database dump (and `wp-content` when the backup included files).
+- Runs as a Helm **`pre-upgrade` hook** so it completes against the running database before the new WordPress pods roll.
+- Restores from the **backup PVC** (default) or pulls the backup from **S3** first (`backup.restore.fromS3: true`).
+- Pick a backup with `backup.restore.timestamp` (the `YYYYMMDD-HHMMSS` folder), or leave it empty to restore the newest. Set `backup.restore.enabled: false` again after a successful restore so it does not re-run on the next upgrade.
+
+### VolumeSnapshot
+- **Declarative CSI VolumeSnapshot** (`backup.volumeSnapshot.enabled`) of the WordPress data PVC — requires the external-snapshotter CRDs and a `VolumeSnapshotClass` on the cluster.
+- A new timestamped VolumeSnapshot is rendered on each `helm upgrade`; combine with your storage backend's retention to prune old snapshots.
+- `backup.volumeSnapshot.className` selects a specific class (empty = cluster default).
+
 ### commonLabels / commonAnnotations
 - **Apply labels or annotations to every resource** created by the chart via `commonLabels` and `commonAnnotations`.
 - Resource-specific annotations always win over `commonAnnotations` (merge: specific overrides common).
@@ -185,8 +196,9 @@ helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples
 
 ## Security by default
 
-- **Pod Security Context**: Configured by default for secure permissions.
+- **Pod Security Context**: Configured by default for secure permissions. Runs as `runAsUser`/`runAsGroup`/`fsGroup` `33` (www-data).
 - **Container Security Context**: RunAsNonRoot and additional security measures enabled.
+- **ServiceAccount token**: `serviceAccount.automount` defaults to `false` — the WordPress pod needs no Kubernetes API access. The chart automatically forces the token on only when the Application Password feature must write a Secret via the ServiceAccount.
 
 
 ## WordPress configuration
@@ -627,6 +639,38 @@ kubectl logs -l job-name=manual-backup-1 -c backup -f
 
 > **Note:** `backup.includeFiles: true` tars `wp-content` in addition to the database dump. Only enable this when the WordPress PVC supports concurrent readers (RWX storage or VolumeSnapshot). With standard RWO storage (OpenEBS ZFS, Longhorn RWO, etc.) leave it `false` (default) to avoid mount conflicts.
 
+### Restore a backup
+Replay a backup created by the CronJob. The restore runs as a Helm `pre-upgrade` hook Job against the running database, before the WordPress pods roll.
+
+```yaml
+# snippet to merge into your values
+backup:
+  enabled: true
+  restore:
+    enabled: true                 # set back to false after a successful restore
+    timestamp: "20260625-084235"  # YYYYMMDD-HHMMSS folder; empty = newest available
+    fromS3: false                 # true = pull the backup from S3 (rclone) first
+```
+
+```bash
+helm upgrade <release> ./charts/wordpress -f values.yaml
+kubectl logs job/<release>-wordpress-restore   # => "restore complete (<timestamp>)"
+# then set backup.restore.enabled=false and upgrade once more so it does not re-run
+```
+
+### VolumeSnapshot
+Create a CSI snapshot of the WordPress data PVC. Requires the external-snapshotter CRDs and a `VolumeSnapshotClass` on the cluster. A new timestamped snapshot is created on every `helm upgrade`.
+
+```yaml
+# snippet to merge into your values
+backup:
+  volumeSnapshot:
+    enabled: true
+    className: ""   # empty = cluster default VolumeSnapshotClass
+```
+
+> **Note:** for `controllerType: statefulset` the data PVC is per-replica (`<fullname>-<fullname>-0`); set `storage.existingClaim` to the PVC you want snapshotted.
+
 ### commonLabels and commonAnnotations
 Apply uniform labels or annotations to every Kubernetes resource the chart creates. See `samples/commonLabels.values.yaml`.
 
@@ -753,6 +797,12 @@ Without `slug`, URL plugins/themes use `basename` of the URL as a best-effort gu
 - **Network activation** (`networkActivate` / `networkEnable`)
 
 ## Notable changes
+
+### To 5.0.0
+- ⚠️ **`serviceAccount.automount` now defaults to `false`** (was `true`). The WordPress pod no longer mounts a Kubernetes API token unless it is actually needed — the chart force-enables it automatically when the Application Password feature must write a Secret via the ServiceAccount. If external tooling relied on the mounted token, set `serviceAccount.automount: true` explicitly.
+- ⚠️ **`podSecurityContext.runAsGroup: 33` is now set by default** (matching `runAsUser`/`fsGroup` = www-data). On pre-existing volumes whose files are owned by a different GID, adjust ownership or override `runAsGroup`.
+- Added **Backup restore** (`backup.restore`): one-shot Job (Helm `pre-upgrade` hook) that restores a CronJob backup — database (and `wp-content` when included) — from the backup PVC or from S3 (`fromS3`). Select a backup with `restore.timestamp` or restore the newest.
+- Added **VolumeSnapshot** (`backup.volumeSnapshot`): declarative CSI VolumeSnapshot of the WordPress data PVC, created per `helm upgrade`.
 
 ### To 4.6.0
 - Added **StatefulSet controller** (`controllerType: statefulset`): each replica runs on its own **ReadWriteOnce** volume via `volumeClaimTemplates`, removing the Longhorn RWX share-manager single point of failure that could take down all replicas at once during a rebuild/share-manager recreation. Adds a headless Service and `statefulset.*` tunables (`podManagementPolicy`, `updateStrategy`, `persistentVolumeClaimRetentionPolicy`). Default remains `controllerType: deployment` (backwards-compatible).

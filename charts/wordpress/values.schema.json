@@ -2223,6 +2223,48 @@
           "type": "object",
           "additionalProperties": true
         },
+        "restore": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "One-shot restore Job for a backup created by the backup CronJob.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Run a one-shot restore Job (disable again afterwards)."
+            },
+            "timestamp": {
+              "type": "string",
+              "description": "Backup folder to restore (YYYYMMDD-HHMMSS). Empty = newest available."
+            },
+            "fromS3": {
+              "type": "boolean",
+              "description": "Pull the backup from S3 (rclone) before restoring instead of the backup PVC."
+            },
+            "backoffLimit": {
+              "type": "integer",
+              "description": "Retries before the restore Job is marked failed."
+            }
+          }
+        },
+        "volumeSnapshot": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Declarative CSI VolumeSnapshot of the WordPress data PVC.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Create a VolumeSnapshot of the WordPress data PVC."
+            },
+            "className": {
+              "type": "string",
+              "description": "VolumeSnapshotClass to use (empty = cluster default)."
+            },
+            "labels": {
+              "type": "object",
+              "description": "Extra labels for the VolumeSnapshot."
+            }
+          }
+        },
         "persistence": {
           "type": "object",
           "additionalProperties": true
