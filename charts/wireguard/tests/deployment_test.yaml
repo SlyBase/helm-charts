@@ -33,6 +33,9 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[0].securityContext.privileged
+          value: false
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation
           value: true
       - equal:
           path: spec.template.spec.containers[0].securityContext.runAsUser
@@ -40,6 +43,9 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].securityContext.capabilities.add
           content: NET_ADMIN
+      - notContains:
+          path: spec.template.spec.containers[0].securityContext.capabilities.add
+          content: SYS_MODULE
 
   - it: defaults the container securityContext for server mode
     template: deployment.yaml
@@ -50,10 +56,23 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[0].securityContext.privileged
+          value: false
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation
           value: true
       - contains:
           path: spec.template.spec.containers[0].securityContext.capabilities.add
           content: NET_ADMIN
+
+  - it: adds SYS_MODULE only when loadKernelModule is enabled
+    template: deployment.yaml
+    set:
+      wireguard:
+        loadKernelModule: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].securityContext.capabilities.add
+          content: SYS_MODULE
 
   - it: allows overriding the container securityContext
     template: deployment.yaml
