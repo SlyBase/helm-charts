@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 5.1.0
+version: 5.1.1
 appVersion: 7.0.0
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -29,16 +29,16 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: added
-      description: "wordpress: tune OPcache, add wp-content storage mode, pin auth salts for HA"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/711e6c71661eba169692a91a6a9ab12ca076e580
     - kind: fixed
-      description: "deps: update docker.io/memcached:1.6.42 docker digest to e2a8683"
+      description: "deps: update docker.io/redis:8.8.0-trixie docker digest to 2838d55"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/5a3bb3fd5a7abe159ee969ffa7e6b61cf7215e4f
+          url: https://github.com/SlyBase/helm-charts/commit/55d62937c5f1be9c07b45b6a8ea53046f1600795
+    - kind: fixed
+      description: "deps: update docker.io/wordpress:7.0.0-php8.3-apache docker digest to 5c83d71"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/c842bd8257dc1d6794e0af0ec6eab3cb28a0c869
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
