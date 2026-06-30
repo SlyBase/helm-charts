@@ -5,3 +5,5 @@
 # No upstream apache_exporter image rebuild available yet (checked 2026-06-11).
 # Re-evaluate / remove after expiry.
 CVE-2025-68121 exp:2026-09-09
+# docker.io/wordpress:7.0.0-php8.3-apache
+CVE-2026-55200 exp:2026-10-01
