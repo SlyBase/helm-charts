@@ -291,7 +291,9 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin "v${TRIVY_VERSION}"
           trivy version
 
-      - name: Trivy image scan (referenced images, blocking on CRITICAL)
+      # Upstream images are not built by us, so CRITICAL findings only warn —
+      # they must not block publishing the chart.
+      - name: Trivy image scan (referenced images, non-blocking)
         shell: bash
         run: |
           set -euo pipefail
@@ -299,8 +301,13 @@ jobs:
           while IFS= read -r image; do
             [ -z "$image" ] && continue
             echo "::group::trivy image scan: ${image}"
-            trivy image --severity CRITICAL --exit-code 1 --ignore-unfixed --scanners vuln "$image"
+            rc=0
+            trivy image --severity CRITICAL --exit-code 1 --ignore-unfixed --scanners vuln "$image" || rc=$?
             echo "::endgroup::"
+            if [ "$rc" -ne 0 ]; then
+              echo "::warning title=Trivy CRITICAL findings::${image} has CRITICAL vulnerabilities (upstream image, release not blocked)"
+              echo "⚠️ Trivy found CRITICAL vulnerabilities in \`${image}\` (upstream image, release not blocked)" >> "$GITHUB_STEP_SUMMARY"
+            fi
           done < images.txt
 
       - name: Dry run summary
