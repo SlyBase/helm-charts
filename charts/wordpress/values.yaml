@@ -160,8 +160,13 @@ wordpress:
   ## @section WordPress initialization settings
   ## @descriptionStart
   ## These settings are set with an init container.
-  ## Note: If WordPress is already installed and wordpress.init.enabled is true, the installation process will be skipped,
-  ## but the following will still be applied: firstname, lastname, permalinks, plugins, users
+  ## Note: The init container itself always runs — it manages plugins, themes, MU-plugins and configuration on every pod start.
+  ## wordpress.init.enabled only controls the automatic WordPress core installation (wp core install) inside it:
+  ##   - true: install WordPress on first start (admin user, title, optional multisite); if WordPress is already installed,
+  ##     the installation is skipped, but firstname, lastname, language, permalinks, plugins and users are still applied.
+  ##   - false (default): no automatic installation — the chart expects an already-installed WordPress database
+  ##     (e.g. migration / external DB). On an empty database the init container fails fast with instructions.
+  ##     language, permalinks and the init.* admin settings are NOT applied in this mode.
   ## @descriptionEnd
   init:
     ## @section Init container image
@@ -175,7 +180,7 @@ wordpress:
       ## @param wordpress.init.image.pullPolicy string Image pull policy for init container
       pullPolicy: IfNotPresent
 
-    ## @param wordpress.init.enabled bool Enable init container for first installation
+    ## @param wordpress.init.enabled bool Enable automatic WordPress core installation on first start (the init container itself always runs; when false, an already-installed WordPress database is expected)
     enabled: false
     ## @param wordpress.init.existingSecret string Existing secret with keys: wordpress.username, wordpress.password, wordpress.email
     existingSecret: ""

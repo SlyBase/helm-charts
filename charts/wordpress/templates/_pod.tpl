@@ -592,10 +592,6 @@
               value: {{ .Values.externalDatabase.password | quote }}
           {{- end }}
           {{- end }}
-          {{ if .Values.wordpress.init.enabled }}
-            - name: WP_INIT
-              value: {{ .Values.wordpress.init.enabled | quote }}
-          {{- end }}
           {{ if .Values.metrics.wordpress.enabled }}
             - name: SLYMETRICS_BEARER_TOKEN
               valueFrom:

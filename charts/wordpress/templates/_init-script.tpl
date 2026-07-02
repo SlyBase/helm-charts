@@ -191,6 +191,13 @@ echo "Setting up WordPress..."
 echo "========================================="
 
 if [ "${WP_INIT}" = "true" ]; then
+  echo "WP_INIT=true: WordPress core installation enabled (skipped if already installed)."
+else
+  echo "WP_INIT=false: skipping WordPress core installation (wordpress.init.enabled=false)."
+  echo "The init container still manages plugins, themes and configuration."
+fi
+
+if [ "${WP_INIT}" = "true" ]; then
   # Check both: wp-cli installation status AND database tables existence
   WP_INSTALLED=false
   if run wp core is-installed --url="${WP_URL}" 2>/dev/null; then
