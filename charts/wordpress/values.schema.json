@@ -312,7 +312,7 @@
             },
             "enabled": {
               "type": "boolean",
-              "description": "Enable init container for first installation",
+              "description": "Enable automatic WordPress core installation on first start (the init container itself always runs; when false, an already-installed WordPress database is expected)",
               "default": false
             },
             "existingSecret": {

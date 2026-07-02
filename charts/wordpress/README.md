@@ -56,6 +56,15 @@ helm install wordpress oci://ghcr.io/slybase/charts/wordpress --values ./samples
 - **Debug Mode**: Enable debugging for the installation.
 - **Permalinks**: Configure permalink structures (e.g., post name, day and name).
 
+#### What `wordpress.init.enabled` does
+
+The chart's init containers **always run** on every pod start — they manage plugins, themes, MU-plugins, `.htaccess` and configuration regardless of this setting. `wordpress.init.enabled` only controls the automatic WordPress **core installation** step inside the init container:
+
+- **`true`**: On first start the init container runs `wp core install` with the configured admin credentials, blog title and (optionally) multisite setup. It is idempotent — if WordPress is already installed, the installation is skipped, but language, permalinks and admin metadata (first/last name) are still applied.
+- **`false`** (default): No automatic installation. The chart expects a database with an **already-installed WordPress** (e.g. a migration or an external/restored database). If the WordPress tables are missing, the init container fails fast with instructions instead of starting an unconfigured site — the pod will not become ready until either `wordpress.init.enabled=true` is set or the database is provisioned. Note that `wordpress.language`, `wordpress.permalinks.*` and the `wordpress.init.*` admin settings are **not** applied in this mode.
+
+For a fresh installation you therefore effectively need `wordpress.init.enabled: true` together with admin credentials (either `wordpress.init.username/password/email` or `wordpress.init.existingSecret`).
+
 ### User Management
 - **Automatic User Generation**: Create additional users with roles (Administrator, Editor, etc.).
 - **Email Notification**: Automatically send emails with generated passwords.
@@ -221,7 +230,7 @@ Two first-class HA models — pick based on whether you have RWX storage:
 > **Note:** If you need full manual control over `WP_HOME` / `WP_SITEURL` (e.g. different values for each, or a reverse proxy setup), set `wordpress.configExtraInject: false` to disable the automatic injection into `wp-config.php` and define the constants yourself via `wordpress.configExtra`. The environment variables `WP_HOME` and `WP_SITEURL` in the container are always derived from `wordpress.url`.
 
 ### Recommended parameters
-- `wordpress.init`: Admin credentials and blog setup
+- `wordpress.init`: Admin credentials and blog setup. For a **fresh installation** set `wordpress.init.enabled: true` — otherwise the chart expects an already-installed WordPress database and the init container fails on an empty one (see [What `wordpress.init.enabled` does](#what-wordpressinitenabled-does)).
 - `service.type`: If you want to access WordPress internally set it to NodePort
 
 ### Additional parameters
