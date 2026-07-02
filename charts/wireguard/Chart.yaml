@@ -25,18 +25,11 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: changed
-      description: "the container no longer runs `privileged: true` by default and `updateStrategy.type` defaults to Recreate. Set `securityContext` explicitly to restore the previous behaviour."
-    - kind: added
-      description: "run wireguard without privileged by default, add loadKernelModule"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/56bf4721a45094628c9ebbac384ad32135c23d68
     - kind: fixed
-      description: "wireguard: update unit tests for non-privileged default"
+      description: "deps: update docker.io/linuxserver/wireguard docker tag to v1.0.20250521-r1-ls116"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/52f67a604947bcdb87cb479076ffdfaee9f62e3b
+          url: https://github.com/SlyBase/helm-charts/commit/938b559525b93f2b13b9aaaede1c64a8f3d84e2d
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wireguard
