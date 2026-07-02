@@ -4,7 +4,7 @@ description: >-
   Using the offical linuxserver/wireguard image with almost any environment
   variables for K8S. Supporting server and client mode.
 type: application
-version: 2.0.0
+version: 2.0.1
 appVersion: 1.0.20250521-r1-ls116
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wireguard/app.png
