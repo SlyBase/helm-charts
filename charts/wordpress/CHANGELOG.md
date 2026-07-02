@@ -2,6 +2,15 @@
 
 All notable changes to this chart are documented here.
 
+## [5.1.3](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.1.2...wordpress-v5.1.3) (2026-07-02)
+
+
+### Bug Fixes
+
+* **deps:** update docker.io/mariadb:12.3.2-noble docker digest to 628f228 ([#460](https://github.com/SlyBase/helm-charts/issues/460)) ([9858a83](https://github.com/SlyBase/helm-charts/commit/9858a8311c5a1421918dae1b27bf07badf7f2444))
+* **wordpress:** clarify init.enabled semantics ([7ea0b1e](https://github.com/SlyBase/helm-charts/commit/7ea0b1ee5108d3f3776520342d097976229bb621))
+* **wordpress:** clarify init.enabled semantics and log init mode ([885b8ff](https://github.com/SlyBase/helm-charts/commit/885b8fff320e3cdfe3fbd81ca1d65eee4df730a6)), closes [#450](https://github.com/SlyBase/helm-charts/issues/450)
+
 ## [5.1.2](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.1.1...wordpress-v5.1.2) (2026-06-29)
 
 
