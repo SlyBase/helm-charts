@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 5.1.3
+version: 5.1.4
 appVersion: 7.0.0
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -30,17 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/mariadb:12.3.2-noble docker digest to 628f228"
+      description: "deps: update chart/wordpress/docker.io/wordpress/digest"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/9858a8311c5a1421918dae1b27bf07badf7f2444
-    - kind: fixed
-      description: "wordpress: clarify init.enabled semantics"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/7ea0b1ee5108d3f3776520342d097976229bb621
-    - kind: fixed
-      description: "wordpress: clarify init.enabled semantics and log init mode ([885b8ff](https://github.com/SlyBase/helm-charts/commit/885b8fff320e3cdfe3fbd81ca1d65eee4df730a6)), closes [#450](https://github.com/SlyBase/helm-charts/issues/450)"
+          url: https://github.com/SlyBase/helm-charts/commit/bf8aec643526ad5e765f838253cb0e3b710d97a9
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
