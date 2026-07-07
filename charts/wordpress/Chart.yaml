@@ -30,10 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update memcached docker tag to v0.14.0"
+      description: "deps: update docker.io/memcached docker tag to v1.6.43"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/32591b2f56c6f977e0bb13b6fbae3159a9496665
+          url: https://github.com/SlyBase/helm-charts/commit/0aa442d4ad0e9fd77f7a240bdeb56f5b80bb3936
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
