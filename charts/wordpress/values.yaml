@@ -1230,7 +1230,7 @@ backup:
       ## @param backup.s3.image.repository string rclone image repository
       repository: rclone/rclone
       ## @param backup.s3.image.tag string rclone image tag
-      tag: "1.74@sha256:623378ad0ff3ebd5cebf77720843c0e02edfe46e2d5b5ac6bed54c6371780dfb"
+      tag: "1.74@sha256:c61954aaa32328a5486715dd063a81c7879f5195ad3505cd362deddd509dc4a1"
       ## @param backup.s3.image.pullPolicy string Pull policy for rclone image
       pullPolicy: IfNotPresent
     ## @param backup.s3.existingSecret string Secret containing key rclone.conf with the configured remote
