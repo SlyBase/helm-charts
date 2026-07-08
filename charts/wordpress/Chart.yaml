@@ -30,10 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/memcached docker tag to v1.6.44"
+      description: "deps: update rclone/rclone:1.74 docker digest to c61954a"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/07dfedc53c749d32fdf69e677039de86a5e92ec5
+          url: https://github.com/SlyBase/helm-charts/commit/5325903606c748794b42b25f3bc641b355584447
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.0-php8.3-apache
