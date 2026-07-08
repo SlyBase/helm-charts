@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [5.1.9](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.1.8...wordpress-v5.1.9) (2026-07-08)
+
+
+### Bug Fixes
+
+* **deps:** update docker.io/memcached docker tag to v1.6.44 ([#474](https://github.com/SlyBase/helm-charts/issues/474)) ([07dfedc](https://github.com/SlyBase/helm-charts/commit/07dfedc53c749d32fdf69e677039de86a5e92ec5))
+
 ## [5.1.8](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.1.7...wordpress-v5.1.8) (2026-07-07)
 
 
