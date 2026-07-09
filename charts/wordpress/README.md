@@ -259,9 +259,11 @@ Enable exactly **one** backend via its `enabled` flag.
   - Subchart on port `6379`
   - Injects: `WP_CACHE`, `WP_CACHE_KEY_SALT`, `WP_REDIS_HOST`, `WP_REDIS_PORT`, optional `WP_REDIS_PASSWORD`
   - No extra PHP-extension init required (`redis-cache` uses Predis)
+  - **Requires the `redis-cache` plugin** installed and activated via `wordpress.plugins` (see minimal example below) — the chart only injects the `WP_REDIS_*` config, it does not install the plugin. Without it the object cache stays inactive with no error.
 - **Valkey** (`valkey.enabled`)
   - Same behavior as Redis (Valkey is Redis-compatible), also on port `6379`
   - Same inject pattern as Redis
+  - Same `redis-cache` plugin requirement as Redis
 
 Common options for all backends:
 
@@ -273,6 +275,11 @@ Common options for all backends:
 Minimal example (Redis):
 
 ```yaml
+wordpress:
+  plugins:
+    - name: "redis-cache"
+      activate: true
+
 redis:
   enabled: true
   createConfig: true
@@ -290,7 +297,8 @@ Quick check (same idea for Redis/Valkey):
 
 ```bash
 kubectl -n default exec deploy/wp-wordpress -c wordpress -- ls -l /var/www/html/wp-content/object-cache.php
-kubectl -n default exec deploy/wp-wordpress -c wordpress -- redis-cli -h wp-redis INFO stats | grep -E 'keyspace_hits|keyspace_misses'
+# TCP reachability only — redis-cli/wp-cli are not installed in the running wordpress container
+kubectl -n default exec deploy/wp-wordpress -c wordpress -- php -r '$s=fsockopen("wp-redis",6379,$e,$es,2); fwrite($s,"PING\r\n"); echo stream_get_contents($s); fclose($s);'
 ```
 
 Short stats checks:
@@ -298,10 +306,9 @@ Short stats checks:
 ```bash
 # Memcached
 kubectl -n default exec deploy/wp-wordpress -c wordpress -- php -r '$s=fsockopen("wp-memcached",11211,$e,$es,2); fwrite($s,"stats\r\n"); echo stream_get_contents($s); fclose($s);' | grep -E 'STAT cmd_get|STAT cmd_set|STAT get_hits|STAT get_misses'
-
-# Redis / Valkey
-kubectl -n default exec deploy/wp-wordpress -c wordpress -- redis-cli -h wp-redis INFO stats | grep -E 'keyspace_hits|keyspace_misses'
 ```
+
+For Redis/Valkey hit/miss stats, use the Redis Object Cache plugin's status page/dashboard widget in wp-admin — `redis-cli`/`wp-cli` are not available in the running `wordpress` container to run `INFO stats` directly.
 
 
 ## Installation samples
