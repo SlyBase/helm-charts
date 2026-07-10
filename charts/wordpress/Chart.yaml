@@ -30,10 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update rclone/rclone:1.74 docker digest to c61954a"
+      description: "deps: update docker.io/wordpress docker tag to v7.0.1"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/5325903606c748794b42b25f3bc641b355584447
+          url: https://github.com/SlyBase/helm-charts/commit/31038df0b35a83274eb754cd9bc62b9741c07c68
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.1-php8.3-apache
