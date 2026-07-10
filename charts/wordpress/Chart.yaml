@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 5.1.11
+version: 5.1.12
 appVersion: 7.0.0
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -30,10 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/wordpress docker tag to v7.0.1"
+      description: "deps: update valkey docker tag to v0.24.0"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/31038df0b35a83274eb754cd9bc62b9741c07c68
+          url: https://github.com/SlyBase/helm-charts/commit/9663fe03e3c3696d7d601401629c8d5abe3932af
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.1-php8.3-apache
