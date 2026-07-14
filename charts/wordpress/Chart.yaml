@@ -30,10 +30,20 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/memcached:1.6.45 docker digest to 05e52a9"
+      description: "deps: update docker.io/memcached:1.6.45 docker digest to 5ddbe11"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/7a82053d16218f37248ec4f8a1558d2a801aeeed
+          url: https://github.com/SlyBase/helm-charts/commit/9f7675e8c8c08848a4df4af21d0f35a5cfdfde02
+    - kind: fixed
+      description: "deps: update docker.io/redis:8.8.0-trixie docker digest to e24be9c"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/17ca6e0e0c1df6917fcc095cc3edb8292d2e9105
+    - kind: fixed
+      description: "deps: update docker.io/wordpress:7.0.1-php8.3-apache docker digest to f93a24e"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/3cadcfdbd198620b13d0ebe9dddee82223bd303a
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.1-php8.3-apache
