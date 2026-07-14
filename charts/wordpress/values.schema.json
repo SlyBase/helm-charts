@@ -1740,11 +1740,14 @@
       "default": {}
     },
     "topologySpreadConstraints": {
-      "type": "array",
+      "type": [
+        "array",
+        "object"
+      ],
       "items": {
         "type": "object"
       },
-      "description": "Topology spread constraints for pods",
+      "description": "Topology spread constraints for pods (accepts an empty object for backwards compatibility with pre-4.x values)",
       "default": []
     },
     "priorityClassName": {
@@ -2784,8 +2787,11 @@
           }
         },
         "topologySpreadConstraints": {
-          "type": "array",
-          "description": "Topology spread constraints for Redis pods",
+          "type": [
+            "array",
+            "object"
+          ],
+          "description": "Topology spread constraints for Redis pods (accepts an empty object for backwards compatibility)",
           "default": []
         },
         "containerSecurityContext": {
