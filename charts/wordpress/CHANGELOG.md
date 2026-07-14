@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [5.1.20](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.1.19...wordpress-v5.1.20) (2026-07-14)
+
+
+### Bug Fixes
+
+* **wordpress:** accept empty object for topologySpreadConstraints ([#507](https://github.com/SlyBase/helm-charts/issues/507)) ([9625b8a](https://github.com/SlyBase/helm-charts/commit/9625b8a6dfef143ca40fd19b8cc092cbba7e8951)), closes [#506](https://github.com/SlyBase/helm-charts/issues/506)
+
 ## [5.1.19](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.1.18...wordpress-v5.1.19) (2026-07-14)
 
 
