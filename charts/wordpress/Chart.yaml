@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 5.1.20
+version: 5.1.21
 appVersion: 7.0.0
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -30,7 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "wordpress: accept empty object for topologySpreadConstraints ([#507](https://github.com/SlyBase/helm-charts/issues/507)) ([9625b8a](https://github.com/SlyBase/helm-charts/commit/9625b8a6dfef143ca40fd19b8cc092cbba7e8951)), closes [#506](https://github.com/SlyBase/helm-charts/issues/506)"
+      description: "deps: update docker.io/valkey/valkey:9.1.0-trixie docker digest to 8e8d64b"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/e7a4e6da8270d58b1f84cd27baa94cfafdb6db3f
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.1-php8.3-apache
