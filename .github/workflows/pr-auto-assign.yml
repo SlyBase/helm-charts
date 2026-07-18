@@ -1,5 +1,12 @@
 name: PR Auto Assign
 
+# Assigns slydlake on newly opened issues/PRs, EXCEPT PRs that need no manual
+# action: release-please release PRs and Renovate PRs slated for automerge.
+# Those either merge themselves or are handled by dedicated notify steps
+# (release-please-automerge.yml assigns on major/prerelease; a failed
+# automerge run assigns via renovate-automerge-failure-notify.yml) — assigning
+# them here too would just be extra push notifications for nothing to do.
+
 "on":
   pull_request_target:
     types: [opened]
@@ -17,6 +24,23 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
+            const pr = context.payload.pull_request;
+            if (pr) {
+              const labels = (pr.labels || []).map((l) => l.name);
+              const isReleasePlease = pr.head.ref.startsWith(
+                'release-please--branches--main--components--'
+              );
+              const isAutomergingRenovate =
+                labels.includes('renovate') && labels.includes('automerge');
+              if (isReleasePlease || isAutomergingRenovate) {
+                console.log(
+                  `Skipping assignment: ${
+                    isReleasePlease ? 'release-please PR' : 'auto-merging Renovate PR'
+                  } needs no manual action`
+                );
+                return;
+              }
+            }
             await github.rest.issues.addAssignees({
               owner: context.repo.owner,
               repo: context.repo.repo,

@@ -56,6 +56,7 @@ jobs:
       packages: write
       id-token: write
       attestations: write
+      pull-requests: write
     steps:
       - name: Resolve release context
         id: ctx
@@ -440,3 +441,27 @@ jobs:
 
           oras manifest fetch "ghcr.io/slybase/charts/$CHART_NAME:artifacthub.io" > "$tmp_manifest"
           jq -e '.config.size > 0 and .config.mediaType == "application/vnd.cncf.artifacthub.config.v1+yaml" and (.layers | length) == 1' "$tmp_manifest"
+
+      # Only source of "a release actually shipped" notification: pr-auto-assign.yml
+      # deliberately does not assign release-please PRs, so without this nobody
+      # would hear about a completed release bump.
+      - name: Notify merged release PR
+        if: steps.ctx.outputs.dry_run != 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHART_NAME: ${{ steps.chart.outputs.chart_name }}
+          CHART_VERSION: ${{ steps.chart.outputs.chart_version }}
+        run: |
+          set -euo pipefail
+
+          branch="release-please--branches--main--components--${CHART_NAME}"
+          pr=$(gh pr list --state merged --search "head:${branch}" \
+                 --json number,mergedAt --limit 1 --jq 'sort_by(.mergedAt) | reverse | .[0].number // empty')
+
+          if [ -z "$pr" ]; then
+            echo "::warning::could not find merged release PR for $branch; skipping notify"
+            exit 0
+          fi
+
+          gh pr comment "$pr" --body "🚀 @slydlake Released **${CHART_NAME} v${CHART_VERSION}** to \`ghcr.io/slybase/charts\`."
