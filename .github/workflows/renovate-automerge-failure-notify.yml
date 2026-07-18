@@ -1,0 +1,45 @@
+name: Renovate Automerge Failure Notify
+
+# Renovate PRs labeled "automerge" rely on GitHub-native platformAutomerge:
+# they merge themselves once CI is green, so pr-auto-assign.yml deliberately
+# skips assigning them (see that file). But if CI fails, native automerge
+# never fires and the PR just sits open with nobody assigned — nothing would
+# tell us. This watches the two PR-validation workflows and assigns slydlake
+# only when an automerge-labeled PR's checks actually failed.
+
+on:
+  workflow_run:
+    workflows: ["PR Chart Validate", "Chart Install Test"]
+    types: [completed]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  notify:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign on automerge failure
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        with:
+          script: |
+            const prRefs = context.payload.workflow_run.pull_requests || [];
+            for (const prRef of prRefs) {
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prRef.number
+              });
+              if (pr.state !== 'open') continue;
+              const labels = (pr.labels || []).map((l) => l.name);
+              if (!labels.includes('automerge')) continue;
+              console.log(`PR #${pr.number}: automerge checks failed, assigning slydlake`);
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                assignees: ['slydlake']
+              });
+            }
