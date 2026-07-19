@@ -30,10 +30,15 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update redis docker tag to v0.32.4"
+      description: "deps: update docker.io/wordpress docker tag to v7.0.1"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/3d4c98aed62b71dcbc841206ce34a9c2bdc8cef4
+          url: https://github.com/SlyBase/helm-charts/commit/9d26165618de023234c5cd0d68b0f6e46b1c03fb
+    - kind: fixed
+      description: "deps: update docker.io/wordpress docker tag to v7.0.1"
+      links:
+        - name: GitHub
+          url: https://github.com/SlyBase/helm-charts/commit/670f7b2b3e1cc8df0800cdd58de04452ec21acb6
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.1-php8.3-apache
