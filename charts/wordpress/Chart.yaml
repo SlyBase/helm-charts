@@ -41,7 +41,7 @@ annotations:
           url: https://github.com/SlyBase/helm-charts/commit/670f7b2b3e1cc8df0800cdd58de04452ec21acb6
   artifacthub.io/images: |
     - name: wordpress
-      image: docker.io/wordpress:7.0.1-php8.3-apache
+      image: docker.io/wordpress:7.0.2-php8.3-apache
     - name: wordpress-cli
       image: docker.io/wordpress:cli-2.12.0-php8.3
     - name: metrics-apache
