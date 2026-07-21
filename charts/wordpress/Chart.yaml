@@ -30,15 +30,15 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/wordpress docker tag to v7.0.1"
+      description: "deps: update docker.io/wordpress docker tag to v7.0.2"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/9d26165618de023234c5cd0d68b0f6e46b1c03fb
+          url: https://github.com/SlyBase/helm-charts/commit/b1a12a9eadb0c142803751951da217d53d40b90a
     - kind: fixed
-      description: "deps: update docker.io/wordpress docker tag to v7.0.1"
+      description: "deps: update docker.io/wordpress:7.0.2-php8.3-apache docker digest to 0235a3c"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/670f7b2b3e1cc8df0800cdd58de04452ec21acb6
+          url: https://github.com/SlyBase/helm-charts/commit/5325f2ce3c041a7d40063ef0d5ee7690d6297cf6
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.0.2-php8.3-apache
