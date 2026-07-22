@@ -53,7 +53,7 @@ annotations:
     - name: redis
       image: docker.io/redis:8.8.0-trixie
     - name: valkey
-      image: docker.io/valkey/valkey:9.1.0-trixie
+      image: docker.io/valkey/valkey:9.1.1-trixie
 dependencies:
   - condition: memcached.enabled
     name: memcached
