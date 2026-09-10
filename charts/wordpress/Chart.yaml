@@ -30,10 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/mariadb:12.3.3-noble docker digest to ab1c3dd"
+      description: "deps: update mariadb docker tag to v0.16.14"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/6cab9c3c24b3218d84abb4f1f2e8f5dbb00cc41f
+          url: https://github.com/SlyBase/helm-charts/commit/fc5754a6f384c03f6e06eda83c2fecabf024d2a2
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.0-php8.3-apache
