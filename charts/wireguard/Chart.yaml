@@ -4,7 +4,7 @@ description: >-
   Using the offical linuxserver/wireguard image with almost any environment
   variables for K8S. Supporting server and client mode.
 type: application
-version: 2.0.5
+version: 2.0.6
 appVersion: 1.0.20260223-r0-ls122
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wireguard/app.png
@@ -26,10 +26,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/linuxserver/wireguard docker tag to v1.0.20260223-r0-ls121"
+      description: "deps: update docker.io/linuxserver/wireguard docker tag to v1.0.20260223-r0-ls122"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/d9a595fd79bb86d59e4229bb5952e872c500d6c4
+          url: https://github.com/SlyBase/helm-charts/commit/1697e2300803717b7304a80f1097e2bcaba95cd0
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wireguard
