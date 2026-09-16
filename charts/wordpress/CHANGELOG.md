@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [5.5.18](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.17...wordpress-v5.5.18) (2026-09-16)
+
+
+### Bug Fixes
+
+* **deps:** update chart/wordpress/docker.io/wordpress/digest ([#695](https://github.com/SlyBase/helm-charts/issues/695)) ([a25fa68](https://github.com/SlyBase/helm-charts/commit/a25fa68854db3dff56e13c59ea37c10728785226))
+
 ## [5.5.17](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.16...wordpress-v5.5.17) (2026-09-14)
 
 
