@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 5.5.24
+version: 5.5.25
 appVersion: 7.0.1
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -30,20 +30,20 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/memcached:1.6.45 docker digest to fad3e67"
+      description: "deps: update docker.io/memcached:1.6.45 docker digest to d956c0a"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/335b43686967e84f5a539c783121701b97a53a52
+          url: https://github.com/SlyBase/helm-charts/commit/7d144dc8b10b4172757038079562e6e2bb4790ab
     - kind: fixed
-      description: "deps: update docker.io/redis:8.10.1-trixie docker digest to 602d361"
+      description: "deps: update docker.io/redis:8.10.1-trixie docker digest to 8a1efc5"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/c06dfad842978e6c2b76c8d05afc963eb65c118a
+          url: https://github.com/SlyBase/helm-charts/commit/a45d8f10f5bad9d31a275dfa624cfc54a9d99bd7
     - kind: fixed
-      description: "deps: update docker.io/wordpress:7.1.1-php8.3-apache docker digest to 6cdf980"
+      description: "deps: update docker.io/wordpress:7.1.1-php8.3-apache docker digest to 51464c8"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/ace40c9e92c5eb5ec5b71dfaa2456d22fda9be6d
+          url: https://github.com/SlyBase/helm-charts/commit/89ce0019c4fda3d2668f9173003d945bc9985915
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.1-php8.3-apache
