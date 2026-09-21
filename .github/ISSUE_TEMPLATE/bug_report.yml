@@ -1,7 +1,7 @@
 name: 🐞Bug report
 description: Report a bug related to a chart.
 title: "[chartname] "
-labels: bug
+type: bug
 assignees:
   - slydlake
 
@@ -44,6 +44,15 @@ body:
     attributes:
       label: Actual behavior
       description: What actually happened (include logs or error messages).
+
+  - type: input
+    id: k8s_version
+    attributes:
+      label: Kubernetes version (optional)
+      description: The cluster version the chart runs on.
+      placeholder: "e.g. v1.31.2"
+    validations:
+      required: false
 
   - type: textarea
     id: values_yaml
