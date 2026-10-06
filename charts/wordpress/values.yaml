@@ -1564,7 +1564,7 @@ redis:
     ## @param redis.image.repository string Redis image repository
     repository: docker.io/redis
     ## @param redis.image.tag string Redis image tag
-    tag: "8.10.2-trixie@sha256:8aee6591ee8c2b26e9e01ad4913fbc804ea6b79a9bc675ee1824d80ea5dd9856"
+    tag: "8.10.2-trixie@sha256:c94085d298b738be22c9ccdc0ac3761fa6649df7dd82ad1d42367f3cb9714935"
     ## @param redis.image.pullPolicy string Redis image pull policy
     pullPolicy: IfNotPresent
 
