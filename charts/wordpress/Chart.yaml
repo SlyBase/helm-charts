@@ -30,10 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/wordpress:7.1.2-php8.3-apache docker digest to e04cf65"
+      description: "deps: update redis docker tag to v0.36.3"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/50f3939550f89390d2bb8f222732c52648b5d70b
+          url: https://github.com/SlyBase/helm-charts/commit/f8094c6640bd8a026a864a9042f871f707605555
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.2-php8.3-apache
