@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [5.5.45](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.44...wordpress-v5.5.45) (2026-10-09)
+
+
+### Bug Fixes
+
+* **deps:** update rclone/rclone:1.75 docker digest to 2687085 ([#772](https://github.com/SlyBase/helm-charts/issues/772)) ([1acd0fd](https://github.com/SlyBase/helm-charts/commit/1acd0fd25a62d4e601fa340731af13042ad49628))
+
 ## [5.5.44](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.43...wordpress-v5.5.44) (2026-10-08)
 
 
