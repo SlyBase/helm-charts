@@ -286,6 +286,15 @@
                 "major"
             ],
             "automerge": false
+        },
+        {
+            "description": "Suppress dependency-lookup warning for trivy-action: its github-tags lookup intermittently returns no-result under the CI token (75 annotated tags), but the action is digest-pinned (pinDigests) so the lookup only gates detecting brand-new releases, not keeping the pin stable",
+            "matchPackageNames": [
+                "aquasecurity/trivy-action"
+            ],
+            "suppressNotifications": [
+                "dependencyLookupWarnings"
+            ]
         }
     ]
 }
