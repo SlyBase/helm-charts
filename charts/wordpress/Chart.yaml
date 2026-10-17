@@ -30,10 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/wordpress:7.1.3-php8.3-apache docker digest to 81a3425"
+      description: "deps: update docker.io/mariadb:12.3.3-noble docker digest to faae028"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/0f5d9326184b30866bf7eea02fbfeb98e616cc3e
+          url: https://github.com/SlyBase/helm-charts/commit/bbd63a08667cff8b774bb9af45eaf1fee1788890
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.3-php8.3-apache
