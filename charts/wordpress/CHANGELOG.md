@@ -2,6 +2,15 @@
 
 All notable changes to this chart are documented here.
 
+## [5.5.52](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.51...wordpress-v5.5.52) (2026-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update docker.io/memcached:1.6.45 docker digest to b3fd958 ([#790](https://github.com/SlyBase/helm-charts/issues/790)) ([dc28667](https://github.com/SlyBase/helm-charts/commit/dc28667b6e2538954e27bf6643b05499769e08ae))
+* **deps:** update docker.io/redis:8.10.2-trixie docker digest to 5c02d7c ([#791](https://github.com/SlyBase/helm-charts/issues/791)) ([5319485](https://github.com/SlyBase/helm-charts/commit/531948579136d42b23b5bec5942a9c18bba83b6c))
+* **deps:** update docker.io/wordpress:7.1.3-php8.3-apache docker digest to 1b913c7 ([#792](https://github.com/SlyBase/helm-charts/issues/792)) ([2995157](https://github.com/SlyBase/helm-charts/commit/2995157639731c0f2e5ba1548cf8f984e0cbc8a4))
+
 ## [5.5.51](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.50...wordpress-v5.5.51) (2026-10-21)
 
 
