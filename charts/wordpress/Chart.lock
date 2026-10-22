@@ -7,9 +7,9 @@ dependencies:
   version: 0.37.8
 - name: valkey
   repository: oci://registry-1.docker.io/cloudpirates
-  version: 0.25.15
+  version: 0.25.16
 - name: mariadb
   repository: oci://registry-1.docker.io/cloudpirates
   version: 0.16.17
-digest: sha256:dd88396bc0ba165560c5a44663aedfe1ed734de86b54d3243ff3ab0ed1e3df87
-generated: "2026-10-22T11:28:18.589030834Z"
+digest: sha256:e0be617d96a8eea83ed565e18bdd387ae05eaff6c7d548c87d302cf16ed232f2
+generated: "2026-10-22T11:31:24.824132795Z"
