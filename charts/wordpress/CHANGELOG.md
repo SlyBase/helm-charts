@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [5.5.57](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.56...wordpress-v5.5.57) (2026-10-22)
+
+
+### Bug Fixes
+
+* **deps:** update valkey docker tag to v0.25.16 ([#807](https://github.com/SlyBase/helm-charts/issues/807)) ([2f54488](https://github.com/SlyBase/helm-charts/commit/2f54488014ab3d684192fb4c19adba3664b2adba))
+
 ## [5.5.56](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.55...wordpress-v5.5.56) (2026-10-22)
 
 
