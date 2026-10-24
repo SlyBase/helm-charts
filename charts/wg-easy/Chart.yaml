@@ -26,10 +26,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: added
-      description: "deps: update ghcr.io/wg-easy/wg-easy docker tag to v15.4.0"
+      description: "deps: update ghcr.io/wg-easy/wg-easy docker tag to v15.5.0"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/6858a1dc682b32c982ccb5c0beb0226f16016d73
+          url: https://github.com/SlyBase/helm-charts/commit/3f1c1c7e776b5dc3c10f5b0a36d7bd9485b80dd5
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wg-easy
