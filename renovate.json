@@ -17,6 +17,10 @@
         "custom.regex"
     ],
     "pinDigests": true,
+    "vulnerabilityAlerts": {
+        "enabled": true,
+        "labels": ["vulnerability"]
+    },
     "prHourlyLimit": 5,
     "prConcurrentLimit": 3,
     "timezone": "Europe/Berlin",
@@ -74,6 +78,26 @@
         }
     ],
     "packageRules": [
+        {
+            "description": "Security updates (label vulnerability, non-major) -> chart PATCH bump (fix) + auto-merge",
+            "matchLabels": [
+                "vulnerability"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch",
+                "digest"
+            ],
+            "semanticCommitType": "fix",
+            "automerge": true
+        },
+        {
+            "description": "Churn digests (same tag, no CVE) -> chore (no chart version bump), auto-merge",
+            "matchUpdateTypes": [
+                "digest"
+            ],
+            "semanticCommitType": "chore"
+        },
         {
             "description": "Disable helm-values for wireguard (handled by custom.regex)",
             "matchManagers": [
@@ -193,7 +217,7 @@
             "semanticCommitType": "feat"
         },
         {
-            "description": "Chart bump mapping: subchart (helmv3) minor/patch/digest -> chart PATCH bump (fix)",
+            "description": "Chart bump mapping: subchart (helmv3) minor/patch -> chart PATCH bump (fix)",
             "matchManagers": [
                 "helmv3"
             ],
@@ -202,8 +226,7 @@
             ],
             "matchUpdateTypes": [
                 "minor",
-                "patch",
-                "digest"
+                "patch"
             ],
             "semanticCommitType": "fix"
         },
@@ -238,7 +261,7 @@
             "semanticCommitType": "feat"
         },
         {
-            "description": "Chart bump mapping: direct dependency patch/digest -> chart PATCH bump (fix)",
+            "description": "Chart bump mapping: direct dependency patch -> chart PATCH bump (fix)",
             "matchManagers": [
                 "helm-values",
                 "custom.regex"
@@ -247,8 +270,7 @@
                 "charts/**"
             ],
             "matchUpdateTypes": [
-                "patch",
-                "digest"
+                "patch"
             ],
             "semanticCommitType": "fix"
         },
