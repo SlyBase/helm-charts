@@ -33,7 +33,7 @@ annotations:
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wg-easy
-      image: ghcr.io/wg-easy/wg-easy:15.4.0
+      image: ghcr.io/wg-easy/wg-easy:15.5.0
 keywords:
   - wireguard
   - vpn
