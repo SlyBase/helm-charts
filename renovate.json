@@ -19,7 +19,8 @@
     "pinDigests": true,
     "vulnerabilityAlerts": {
         "enabled": true,
-        "labels": ["vulnerability"]
+        "labels": ["vulnerability"],
+        "semanticCommitType": "fix"
     },
     "prHourlyLimit": 5,
     "prConcurrentLimit": 3,
@@ -78,19 +79,6 @@
         }
     ],
     "packageRules": [
-        {
-            "description": "Security updates (label vulnerability, non-major) -> chart PATCH bump (fix) + auto-merge",
-            "matchLabels": [
-                "vulnerability"
-            ],
-            "matchUpdateTypes": [
-                "minor",
-                "patch",
-                "digest"
-            ],
-            "semanticCommitType": "fix",
-            "automerge": true
-        },
         {
             "description": "Churn digests (same tag, no CVE) -> chore (no chart version bump), auto-merge",
             "matchUpdateTypes": [
