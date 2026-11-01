@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [2.0.13](https://github.com/SlyBase/helm-charts/compare/wireguard-v2.0.12...wireguard-v2.0.13) (2026-11-01)
+
+
+### Bug Fixes
+
+* **deps:** update docker.io/linuxserver/wireguard docker tag to v1.0.20260223-r0-ls129 ([#848](https://github.com/SlyBase/helm-charts/issues/848)) ([267208d](https://github.com/SlyBase/helm-charts/commit/267208dcc12306f3572ea1773454c57b238f05cd))
+
 ## [2.0.12](https://github.com/SlyBase/helm-charts/compare/wireguard-v2.0.11...wireguard-v2.0.12) (2026-10-29)
 
 
