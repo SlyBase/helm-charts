@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [5.5.68](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.67...wordpress-v5.5.68) (2026-11-05)
+
+
+### Bug Fixes
+
+* **deps:** update docker.io/lusotycoon/apache-exporter docker tag to v1.1.2 ([#858](https://github.com/SlyBase/helm-charts/issues/858)) ([31b6f32](https://github.com/SlyBase/helm-charts/commit/31b6f32b9be0148e45a9fa9123548a1a0e52fa90))
+
 ## [5.5.67](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.66...wordpress-v5.5.67) (2026-11-04)
 
 
