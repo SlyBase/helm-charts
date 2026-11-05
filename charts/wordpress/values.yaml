@@ -1052,7 +1052,7 @@ metrics:
       ## @param metrics.apache.image.pullPolicy string Image pull policy
       pullPolicy: IfNotPresent
       ## @param metrics.apache.image.tag string Image tag
-      tag: "v1.1.2@sha256:8df688de36d56f7498c78087ad84eadd1881dcf5026a93112ef7de7f84220adc"
+      tag: "v1.1.3@sha256:a49b74772d78351d5513bc83e03f86219cd5563cf0cbf2960a69471818934d0a"
 
     ## @section Apache Exporter Probes
     ## @descriptionStart
