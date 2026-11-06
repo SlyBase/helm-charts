@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [5.6.0](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.70...wordpress-v5.6.0) (2026-11-06)
+
+
+### Features
+
+* **deps:** update rclone/rclone docker tag to v1.76 ([#869](https://github.com/SlyBase/helm-charts/issues/869)) ([d741412](https://github.com/SlyBase/helm-charts/commit/d7414124ac3705c6e1149a86ab791da9b22f74e5))
+
 ## [5.5.70](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.5.69...wordpress-v5.5.70) (2026-11-06)
 
 
