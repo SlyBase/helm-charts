@@ -29,11 +29,11 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: added
-      description: "deps: update rclone/rclone docker tag to v1.76"
+    - kind: fixed
+      description: "deps: update valkey docker tag to v0.26.0"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/d7414124ac3705c6e1149a86ab791da9b22f74e5
+          url: https://github.com/SlyBase/helm-charts/commit/add52581267d819c37376e46d823a5e18c7a5323
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.4-php8.3-apache
