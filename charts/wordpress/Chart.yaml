@@ -30,10 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update valkey docker tag to v0.26.0"
+      description: "deps: update docker.io/lusotycoon/apache-exporter docker tag to v1.1.3"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/add52581267d819c37376e46d823a5e18c7a5323
+          url: https://github.com/SlyBase/helm-charts/commit/7ce9fa2f2c333290fcd7a8cf91cf8c74511107dd
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.4-php8.3-apache
