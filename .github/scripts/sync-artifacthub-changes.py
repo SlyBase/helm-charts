@@ -11,11 +11,15 @@ maintained in one place.
 It also keeps the ``artifacthub.io/prerelease`` annotation in sync with the
 chart version (set when the version carries an -alpha/-beta/-rc suffix).
 
-The ``artifacthub.io/images`` annotation is NOT touched here; it is maintained
-directly by Renovate's custom.regex manager.
+The ``artifacthub.io/images`` annotation is owned by Renovate's custom.regex
+manager and is never generated here. With ``--images-from <Chart.yaml>`` the
+script restores that annotation verbatim from a reference file (the current
+``main`` Chart.yaml), undoing a release-please rewrite from a stale snapshot
+that would otherwise revert the Renovate-maintained image tags.
 
 Usage:
-    sync-artifacthub-changes.py --chart-dir charts/wordpress
+    sync-artifacthub-changes.py --chart-dir charts/wordpress \
+        [--images-from /path/to/main/Chart.yaml]
 """
 
 from __future__ import annotations
@@ -53,6 +57,10 @@ def main() -> int:
         print(f"skip: no CHANGELOG.md in {chart_dir}", file=sys.stderr)
         return 0
 
+    reference_content = None
+    if args.images_from:
+        reference_content = Path(args.images_from).read_text(encoding="utf8")
+
     version = read_current_version(chart_file_path)
     changes = parse_top_changelog_entry(changelog_path.read_text(encoding="utf8"), version)
 
@@ -65,6 +73,8 @@ def main() -> int:
         # Still keep the prerelease annotation consistent with the version.
         content = chart_file_path.read_text(encoding="utf8")
         content = sync_prerelease_annotation(content, is_prerelease_version(version))
+        if reference_content is not None:
+            content = sync_images_annotation(content, reference_content)
         chart_file_path.write_text(content, encoding="utf8")
         return 0
 
@@ -76,6 +86,8 @@ def main() -> int:
         block_scalar=True,
     )
     content = sync_prerelease_annotation(content, is_prerelease_version(version))
+    if reference_content is not None:
+        content = sync_images_annotation(content, reference_content)
     chart_file_path.write_text(content, encoding="utf8")
 
     print(f"synced {len(changes)} change entr{'y' if len(changes) == 1 else 'ies'} for {chart_dir.name} {version}")
@@ -85,6 +97,7 @@ def main() -> int:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chart-dir", required=True, help="Path to the chart directory, e.g. charts/wordpress")
+    parser.add_argument("--images-from", help="Reference Chart.yaml (e.g. origin/main) to restore artifacthub.io/images from")
     return parser.parse_args()
 
 
@@ -195,6 +208,35 @@ def sync_prerelease_annotation(content: str, is_prerelease: bool) -> str:
     if is_prerelease:
         return replace_annotation_block(content, key, '"true"', block_scalar=False)
     return remove_annotation(content, key)
+
+
+def sync_images_annotation(content: str, reference_content: str) -> str:
+    """Restore ``artifacthub.io/images`` verbatim from the reference Chart.yaml.
+
+    release-please can rewrite Chart.yaml from a stale snapshot and revert the
+    Renovate-maintained images annotation. Restoring it from the reference (the
+    current main Chart.yaml) undoes that. Images are never generated here; if
+    the reference has no images block, the content is left unchanged.
+    """
+    images = extract_annotation_block(reference_content, "artifacthub.io/images")
+    if images is None:
+        return content
+    return replace_annotation_block(content, "artifacthub.io/images", images, block_scalar=True)
+
+
+def extract_annotation_block(content: str, key: str) -> str | None:
+    """Return the inner lines of a block-scalar annotation, or None if absent."""
+    lines = content.splitlines()
+    bounds = find_annotations_section(lines)
+    if bounds is None:
+        return None
+    entry_start, entry_end = find_annotation_entry(lines, bounds[0], bounds[1], key)
+    if entry_start is None:
+        return None
+    value_lines = lines[entry_start + 1:entry_end]
+    while value_lines and not value_lines[-1].strip():
+        value_lines.pop()
+    return "\n".join(line[4:] if line.startswith("    ") else line for line in value_lines)
 
 
 def replace_annotation_block(content: str, key: str, value: str, *, block_scalar: bool) -> str:

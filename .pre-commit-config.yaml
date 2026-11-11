@@ -29,3 +29,11 @@ repos:
         language: python
         files: Chart\.yaml$
         additional_dependencies: [pyyaml]
+
+      # Unit self-check for the release-please ArtifactHub sync script.
+      - id: sync-artifacthub-selftest
+        name: Sync ArtifactHub self-test
+        entry: python .github/scripts/test_sync_artifacthub_changes.py
+        language: python
+        always_run: true
+        pass_filenames: false

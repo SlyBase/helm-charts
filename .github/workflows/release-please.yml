@@ -65,6 +65,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # Reference for restoring Renovate-owned images: the current main.
+          git fetch origin main --quiet
+
           echo "$PRS" | jq -c '.[]' | while read -r pr; do
             branch=$(echo "$pr" | jq -r '.headBranchName')
             # release-please (separate-pull-requests) names branches:
@@ -85,13 +88,19 @@ jobs:
             git fetch origin "$branch"
             git checkout -B "$branch" "origin/$branch"
 
-            python3 .github/scripts/sync-artifacthub-changes.py --chart-dir "$chart_dir"
+            # Restore artifacthub.io/images from main: release-please can rewrite
+            # Chart.yaml from a stale snapshot and revert Renovate's image tags.
+            main_chart="$(mktemp)"
+            git show "origin/main:$chart_dir/Chart.yaml" > "$main_chart" 2>/dev/null || true
+            python3 .github/scripts/sync-artifacthub-changes.py \
+              --chart-dir "$chart_dir" --images-from "$main_chart"
+            rm -f "$main_chart"
 
             if git diff --quiet -- "$chart_dir/Chart.yaml"; then
-              echo "artifacthub.io/changes already up to date for $chart"
+              echo "artifacthub.io annotations already up to date for $chart"
             else
               git add "$chart_dir/Chart.yaml"
-              git commit -m "chore: sync artifacthub.io/changes for $chart"
+              git commit -m "chore: sync artifacthub.io annotations for $chart"
               git push origin "$branch"
             fi
             echo "::endgroup::"
