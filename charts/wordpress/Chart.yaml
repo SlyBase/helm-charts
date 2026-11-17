@@ -30,20 +30,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update mariadb docker tag to v0.16.18"
+      description: "deps: update mariadb docker tag to v0.17.0"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/31343e090bba26b308a232a9e0c8f9088a64f4c2
-    - kind: fixed
-      description: "deps: update memcached docker tag to v0.14.14"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/637df6bea0bb3b0fc62f5b7f5c93b481f5e1dbe4
-    - kind: fixed
-      description: "deps: update redis docker tag to v0.39.6"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/f4e6a771942e0182e92cdf30c59c9a90f35afd8f
+          url: https://github.com/SlyBase/helm-charts/commit/7b77de81d3dcfc3c0f52fb7e4d5957002bce110d
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.4-php8.3-apache
