@@ -1,0 +1,61 @@
+name: Tag Manifest Consistency
+
+# Guard: every chart version in .release-please-manifest.json must have its git
+# tag (e.g. wordpress-v5.6.7). A missing tag makes release-please fall back to
+# the bootstrap-sha on its next run, re-scanning months of history and
+# misclassifying already-released commits (including breaking ones) as new,
+# which can trigger a spurious MAJOR bump. This check fails fast the moment a
+# manifest/tag divergence appears, so the gap can be fixed before the next
+# release-please run turns it into a wrong release.
+#
+# Incident: PR #894 (title 5.6.6, content 5.6.7) caused release-please to tag
+# 5.6.6, leaving wordpress-v5.6.7 missing. The next release-please run then
+# opened PR #899 "release wordpress 6.0.0" based on the bootstrap-sha.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tag-consistency
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: manifest tags exist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0   # need full tag history
+
+      - name: Check manifest versions against tags
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, subprocess, sys
+
+          manifest = json.load(open(".release-please-manifest.json"))
+          config = json.load(open("release-please-config.json"))
+          tags = set(subprocess.check_output(["git", "tag", "--list"]).decode().split())
+
+          missing = []
+          for chart, ver in manifest.items():
+              component = config["packages"][chart]["component"]
+              tag = f"{component}-v{ver}"
+              if tag not in tags:
+                  missing.append((chart, ver, tag))
+
+          if missing:
+              print("MANIFEST/TAG MISMATCH — manifest versions without a git tag:")
+              for chart, ver, tag in missing:
+                  print(f"  {chart}: version {ver} -> missing tag {tag}")
+              sys.exit(1)
+          print("OK: all manifest versions have their git tags")
+          PY
