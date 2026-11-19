@@ -4,7 +4,7 @@ description: >-
   Using the official WordPress image. This chart provides automation for
   installation, user management, plugin installation, and metrics.
 type: application
-version: 5.6.8
+version: 5.7.0
 appVersion: 7.0.1
 icon: >-
   https://raw.githubusercontent.com/slydlake/helm-charts/refs/heads/main/charts/wordpress/app.png
@@ -58,7 +58,7 @@ annotations:
     - name: redis
       image: docker.io/redis:8.10.3-trixie
     - name: valkey
-      image: docker.io/valkey/valkey:9.2.0-trixie
+      image: docker.io/valkey/valkey:9.1.4-trixie
 dependencies:
   - condition: memcached.enabled
     name: memcached
