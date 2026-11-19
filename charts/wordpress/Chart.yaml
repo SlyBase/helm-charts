@@ -29,21 +29,11 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: fixed
-      description: "deps: update docker.io/valkey/valkey docker tag to v9.1.4"
+    - kind: added
+      description: "deps: update docker.io/valkey/valkey docker tag to v9.2.0"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/261917c30fee8215932f5006b3dc9e3cc9803d48
-    - kind: fixed
-      description: "deps: update docker.io/wordpress docker tag to v7.1.5"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/c55b592c09a24498be7644ae82298492ccbb3afd
-    - kind: fixed
-      description: "deps: update redis docker tag to v0.40.0"
-      links:
-        - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/b8b8dd52a982aa5b57b0892323060a7f30f59225
+          url: https://github.com/SlyBase/helm-charts/commit/b7cbbc209dc74ae073e77e416b7574282e8f3e24
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.5-php8.3-apache
@@ -58,7 +48,7 @@ annotations:
     - name: redis
       image: docker.io/redis:8.10.3-trixie
     - name: valkey
-      image: docker.io/valkey/valkey:9.1.4-trixie
+      image: docker.io/valkey/valkey:9.2.0-trixie
 dependencies:
   - condition: memcached.enabled
     name: memcached
