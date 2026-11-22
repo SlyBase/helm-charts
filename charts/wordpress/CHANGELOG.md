@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [5.7.1](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.7.0...wordpress-v5.7.1) (2026-11-22)
+
+
+### Bug Fixes
+
+* **deps:** update mariadb docker tag to v0.17.1 ([#908](https://github.com/SlyBase/helm-charts/issues/908)) ([30fd428](https://github.com/SlyBase/helm-charts/commit/30fd4288474c808ba610c8b736fdac68df3c4228))
+
 ## [5.7.0](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.6.8...wordpress-v5.7.0) (2026-11-19)
 
 
