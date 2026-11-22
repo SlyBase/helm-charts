@@ -29,11 +29,11 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: added
-      description: "deps: update docker.io/valkey/valkey docker tag to v9.2.0"
+    - kind: fixed
+      description: "deps: update mariadb docker tag to v0.17.1"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/b7cbbc209dc74ae073e77e416b7574282e8f3e24
+          url: https://github.com/SlyBase/helm-charts/commit/30fd4288474c808ba610c8b736fdac68df3c4228
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.5-php8.3-apache
