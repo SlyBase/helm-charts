@@ -29,11 +29,11 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: fixed
-      description: "deps: update mariadb docker tag to v0.17.1"
+    - kind: added
+      description: "deps: update docker.io/redis docker tag to v8.12.0"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/30fd4288474c808ba610c8b736fdac68df3c4228
+          url: https://github.com/SlyBase/helm-charts/commit/d27c44e2331b6f9dcf55944c8e8edc42e71d12a5
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.5-php8.3-apache
