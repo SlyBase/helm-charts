@@ -2,6 +2,13 @@
 
 All notable changes to this chart are documented here.
 
+## [5.8.0](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.7.1...wordpress-v5.8.0) (2026-11-23)
+
+
+### Features
+
+* **deps:** update docker.io/redis docker tag to v8.12.0 ([#911](https://github.com/SlyBase/helm-charts/issues/911)) ([d27c44e](https://github.com/SlyBase/helm-charts/commit/d27c44e2331b6f9dcf55944c8e8edc42e71d12a5))
+
 ## [5.7.1](https://github.com/SlyBase/helm-charts/compare/wordpress-v5.7.0...wordpress-v5.7.1) (2026-11-22)
 
 
