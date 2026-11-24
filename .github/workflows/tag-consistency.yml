@@ -11,6 +11,12 @@ name: Tag Manifest Consistency
 # Incident: PR #894 (title 5.6.6, content 5.6.7) caused release-please to tag
 # 5.6.6, leaving wordpress-v5.6.7 missing. The next release-please run then
 # opened PR #899 "release wordpress 6.0.0" based on the bootstrap-sha.
+#
+# Release commits are skipped: release-please creates the tag in its own
+# workflow run triggered by the SAME push, so at check time the new tag
+# legitimately does not exist yet (false positive on every release merge,
+# e.g. runs for 5.7.0 / 5.7.1 / 5.8.0). The next non-release push still runs
+# the check and flags a tag that was never created.
 
 on:
   push:
@@ -28,6 +34,10 @@ concurrency:
 jobs:
   check:
     name: manifest tags exist
+    # Skip release-please merge commits: their tag is created concurrently by
+    # the Release Please run for the same push (see header comment). null on
+    # workflow_dispatch -> startsWith is false -> the check runs.
+    if: "${{ !startsWith(github.event.head_commit.message, 'chore(main): release') }}"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
