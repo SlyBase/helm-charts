@@ -29,11 +29,11 @@ annotations:
     - name: slydlake
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
-    - kind: added
-      description: "deps: update docker.io/redis docker tag to v8.12.0"
+    - kind: fixed
+      description: "deps: update redis docker tag to v0.42.0"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/d27c44e2331b6f9dcf55944c8e8edc42e71d12a5
+          url: https://github.com/SlyBase/helm-charts/commit/6d329a776a90605404682eb1374c99dcd9da90fc
   artifacthub.io/images: |
     - name: wordpress
       image: docker.io/wordpress:7.1.5-php8.3-apache
