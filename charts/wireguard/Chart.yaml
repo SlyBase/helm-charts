@@ -26,10 +26,10 @@ annotations:
       email: sly.dlake@gmail.com
   artifacthub.io/changes: |
     - kind: fixed
-      description: "deps: update docker.io/linuxserver/wireguard docker tag to v1.0.20260223-r0-ls130"
+      description: "deps: update docker.io/linuxserver/wireguard docker tag to v1.0.20260223-r0-ls131"
       links:
         - name: GitHub
-          url: https://github.com/SlyBase/helm-charts/commit/961cb879564b71060659007c113dfa82d931d882
+          url: https://github.com/SlyBase/helm-charts/commit/3875c1f4089d0af02bb33fe615981d3b5180d811
   artifacthub.io/containsSecurityUpdates: false
   artifacthub.io/images: |
     - name: wireguard
